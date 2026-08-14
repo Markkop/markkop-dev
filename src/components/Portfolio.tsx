@@ -20,7 +20,8 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { profile, projects, stack } from '@/data/profile'
+import { profile, stack } from '@/data/profile'
+import ProjectShowcase from '@/components/ProjectShowcase'
 
 type GithubProfile = { public_repos?: number; followers?: number }
 type GithubEvent = { repo?: { name?: string }; type?: string }
@@ -211,40 +212,7 @@ export default function Portfolio() {
           </div>
         </section>
 
-        <section id="projects" className="section projects-section">
-          <div className="container">
-            <motion.div className="section-heading split-heading" {...reveal}>
-              <div><p className="eyebrow">{'// SELECTED WORK'}</p><h2>Projects that<br /><span>left the terminal.</span></h2></div>
-              <p>Tools, experiments, and products built across more than a decade of learning in public.</p>
-            </motion.div>
-
-            <div className="projects-grid">
-              {projects.map((project, index) => (
-                <motion.article className={`project-card ${index === 0 || index === 3 ? 'featured' : ''}`} key={project.slug} {...reveal}>
-                  <div className="project-preview">
-                    {project.image ? <Image src={project.image} alt={`${project.title} project preview`} fill sizes="(max-width: 768px) 100vw, 50vw" /> : (
-                      <div className="project-fallback"><Code2 size={34} /><span>{project.title}</span></div>
-                    )}
-                    <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-                  </div>
-                  <div className="project-content">
-                    <div className="project-meta"><span>{project.category}</span><strong>{project.metric}</strong></div>
-                    <h3>{project.title}</h3>
-                    <p>{project.description}</p>
-                    <div className="tag-row">{project.tech.map((tech) => <span key={tech}>{tech}</span>)}</div>
-                    <div className="project-bottom">
-                      <small>{project.timeframe}</small>
-                      <div>
-                        {project.code && <a href={project.code} target="_blank" rel="noreferrer" aria-label={`${project.title} source code`}><Github size={16} /></a>}
-                        <a href={project.live} target="_blank" rel="noreferrer">Visit <ArrowUpRight size={15} /></a>
-                      </div>
-                    </div>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ProjectShowcase />
 
         <section id="tech-stack" className="section stack-section">
           <div className="container">
