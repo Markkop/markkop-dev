@@ -5,8 +5,10 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform }
 import { ArrowDown, ArrowUpRight, Code2, Github } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { projects, type Project } from '@/data/profile'
+import { useLanguage } from '@/context/LanguageContext'
+import type { SiteContent } from '@/i18n/content'
 
-function ProjectVisual({ project, priority = false }: { project: Project; priority?: boolean }) {
+function ProjectVisual({ project, previewLabel, categoryLabel, priority = false }: { project: Project; previewLabel: string; categoryLabel: string; priority?: boolean }) {
   return (
     <div className="project-browser">
       <div className="project-browser-bar">
@@ -17,7 +19,7 @@ function ProjectVisual({ project, priority = false }: { project: Project; priori
         {project.image ? (
           <Image
             src={project.image}
-            alt={`${project.title} project preview`}
+            alt={previewLabel}
             fill
             priority={priority}
             sizes="(max-width: 980px) 100vw, 56vw"
@@ -26,7 +28,7 @@ function ProjectVisual({ project, priority = false }: { project: Project; priori
           <div className="project-showcase-fallback">
             <Code2 size={44} />
             <strong>{project.title}</strong>
-            <span>{project.category}</span>
+            <span>{categoryLabel}</span>
           </div>
         )}
       </div>
@@ -34,33 +36,36 @@ function ProjectVisual({ project, priority = false }: { project: Project; priori
   )
 }
 
-function ProjectCopy({ project, index }: { project: Project; index: number }) {
+function ProjectCopy({ project, index, t }: { project: Project; index: number; t: SiteContent }) {
+  const copy = t.projects.items[project.slug] ?? project
+
   return (
     <div className="project-showcase-copy">
       <div className="project-showcase-meta">
         <span>{String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}</span>
-        <span>{project.category}</span>
-        <strong>{project.metric}</strong>
+        <span>{copy.category}</span>
+        <strong>{copy.metric}</strong>
       </div>
       <h3>{project.title}</h3>
-      <p>{project.description}</p>
+      <p>{copy.description}</p>
       <div className="project-showcase-tags">
         {project.tech.map((tech) => <span key={tech}>{tech}</span>)}
       </div>
       <div className="project-showcase-links">
-        <a href={project.live} target="_blank" rel="noreferrer">Visit project <ArrowUpRight size={16} /></a>
+        <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit} <ArrowUpRight size={16} /></a>
         {project.code && (
           <a className="secondary" href={project.code} target="_blank" rel="noreferrer">
-            <Github size={16} /> Source
+            <Github size={16} /> {t.projects.source}
           </a>
         )}
-        <small>{project.timeframe}</small>
+        <small>{copy.timeframe}</small>
       </div>
     </div>
   )
 }
 
 export default function ProjectShowcase() {
+  const { t } = useLanguage()
   const trackRef = useRef<HTMLDivElement>(null)
   const activeIndexRef = useRef(0)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -95,8 +100,8 @@ export default function ProjectShowcase() {
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.55 }}
         >
-          <div><p className="eyebrow">{'// SELECTED WORK'}</p><h2>Projects that<br /><span>left the terminal.</span></h2></div>
-          <p>Tools, experiments, and products built across more than a decade of learning in public.</p>
+          <div><p className="eyebrow">{t.projects.eyebrow}</p><h2>{t.projects.title}<br /><span>{t.projects.titleHighlight}</span></h2></div>
+          <p>{t.projects.intro}</p>
         </motion.div>
       </div>
 
@@ -121,13 +126,13 @@ export default function ProjectShowcase() {
 
           <div className="project-stage-nav container">
             <span>{String(activeIndex + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}</span>
-            <div aria-label="Choose a project">
+            <div aria-label={t.projects.choose}>
               {projects.map((project, index) => (
                 <button
                   key={project.slug}
                   className={index === activeIndex ? 'active' : ''}
                   onClick={() => goToProject(index)}
-                  aria-label={`Show ${project.title}`}
+                  aria-label={t.projects.show(project.title)}
                   aria-current={index === activeIndex ? 'true' : undefined}
                 />
               ))}
@@ -143,12 +148,12 @@ export default function ProjectShowcase() {
               exit={{ opacity: 0, y: -28 }}
               transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             >
-              <ProjectCopy project={activeProject} index={activeIndex} />
-              <ProjectVisual project={activeProject} priority={activeIndex === 0} />
+              <ProjectCopy project={activeProject} index={activeIndex} t={t} />
+              <ProjectVisual project={activeProject} previewLabel={t.projects.preview(activeProject.title)} categoryLabel={(t.projects.items[activeProject.slug] ?? activeProject).category} priority={activeIndex === 0} />
             </motion.article>
           </AnimatePresence>
 
-          <div className="project-scroll-cue"><ArrowDown size={14} /><span>Scroll to explore</span></div>
+          <div className="project-scroll-cue"><ArrowDown size={14} /><span>{t.projects.scroll}</span></div>
         </div>
       </div>
 
@@ -156,8 +161,8 @@ export default function ProjectShowcase() {
         {projects.map((project, index) => (
           <article className="project-mobile-slide" key={project.slug}>
             <div className="container">
-              <ProjectCopy project={project} index={index} />
-              <ProjectVisual project={project} />
+              <ProjectCopy project={project} index={index} t={t} />
+              <ProjectVisual project={project} previewLabel={t.projects.preview(project.title)} categoryLabel={(t.projects.items[project.slug] ?? project).category} />
             </div>
           </article>
         ))}

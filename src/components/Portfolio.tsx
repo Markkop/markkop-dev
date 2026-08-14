@@ -22,17 +22,11 @@ import {
 import { useEffect, useState } from 'react'
 import { profile, stack } from '@/data/profile'
 import ProjectShowcase from '@/components/ProjectShowcase'
+import LanguageToggle from '@/components/LanguageToggle'
+import { useLanguage } from '@/context/LanguageContext'
 
 type GithubProfile = { public_repos?: number; followers?: number }
 type GithubEvent = { repo?: { name?: string }; type?: string }
-
-const navItems = [
-  { label: 'Home', href: '#hero' },
-  { label: 'About', href: '#about' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Stack', href: '#tech-stack' },
-  { label: 'Contact', href: '#contact' },
-]
 
 const reveal = {
   initial: { opacity: 0, y: 24 },
@@ -42,13 +36,24 @@ const reveal = {
 }
 
 export default function Portfolio() {
+  const { t } = useLanguage()
   const [menuOpen, setMenuOpen] = useState(false)
   const [theme, setTheme] = useState<'dark' | 'light'>(() =>
     typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
   )
   const [github, setGithub] = useState<GithubProfile>({})
-  const [activity, setActivity] = useState('Building in public')
+  const [activityRepo, setActivityRepo] = useState('')
   const [loading, setLoading] = useState(true)
+
+  const navItems = [
+    { label: t.nav.home, href: '#hero' },
+    { label: t.nav.about, href: '#about' },
+    { label: t.nav.projects, href: '#projects' },
+    { label: t.nav.stack, href: '#tech-stack' },
+    { label: t.nav.contact, href: '#contact' },
+  ]
+
+  const activity = activityRepo ? `${t.status.latest} · ${activityRepo}` : t.status.building
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('markkop-theme') === 'light' ? 'light' : 'dark'
@@ -67,7 +72,7 @@ export default function Portfolio() {
       if (profileResult.status === 'fulfilled') setGithub(profileResult.value as GithubProfile)
       if (eventsResult.status === 'fulfilled') {
         const event = (eventsResult.value as GithubEvent[]).find((item) => item.repo?.name)
-        if (event?.repo?.name) setActivity(`Latest activity · ${event.repo.name.replace('Markkop/', '')}`)
+        if (event?.repo?.name) setActivityRepo(event.repo.name.replace('Markkop/', ''))
       }
     })
 
@@ -98,20 +103,21 @@ export default function Portfolio() {
         )}
       </AnimatePresence>
 
-      <a className="skip-link" href="#main-content">Skip to content</a>
+      <a className="skip-link" href="#main-content">{t.accessibility.skip}</a>
 
       <header className="site-header">
-        <nav className="nav-shell" aria-label="Primary navigation">
-          <a className="brand" href="#hero" aria-label="markkop.dev home">markkop.dev<span>_</span></a>
+        <nav className="nav-shell" aria-label={t.accessibility.primaryNav}>
+          <a className="brand" href="#hero" aria-label={`markkop.dev · ${t.nav.home}`}>markkop.dev<span>_</span></a>
           <div className="desktop-nav">
             {navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
           </div>
           <div className="nav-actions">
-            <button className="icon-button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>
+            <LanguageToggle />
+            <button className="icon-button" onClick={toggleTheme} aria-label={t.accessibility.theme(theme)}>
               {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
             </button>
-            <a className="nav-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">Connect</a>
-            <button className="icon-button menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label="Toggle menu">
+            <a className="nav-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
+            <button className="icon-button menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>
               {menuOpen ? <X size={19} /> : <Menu size={19} />}
             </button>
           </div>
@@ -120,13 +126,13 @@ export default function Portfolio() {
           {menuOpen && (
             <motion.div className="mobile-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
               {navItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
-              <Link href="/links" onClick={() => setMenuOpen(false)}>Links</Link>
+              <Link href="/links" onClick={() => setMenuOpen(false)}>{t.nav.links}</Link>
             </motion.div>
           )}
         </AnimatePresence>
       </header>
 
-      <aside className="social-rail" aria-label="Social profiles">
+      <aside className="social-rail" aria-label={t.accessibility.socialProfiles}>
         <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a>
         <a href={profile.links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a>
         <a href={profile.links.x} target="_blank" rel="noreferrer" aria-label="X"><Twitter size={17} /></a>
@@ -142,16 +148,16 @@ export default function Portfolio() {
               <div className="status-line"><span /><Radio size={13} /> {activity}</div>
               <p className="eyebrow">{profile.name}</p>
               <h1>
-                <span>I build practical products where</span>
-                <strong>web, AI, games &amp; onchain systems meet.</strong>
+                <span>{t.hero.lead}</span>
+                <strong>{t.hero.highlight}</strong>
               </h1>
-              <p className="hero-summary">{profile.summary}</p>
+              <p className="hero-summary">{t.hero.summary}</p>
               <div className="hero-actions">
-                <a className="button button-primary" href="#projects">Explore my work <ArrowDown size={15} /></a>
-                <a className="button button-secondary" href={profile.links.linkedin} target="_blank" rel="noreferrer">Connect on LinkedIn <ArrowUpRight size={15} /></a>
+                <a className="button button-primary" href="#projects">{t.hero.explore} <ArrowDown size={15} /></a>
+                <a className="button button-secondary" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.hero.linkedin} <ArrowUpRight size={15} /></a>
               </div>
               <div className="identity-row">
-                <span><MapPin size={14} /> {profile.location}</span>
+                <span><MapPin size={14} /> {t.hero.location}</span>
                 <span><Building2 size={14} /> {profile.company}</span>
               </div>
             </motion.div>
@@ -162,12 +168,12 @@ export default function Portfolio() {
                 <div className="terminal-body">
                   <div className="terminal-profile">
                     <div className="avatar-frame"><Image src="/avatar.png" alt="Marcelo Kopmann" fill priority sizes="140px" /></div>
-                    <div><small>whoami</small><strong>{profile.shortName}</strong><span>{profile.role}</span></div>
+                    <div><small>whoami</small><strong>{profile.shortName}</strong><span>{t.hero.role}</span></div>
                   </div>
                   <div className="command"><span>$</span> cat focus.txt</div>
-                  <p className="output">web_products + ai_workflows + open_source + onchain_incentives</p>
+                  <p className="output">{t.hero.focus}</p>
                   <div className="command"><span>$</span> git status --short</div>
-                  <p className="output success">● curious, shipping, learning</p>
+                  <p className="output success">{t.hero.state}</p>
                   <div className="terminal-footer"><span>main</span><span>UTF-8</span><span>TypeScript</span></div>
                 </div>
               </div>
@@ -178,21 +184,21 @@ export default function Portfolio() {
         <section id="about" className="section about-section">
           <div className="container">
             <motion.div className="stats-grid" {...reveal}>
-              {profile.stats.map((stat) => (
+              {profile.stats.map((stat, index) => (
                 <div key={stat.label}>
                   <strong>{dynamicValue('dynamic' in stat ? stat.dynamic : undefined, stat.value)}</strong>
-                  <span>{stat.label}</span>
+                  <span>{t.about.stats[index]}</span>
                 </div>
               ))}
             </motion.div>
 
             <motion.div className="section-heading" {...reveal}>
-              <p className="eyebrow">{'// ABOUT ME'}</p>
-              <h2>The person behind<br /><span>the terminal.</span></h2>
+              <p className="eyebrow">{t.about.eyebrow}</p>
+              <h2>{t.about.title}<br /><span>{t.about.titleHighlight}</span></h2>
             </motion.div>
 
             <div className="about-grid">
-              {profile.about.map((item, index) => (
+              {t.about.cards.map((item, index) => (
                 <motion.article key={item.title} {...reveal} transition={{ duration: 0.55, delay: index * 0.08 }}>
                   <p className="eyebrow">{item.label}</p>
                   <h3>{item.title}</h3>
@@ -202,10 +208,10 @@ export default function Portfolio() {
             </div>
 
             <motion.div className="journey" {...reveal}>
-              <p className="eyebrow">{'// JOURNEY'}</p>
+              <p className="eyebrow">{t.about.journey}</p>
               <div className="journey-line">
-                {profile.milestones.map((milestone) => (
-                  <div key={milestone.year}><i /><strong>{milestone.year}</strong><span>{milestone.text}</span></div>
+                {profile.milestones.map((milestone, index) => (
+                  <div key={milestone.year}><i /><strong>{milestone.year}</strong><span>{t.about.milestones[index]}</span></div>
                 ))}
               </div>
             </motion.div>
@@ -217,15 +223,15 @@ export default function Portfolio() {
         <section id="tech-stack" className="section stack-section">
           <div className="container">
             <motion.div className="section-heading" {...reveal}>
-              <p className="eyebrow">{'// TOOLS OF THE TRADE'}</p>
-              <h2>My technical<br /><span>constellation.</span></h2>
-              <p>Different tools for different jobs—chosen for the problem, not the trend.</p>
+              <p className="eyebrow">{t.stack.eyebrow}</p>
+              <h2>{t.stack.title}<br /><span>{t.stack.titleHighlight}</span></h2>
+              <p>{t.stack.intro}</p>
             </motion.div>
             <div className="stack-grid">
               {stack.map((group, index) => (
                 <motion.div className="stack-card" key={group.group} {...reveal} transition={{ duration: 0.5, delay: index * 0.07 }}>
                   <span className="stack-number">0{index + 1}</span>
-                  <h3>{group.group}</h3>
+                  <h3>{t.stack.groups[index]}</h3>
                   <div>{group.items.map((item) => <span key={item}>{item}</span>)}</div>
                 </motion.div>
               ))}
@@ -238,12 +244,9 @@ export default function Portfolio() {
             <motion.div className="now-card" {...reveal}>
               <div className="terminal-bar"><div><i /><i /><i /></div><span>cat /now.md</span><Radio size={14} /></div>
               <div className="now-body">
-                <p><span>&gt;</span> Building habit systems with meaningful incentives</p>
-                <p><span>&gt;</span> Exploring AI-assisted product workflows</p>
-                <p><span>&gt;</span> Maintaining open-source tools and community projects</p>
-                <p><span>&gt;</span> Shipping small experiments that teach something</p>
+                {t.now.items.map((item) => <p key={item}><span>&gt;</span> {item}</p>)}
               </div>
-              <small>Updated August 2026</small>
+              <small>{t.now.updated}</small>
             </motion.div>
           </div>
         </section>
@@ -251,22 +254,22 @@ export default function Portfolio() {
         <section id="contact" className="contact-section">
           <div className="container contact-layout">
             <motion.div {...reveal}>
-              <p className="eyebrow">{'// LET\'S CONNECT'}</p>
-              <h2>Have an interesting<br /><span>problem to solve?</span></h2>
-              <p>I&apos;m always interested in thoughtful products, open-source collaboration, and systems that make work or life more rewarding.</p>
+              <p className="eyebrow">{t.contact.eyebrow}</p>
+              <h2>{t.contact.title}<br /><span>{t.contact.titleHighlight}</span></h2>
+              <p>{t.contact.intro}</p>
             </motion.div>
             <motion.div className="contact-links" {...reveal}>
-              <a href={profile.links.linkedin} target="_blank" rel="noreferrer"><Linkedin size={20} /><span><strong>LinkedIn</strong><small>Start a conversation</small></span><ArrowUpRight size={18} /></a>
-              <a href={profile.links.github} target="_blank" rel="noreferrer"><Github size={20} /><span><strong>GitHub</strong><small>Explore 98+ repositories</small></span><ArrowUpRight size={18} /></a>
+              <a href={profile.links.linkedin} target="_blank" rel="noreferrer"><Linkedin size={20} /><span><strong>LinkedIn</strong><small>{t.contact.linkedin}</small></span><ArrowUpRight size={18} /></a>
+              <a href={profile.links.github} target="_blank" rel="noreferrer"><Github size={20} /><span><strong>GitHub</strong><small>{t.contact.github}</small></span><ArrowUpRight size={18} /></a>
               <a href={profile.links.x} target="_blank" rel="noreferrer"><Twitter size={20} /><span><strong>X / Twitter</strong><small>@heymarkkop</small></span><ArrowUpRight size={18} /></a>
-              <Link href="/links"><Code2 size={20} /><span><strong>All links</strong><small>Projects and profiles</small></span><ArrowUpRight size={18} /></Link>
+              <Link href="/links"><Code2 size={20} /><span><strong>{t.contact.allLinks}</strong><small>{t.contact.allLinksDescription}</small></span><ArrowUpRight size={18} /></Link>
             </motion.div>
           </div>
         </section>
       </main>
 
       <footer className="site-footer">
-        <div className="container"><span>© 2026 Marcelo Kopmann</span><span>Designed &amp; built by Mark · markkop.dev</span><span>$ mark --version 2026</span></div>
+        <div className="container"><span>© 2026 Marcelo Kopmann</span><span>{t.footer.built}</span><span>$ mark --version 2026</span></div>
       </footer>
     </>
   )

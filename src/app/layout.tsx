@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { siteConfig } from '@/config/seo'
+import { LanguageProvider } from '@/context/LanguageContext'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -71,12 +72,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{document.documentElement.dataset.theme=localStorage.getItem('markkop-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}",
+              "try{document.documentElement.dataset.theme=localStorage.getItem('markkop-theme')||'dark';var language=localStorage.getItem('markkop-language')==='pt-BR'?'pt-BR':'en';document.documentElement.dataset.language=language;document.documentElement.lang=language}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.language='en'}",
           }}
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body>{children}</body>
+      <body><LanguageProvider>{children}</LanguageProvider></body>
     </html>
   )
 }
