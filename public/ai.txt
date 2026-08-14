@@ -1,0 +1,12 @@
+# markkop.dev
+
+Owner: Marcelo Kopmann (Mark Kop)
+Role: Software Engineer
+Location: Santa Catarina, Brazil
+Website: https://markkop.dev
+GitHub: https://github.com/Markkop
+LinkedIn: https://www.linkedin.com/in/markkopmann
+X: https://x.com/heymarkkop
+
+Marcelo builds practical web, AI, gamified, open-source, and onchain products.
+Highlighted work includes HabitChain, Minha Casa, Stipend Helper, Wedding Guest Planner, NFT Marketplace, Corvo Astral, RepoGPT, and Repo Env Generator.

@@ -1,0 +1,8 @@
+.git
+.next
+node_modules
+.ssh-prod
+.DS_Store
+*.log
+.env*
+infra/vps/README.md
