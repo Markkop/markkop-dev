@@ -74,6 +74,7 @@ export type SiteContent = {
     linkedin: string
   }
   notFound: { title: string; text: string; home: string }
+  error: { title: string; text: string; retry: string }
 }
 
 const englishProjects = Object.fromEntries(
@@ -237,6 +238,7 @@ export const content: Record<Language, SiteContent> = {
       linkedin: 'Professional profile and contact',
     },
     notFound: { title: 'This route wandered off.', text: 'The page is missing, but the rest of the system is still online.', home: 'Return home' },
+    error: { title: 'Something went wrong.', text: 'An unexpected error occurred. Try rendering this page again.', retry: 'Try again' },
   },
   'pt-BR': {
     language: { label: 'Português', switchLabel: 'Mudar idioma para inglês' },
@@ -330,5 +332,6 @@ export const content: Record<Language, SiteContent> = {
       linkedin: 'Perfil profissional e contato',
     },
     notFound: { title: 'Esta rota se perdeu.', text: 'A página não existe, mas o restante do sistema continua online.', home: 'Voltar ao início' },
+    error: { title: 'Algo deu errado.', text: 'Ocorreu um erro inesperado. Tente renderizar esta página novamente.', retry: 'Tentar novamente' },
   },
 }

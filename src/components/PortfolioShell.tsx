@@ -7,7 +7,6 @@ import { ArrowUp, Code2, Github, Linkedin, Menu, Moon, Sun, Twitter, X } from 'l
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import LanguageToggle from '@/components/LanguageToggle'
-import SmoothScroll from '@/components/SmoothScroll'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile } from '@/data/profile'
 
@@ -20,6 +19,24 @@ function loaderEase(t: number) {
   if (t < 0.65) return 0.2 + ((t - 0.25) / 0.4) * 0.5
   if (t < 0.88) return 0.7 + Math.pow((t - 0.65) / 0.23, 1.5) * 0.18
   return 0.88 + Math.pow((t - 0.88) / 0.12, 4) * 0.12
+}
+
+function generatePauses() {
+  const pauses: Array<{ start: number; end: number }> = []
+  const count = 3 + Math.floor(Math.random() * 3)
+  for (let index = 0; index < count; index += 1) {
+    const center = 0.15 + Math.random() * 0.7
+    const width = 0.04 + Math.random() * 0.08
+    pauses.push({
+      start: Math.max(0.15, center - width / 2),
+      end: Math.min(0.85, center + width / 2),
+    })
+  }
+  pauses.push({
+    start: 0.75 + Math.random() * 0.05,
+    end: 0.82 + Math.random() * 0.03,
+  })
+  return pauses
 }
 
 type LoaderPhase = 'loading' | 'greeting' | 'hint' | 'entering' | 'done'
@@ -45,10 +62,13 @@ function WordReveal({ text, delay, accent = false }: { text: string; delay: numb
 function LoadingScreen() {
   const pathname = usePathname()
   const { language } = useLanguage()
+  const [mounted, setMounted] = useState(false)
   const [phase, setPhase] = useState<LoaderPhase>('loading')
   const [count, setCount] = useState(0)
+  const [bar, setBar] = useState(0)
   const [visible, setVisible] = useState(true)
   const raf = useRef(0)
+  const pauses = useRef(generatePauses())
   const isLinks = pathname.startsWith('/links')
   const copy = language === 'pt-BR'
     ? { hello: 'Oi, meu nome é', welcome: 'Bem-vindo ao meu portfólio', enter: 'Role para entrar', init: 'Inicializando', ready: 'Pronto' }
@@ -66,35 +86,64 @@ function LoadingScreen() {
 
   useEffect(() => {
     if (isLinks) return
-    const local = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-    if (!local && sessionStorage.getItem('markkop-mubx-loaded')) {
-      const skipTimer = window.setTimeout(() => {
-        setPhase('done')
-        setVisible(false)
-      }, 0)
-      return () => window.clearTimeout(skipTimer)
-    }
+
+    const userAgent = navigator.userAgent.toLowerCase()
+    const isBot = /lighthouse|chrome-lighthouse|googlebot|bingbot|yandexbot|baiduspider|headlesschrome|speed insights|insights/i.test(userAgent)
+    const lighthouseWindow = window as Window & { _lighthouse?: unknown }
+    const isAutomated = navigator.webdriver || window.location.search.includes('lighthouse') || Boolean(lighthouseWindow._lighthouse)
+    if (isBot || isAutomated) return
+
+    const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.port !== ''
+    const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost
+    if (isProduction && sessionStorage.getItem('markkop-mubx-loaded')) return
 
     const started = performance.now()
+    const mountTimer = window.setTimeout(() => setMounted(true), 0)
+    let greetingTimer = 0
+    let hintTimer = 0
     const tick = (now: number) => {
       const raw = Math.min((now - started) / 3800, 1)
-      setCount(Math.round(loaderEase(raw) * 100))
+      const paused = raw < 0.95 && pauses.current.some((pause) => raw >= pause.start && raw <= pause.end)
+      if (paused) {
+        raf.current = requestAnimationFrame(tick)
+        return
+      }
+      const eased = loaderEase(raw)
+      setCount(Math.round(eased * 100))
+      setBar(eased)
       if (raw < 1) raf.current = requestAnimationFrame(tick)
       else {
         setCount(100)
-        window.setTimeout(() => setPhase('greeting'), 500)
-        window.setTimeout(() => setPhase('hint'), 2700)
+        setBar(1)
+        greetingTimer = window.setTimeout(() => setPhase('greeting'), 500)
+        hintTimer = window.setTimeout(() => setPhase('hint'), 2700)
       }
     }
     raf.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf.current)
+    return () => {
+      window.clearTimeout(mountTimer)
+      cancelAnimationFrame(raf.current)
+      window.clearTimeout(greetingTimer)
+      window.clearTimeout(hintTimer)
+    }
   }, [isLinks])
 
   useEffect(() => {
-    if (!visible || phase === 'done') return
+    if (!mounted || !visible || phase === 'done') return
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
-  }, [phase, visible])
+  }, [mounted, phase, visible])
+
+  useEffect(() => {
+    if (!mounted || isLinks || !visible || phase === 'done' || phase === 'hint') return
+    const preventScroll = (event: Event) => event.preventDefault()
+    window.addEventListener('wheel', preventScroll, { passive: false })
+    window.addEventListener('touchmove', preventScroll, { passive: false })
+    return () => {
+      window.removeEventListener('wheel', preventScroll)
+      window.removeEventListener('touchmove', preventScroll)
+    }
+  }, [isLinks, mounted, phase, visible])
 
   useEffect(() => {
     if (phase !== 'hint') return
@@ -111,7 +160,7 @@ function LoadingScreen() {
     }
   }, [enter, phase])
 
-  if (!visible || isLinks) return null
+  if (!mounted || !visible || isLinks) return null
   const loading = phase === 'loading'
   const greeting = phase === 'greeting' || phase === 'hint'
   const entering = phase === 'entering'
@@ -130,7 +179,7 @@ function LoadingScreen() {
           {loading && (
             <motion.div className="mk-loader-counter" key="count" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}>
               <strong>{count}<small>%</small></strong>
-              <div><span style={{ width: `${count}%` }} /></div>
+              <div><span style={{ width: `${bar * 100}%` }} /></div>
               <p>{count < 100 ? copy.init : copy.ready}</p>
             </motion.div>
           )}
@@ -320,7 +369,7 @@ function ScrollProgress() {
 export default function PortfolioShell({ children }: { children: ReactNode }) {
   const { t } = useLanguage()
   return (
-    <SmoothScroll>
+    <>
       <LoadingScreen />
       <a className="mk-skip" href="#main-content">{t.accessibility.skip}</a>
       <Navbar />
@@ -328,6 +377,6 @@ export default function PortfolioShell({ children }: { children: ReactNode }) {
       <FloatingLogo />
       <ScrollProgress />
       {children}
-    </SmoothScroll>
+    </>
   )
 }

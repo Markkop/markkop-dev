@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { siteConfig } from '@/config/seo'
 import { LanguageProvider } from '@/context/LanguageContext'
+import SmoothScroll from '@/components/SmoothScroll'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -77,7 +78,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
-      <body><LanguageProvider>{children}</LanguageProvider></body>
+      <body><LanguageProvider><SmoothScroll>{children}</SmoothScroll></LanguageProvider></body>
     </html>
   )
 }
