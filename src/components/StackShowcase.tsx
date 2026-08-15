@@ -79,6 +79,11 @@ export default function StackShowcase() {
     { type: 'label', name: category, description: descriptions[category] },
     ...tech.filter((item) => item.category === category).map((item) => ({ type: 'tech' as const, ...item })),
   ]), [])
+  const mobileRows = useMemo(() => {
+    const rows: Cell[][] = []
+    for (let index = 0; index < cells.length; index += 3) rows.push(cells.slice(index, index + 3))
+    return rows
+  }, [cells])
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] })
   const assembled = useMemo(() => {
@@ -98,9 +103,12 @@ export default function StackShowcase() {
     <section id="tech-stack" className="mk-stack-root">
       <div className="mk-stack-mobile mk-section-dark">
         <header className="mk-stack-heading"><p>{t.stack.eyebrow}</p><h2>{t.stack.title} {t.stack.titleHighlight}</h2><span>{t.stack.intro}</span></header>
-        <div className="mk-mobile-hexes">{cells.map((cell, index) => <motion.div key={`${cell.name}-${index}`} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-30px' }} transition={{ delay: index * 0.025 }}><Hex cell={cell} index={index} mobile /></motion.div>)}</div>
+        <div className="mk-mobile-hexes">{mobileRows.map((row, rowIndex) => <div className="mk-mobile-hex-row" key={`row-${rowIndex}`}>{row.map((cell, columnIndex) => {
+          const index = rowIndex * 3 + columnIndex
+          return <motion.div key={`${cell.name}-${index}`} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '-30px' }} transition={{ duration: 0.45, delay: index * 0.03 }}><Hex cell={cell} index={index} mobile /></motion.div>
+        })}</div>)}</div>
       </div>
-      <div className="mk-stack-intro mk-section-dark"><header className="mk-stack-heading"><p>{t.stack.eyebrow}</p><h2>{t.stack.title} {t.stack.titleHighlight}</h2><span>{t.stack.intro}</span><small><ChevronDown />Scroll to assemble</small></header></div>
+      <div className="mk-stack-intro mk-section-dark"><header className="mk-stack-heading"><p>{t.stack.eyebrow}</p><h2>{t.stack.title} {t.stack.titleHighlight}</h2><span>{t.stack.intro}</span><small><ChevronDown />{t.stack.assemble}</small></header></div>
       <div className="mk-stack-track" ref={ref}>
         <div className="mk-stack-stage">{cells.map((cell, index) => <AssemblingHex key={`${cell.name}-${index}`} cell={cell} index={index} progress={scrollYProgress} from={scattered[index]} to={assembled[index]} />)}</div>
       </div>

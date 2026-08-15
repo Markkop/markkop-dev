@@ -300,16 +300,17 @@ function FloatingLogo() {
 }
 
 function ScrollProgress() {
+  const { t } = useLanguage()
   const { scrollYProgress } = useScroll()
   const [progress, setProgress] = useState(0)
   useMotionValueEvent(scrollYProgress, 'change', (value) => setProgress(Math.round(value * 100)))
   const circumference = 2 * Math.PI * 24
   return (
     <>
-      <motion.div className="mk-top-progress" style={{ scaleX: scrollYProgress }} />
-      <button className={`mk-to-top${progress > 5 ? ' visible' : ''}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label="Scroll back to top">
-        <svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" /><circle className="progress" cx="30" cy="30" r="24" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} /></svg>
-        <ArrowUp size={20} />
+      <motion.div className="mk-top-progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
+      <button type="button" className={`mk-to-top${progress > 5 ? ' visible' : ''}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label={t.accessibility.backToTop}>
+        <svg className="mk-to-top-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="24" /><circle className="progress" cx="30" cy="30" r="24" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} /></svg>
+        <span className="mk-to-top-arrows" aria-hidden="true"><ArrowUp /><ArrowUp /></span>
         <small>{progress}%</small>
       </button>
     </>
@@ -317,10 +318,11 @@ function ScrollProgress() {
 }
 
 export default function PortfolioShell({ children }: { children: ReactNode }) {
+  const { t } = useLanguage()
   return (
     <SmoothScroll>
       <LoadingScreen />
-      <a className="mk-skip" href="#main-content">Skip to content</a>
+      <a className="mk-skip" href="#main-content">{t.accessibility.skip}</a>
       <Navbar />
       <SocialSidebar />
       <FloatingLogo />

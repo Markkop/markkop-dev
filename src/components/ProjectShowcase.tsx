@@ -15,6 +15,7 @@ const techLogos: Record<string, string> = {
 }
 
 function ProjectSimulator({ project, label }: { project: Project; label: string }) {
+  const { t } = useLanguage()
   const [hovered, setHovered] = useState(false)
   const domain = project.live.replace(/^https?:\/\//, '').replace(/\/$/, '')
   return (
@@ -28,7 +29,7 @@ function ProjectSimulator({ project, label }: { project: Project; label: string 
         {project.image ? (
           <>
             <div className="mk-simulator-image"><Image src={project.image} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" /></div>
-            <span className="mk-hover-hint">🖱️ Hover to scroll preview</span>
+            <span className="mk-hover-hint">🖱️ {t.projects.hoverPreview}</span>
           </>
         ) : (
           <div className="mk-project-fallback"><Code2 size={44} /><strong>{project.title}</strong></div>
@@ -121,7 +122,7 @@ export default function ProjectShowcase() {
               <div className="mk-project-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} /></div>
             </motion.article>
           </AnimatePresence>
-          <motion.div className="mk-project-cue" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}><small>{active < projects.length - 1 ? t.projects.scroll : 'Keep scrolling'}</small><ChevronDown /></motion.div>
+          <motion.div className="mk-project-cue" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}><small>{active < projects.length - 1 ? t.projects.scroll : t.projects.keepScrolling}</small><ChevronDown /></motion.div>
         </div>
       </div>
     </section>

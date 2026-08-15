@@ -98,7 +98,7 @@ function Now() {
     <section className="mk-now mk-section-dark">
       <div className="mk-section-glow" />
       <div className="mk-wide">
-        <SectionWrapper><h2 className="mk-kicker">CURRENTLY BUILDING</h2></SectionWrapper>
+        <SectionWrapper><h2 className="mk-kicker">{t.now.eyebrow}</h2></SectionWrapper>
         <SectionWrapper delay={0.1}>
           <motion.div className="mk-now-card" whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(0,0,0,.35)' }}>
             <p><motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>$</motion.span> cat /now.md</p>

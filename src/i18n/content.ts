@@ -12,7 +12,7 @@ type ProjectCopy = {
 export type SiteContent = {
   language: { label: string; switchLabel: string }
   nav: { home: string; about: string; projects: string; stack: string; contact: string; connect: string; links: string }
-  accessibility: { skip: string; primaryNav: string; toggleMenu: string; socialProfiles: string; theme: (theme: 'dark' | 'light') => string }
+  accessibility: { skip: string; backToTop: string; primaryNav: string; toggleMenu: string; socialProfiles: string; theme: (theme: 'dark' | 'light') => string }
   status: { building: string; latest: string }
   hero: {
     lead: string
@@ -44,11 +44,13 @@ export type SiteContent = {
     choose: string
     show: (title: string) => string
     preview: (title: string) => string
+    hoverPreview: string
     scroll: string
+    keepScrolling: string
     items: Record<string, ProjectCopy>
   }
-  stack: { eyebrow: string; title: string; titleHighlight: string; intro: string; groups: string[] }
-  now: { items: string[]; updated: string }
+  stack: { eyebrow: string; title: string; titleHighlight: string; intro: string; assemble: string; groups: string[] }
+  now: { eyebrow: string; items: string[]; updated: string }
   contact: {
     eyebrow: string
     title: string
@@ -152,6 +154,7 @@ export const content: Record<Language, SiteContent> = {
     nav: { home: 'Home', about: 'About', projects: 'Projects', stack: 'Stack', contact: 'Contact', connect: 'Connect', links: 'Links' },
     accessibility: {
       skip: 'Skip to content',
+      backToTop: 'Scroll back to top',
       primaryNav: 'Primary navigation',
       toggleMenu: 'Toggle menu',
       socialProfiles: 'Social profiles',
@@ -188,7 +191,9 @@ export const content: Record<Language, SiteContent> = {
       choose: 'Choose a project',
       show: (title) => `Show ${title}`,
       preview: (title) => `${title} project preview`,
+      hoverPreview: 'Hover to scroll preview',
       scroll: 'Scroll to explore',
+      keepScrolling: 'Keep scrolling',
       items: englishProjects,
     },
     stack: {
@@ -196,9 +201,11 @@ export const content: Record<Language, SiteContent> = {
       title: 'My technical',
       titleHighlight: 'constellation.',
       intro: 'Different tools for different jobs—chosen for the problem, not the trend.',
+      assemble: 'Scroll to assemble',
       groups: ['Frontend', 'Backend', 'Onchain', 'Tools'],
     },
     now: {
+      eyebrow: 'CURRENTLY BUILDING',
       items: [
         'Building habit systems with meaningful incentives',
         'Exploring AI-assisted product workflows',
@@ -236,6 +243,7 @@ export const content: Record<Language, SiteContent> = {
     nav: { home: 'Início', about: 'Sobre', projects: 'Projetos', stack: 'Stack', contact: 'Contato', connect: 'Conectar', links: 'Links' },
     accessibility: {
       skip: 'Pular para o conteúdo',
+      backToTop: 'Voltar ao topo',
       primaryNav: 'Navegação principal',
       toggleMenu: 'Abrir ou fechar menu',
       socialProfiles: 'Perfis sociais',
@@ -276,7 +284,9 @@ export const content: Record<Language, SiteContent> = {
       choose: 'Escolha um projeto',
       show: (title) => `Mostrar ${title}`,
       preview: (title) => `Prévia do projeto ${title}`,
+      hoverPreview: 'Passe o mouse para rolar a prévia',
       scroll: 'Role para explorar',
+      keepScrolling: 'Continue rolando',
       items: portugueseProjects,
     },
     stack: {
@@ -284,9 +294,11 @@ export const content: Record<Language, SiteContent> = {
       title: 'Minha constelação',
       titleHighlight: 'técnica.',
       intro: 'Ferramentas diferentes para trabalhos diferentes—escolhidas pelo problema, não pela tendência.',
+      assemble: 'Role para montar',
       groups: ['Frontend', 'Backend', 'Onchain', 'Ferramentas'],
     },
     now: {
+      eyebrow: 'CRIANDO AGORA',
       items: [
         'Criando sistemas de hábitos com incentivos significativos',
         'Explorando fluxos de produto assistidos por IA',
