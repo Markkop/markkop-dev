@@ -25,7 +25,7 @@ export default function LinksPageContent() {
         </div>
         <header className="links-header">
           <div className="avatar-ring">
-            <Image src="/avatar.png" alt="Marcelo Kopmann" fill sizes="128px" priority />
+            <Image src="/LISBON_229.jpg" alt="Marcelo Kopmann" fill sizes="128px" priority />
           </div>
           <p className="eyebrow">{t.links.eyebrow}</p>
           <h1>Marcelo <span>/</span> Kopmann</h1>

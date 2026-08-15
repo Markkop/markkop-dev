@@ -52,7 +52,7 @@ const jsonLd = {
   name: 'Marcelo Kopmann',
   alternateName: 'Mark Kop',
   url: siteConfig.url,
-  image: `${siteConfig.url}/avatar.png`,
+  image: `${siteConfig.url}/LISBON_229.jpg`,
   jobTitle: 'Software Engineer',
   worksFor: { '@type': 'Organization', name: 'Halborn' },
   address: {

@@ -36,7 +36,7 @@ function Hero() {
         <motion.div className="mk-portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.85, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}>
           <i />
           <div>
-            <Image src="/avatar.png" alt={`${profile.name} — ${t.hero.role}`} fill sizes="(max-width: 1024px) 100vw, 50vw" priority />
+            <Image src="/LISBON_229.jpg" alt={`${profile.name} — ${t.hero.role}`} fill sizes="(max-width: 1024px) 100vw, 50vw" priority />
             <span><strong>{profile.name}</strong><small>{t.hero.role}</small></span>
           </div>
         </motion.div>

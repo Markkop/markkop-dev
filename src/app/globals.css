@@ -210,7 +210,7 @@ button { font: inherit; }
 .terminal-body { padding: 26px; font-family: "JetBrains Mono", monospace; }
 .terminal-profile { padding-bottom: 24px; margin-bottom: 22px; display: flex; align-items: center; gap: 20px; border-bottom: 1px solid var(--border); }
 .avatar-frame { width: 112px; height: 112px; flex: 0 0 auto; position: relative; overflow: hidden; border: 1px solid color-mix(in srgb, var(--purple) 50%, transparent); background: var(--purple-soft); }
-.avatar-frame img, .avatar-ring img { object-fit: cover; }
+.avatar-frame img, .avatar-ring img { object-fit: cover; object-position: center 15%; }
 .terminal-profile div:last-child { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
 .terminal-profile small { color: var(--purple); font-size: 10px; }
 .terminal-profile strong { font-size: 20px; }
@@ -532,7 +532,7 @@ button { font: inherit; }
 .mk-portrait { position: relative; width: 100%; max-width: 448px; aspect-ratio: 4/5; margin: auto; }
 .mk-portrait > i { position: absolute; inset: -16px; background: rgba(var(--mk-accent-rgb), .13); filter: blur(42px); }
 .mk-portrait > div { position: absolute; inset: 0; overflow: hidden; border: 1px solid var(--mk-border); border-radius: 24px; box-shadow: 0 0 40px rgba(var(--mk-accent-rgb), .18); }
-.mk-portrait img { object-fit: cover; object-position: center; }
+.mk-portrait img { object-fit: cover; object-position: center 18%; }
 .mk-portrait > div > span { position: absolute; inset: auto 0 0; padding: 64px 20px 18px; display: flex; flex-direction: column; background: linear-gradient(transparent, rgba(0,0,0,.88)); }
 .mk-portrait strong { color: white; font: 700 12px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
 .mk-portrait small { margin-top: 4px; color: #a78bfa; font: 9px var(--font-mono); letter-spacing: .15em; text-transform: uppercase; }

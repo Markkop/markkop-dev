@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from 'framer-motion'
+import { useLenis } from 'lenis/react'
 import { ArrowUp, Code2, Github, Linkedin, Menu, Moon, Sun, Twitter, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
@@ -19,24 +20,6 @@ function loaderEase(t: number) {
   if (t < 0.65) return 0.2 + ((t - 0.25) / 0.4) * 0.5
   if (t < 0.88) return 0.7 + Math.pow((t - 0.65) / 0.23, 1.5) * 0.18
   return 0.88 + Math.pow((t - 0.88) / 0.12, 4) * 0.12
-}
-
-function generatePauses() {
-  const pauses: Array<{ start: number; end: number }> = []
-  const count = 3 + Math.floor(Math.random() * 3)
-  for (let index = 0; index < count; index += 1) {
-    const center = 0.15 + Math.random() * 0.7
-    const width = 0.04 + Math.random() * 0.08
-    pauses.push({
-      start: Math.max(0.15, center - width / 2),
-      end: Math.min(0.85, center + width / 2),
-    })
-  }
-  pauses.push({
-    start: 0.75 + Math.random() * 0.05,
-    end: 0.82 + Math.random() * 0.03,
-  })
-  return pauses
 }
 
 type LoaderPhase = 'loading' | 'greeting' | 'hint' | 'entering' | 'done'
@@ -61,28 +44,36 @@ function WordReveal({ text, delay, accent = false }: { text: string; delay: numb
 
 function LoadingScreen() {
   const pathname = usePathname()
+  const lenis = useLenis()
   const { language } = useLanguage()
   const [mounted, setMounted] = useState(false)
   const [phase, setPhase] = useState<LoaderPhase>('loading')
   const [count, setCount] = useState(0)
-  const [bar, setBar] = useState(0)
   const [visible, setVisible] = useState(true)
   const raf = useRef(0)
-  const pauses = useRef(generatePauses())
+  const enteringRef = useRef(false)
   const isLinks = pathname.startsWith('/links')
   const copy = language === 'pt-BR'
     ? { hello: 'Oi, meu nome é', welcome: 'Bem-vindo ao meu portfólio', enter: 'Role para entrar', init: 'Inicializando', ready: 'Pronto' }
     : { hello: 'Hi, my name is', welcome: 'Welcome to my Portfolio', enter: 'Scroll to enter', init: 'Initializing', ready: 'Ready' }
 
+  const pinToTop = useCallback(() => {
+    lenis?.scrollTo(0, { immediate: true, force: true })
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [lenis])
+
   const enter = useCallback(() => {
-    if (phase !== 'hint') return
+    if (phase !== 'hint' || enteringRef.current) return
+    enteringRef.current = true
+    pinToTop()
     setPhase('entering')
     window.setTimeout(() => {
+      pinToTop()
       setPhase('done')
       setVisible(false)
       sessionStorage.setItem('markkop-mubx-loaded', 'true')
     }, 1100)
-  }, [phase])
+  }, [phase, pinToTop])
 
   useEffect(() => {
     if (isLinks) return
@@ -103,18 +94,11 @@ function LoadingScreen() {
     let hintTimer = 0
     const tick = (now: number) => {
       const raw = Math.min((now - started) / 3800, 1)
-      const paused = raw < 0.95 && pauses.current.some((pause) => raw >= pause.start && raw <= pause.end)
-      if (paused) {
-        raf.current = requestAnimationFrame(tick)
-        return
-      }
       const eased = loaderEase(raw)
       setCount(Math.round(eased * 100))
-      setBar(eased)
       if (raw < 1) raf.current = requestAnimationFrame(tick)
       else {
         setCount(100)
-        setBar(1)
         greetingTimer = window.setTimeout(() => setPhase('greeting'), 500)
         hintTimer = window.setTimeout(() => setPhase('hint'), 2700)
       }
@@ -127,6 +111,16 @@ function LoadingScreen() {
       window.clearTimeout(hintTimer)
     }
   }, [isLinks])
+
+  useEffect(() => {
+    if (!mounted || !visible || isLinks) return
+    lenis?.stop()
+    pinToTop()
+    return () => {
+      pinToTop()
+      lenis?.start()
+    }
+  }, [isLinks, lenis, mounted, pinToTop, visible])
 
   useEffect(() => {
     if (!mounted || !visible || phase === 'done') return
@@ -147,18 +141,26 @@ function LoadingScreen() {
 
   useEffect(() => {
     if (phase !== 'hint') return
-    const onKey = (event: KeyboardEvent) => {
-      if (['Space', 'ArrowDown', 'Enter'].includes(event.code)) enter()
+    const unlock = (event: Event) => {
+      event.preventDefault()
+      pinToTop()
+      enter()
     }
-    window.addEventListener('wheel', enter, { passive: true })
-    window.addEventListener('touchmove', enter, { passive: true })
+    const onKey = (event: KeyboardEvent) => {
+      if (!['Space', 'ArrowDown', 'Enter'].includes(event.code)) return
+      event.preventDefault()
+      pinToTop()
+      enter()
+    }
+    window.addEventListener('wheel', unlock, { passive: false })
+    window.addEventListener('touchmove', unlock, { passive: false })
     window.addEventListener('keydown', onKey)
     return () => {
-      window.removeEventListener('wheel', enter)
-      window.removeEventListener('touchmove', enter)
+      window.removeEventListener('wheel', unlock)
+      window.removeEventListener('touchmove', unlock)
       window.removeEventListener('keydown', onKey)
     }
-  }, [enter, phase])
+  }, [enter, phase, pinToTop])
 
   if (!mounted || !visible || isLinks) return null
   const loading = phase === 'loading'
@@ -179,7 +181,7 @@ function LoadingScreen() {
           {loading && (
             <motion.div className="mk-loader-counter" key="count" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}>
               <strong>{count}<small>%</small></strong>
-              <div><span style={{ width: `${bar * 100}%` }} /></div>
+              <div><span style={{ width: `${count}%` }} /></div>
               <p>{count < 100 ? copy.init : copy.ready}</p>
             </motion.div>
           )}
