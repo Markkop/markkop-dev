@@ -2,275 +2,166 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
-import {
-  ArrowDown,
-  ArrowUpRight,
-  Building2,
-  Code2,
-  Github,
-  Linkedin,
-  MapPin,
-  Menu,
-  Moon,
-  Radio,
-  Sun,
-  Terminal,
-  Twitter,
-  X,
-} from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowRight, Calendar, Code2, Download, Github, Linkedin, Twitter } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { profile, stack } from '@/data/profile'
+import PortfolioShell from '@/components/PortfolioShell'
 import ProjectShowcase from '@/components/ProjectShowcase'
-import LanguageToggle from '@/components/LanguageToggle'
+import StackShowcase from '@/components/StackShowcase'
+import SectionWrapper from '@/components/ui/SectionWrapper'
 import { useLanguage } from '@/context/LanguageContext'
+import { profile } from '@/data/profile'
 
 type GithubProfile = { public_repos?: number; followers?: number }
-type GithubEvent = { repo?: { name?: string }; type?: string }
 
-const reveal = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-80px' },
-  transition: { duration: 0.55 },
+function Hero() {
+  const { t } = useLanguage()
+  return (
+    <section id="hero" className="mk-hero">
+      <div className="mk-hero-glow" />
+      <div className="mk-hero-inner">
+        <motion.div className="mk-hero-copy" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}>
+          <p className="mk-name">{profile.name}</p>
+          <h1>
+            <span>{t.hero.lead}</span>
+            <strong>{t.hero.highlight}</strong>
+            <small>{t.hero.summary}</small>
+          </h1>
+          <div className="mk-hero-actions">
+            <a className="primary" href={profile.links.linkedin} target="_blank" rel="noreferrer"><Calendar size={16} />{t.nav.connect}</a>
+            <Link className="secondary" href="/links"><Download size={16} />{t.nav.links}</Link>
+          </div>
+        </motion.div>
+
+        <motion.div className="mk-portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.85, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}>
+          <i />
+          <div>
+            <Image src="/avatar.png" alt={`${profile.name} — ${t.hero.role}`} fill sizes="(max-width: 1024px) 100vw, 50vw" priority />
+            <span><strong>{profile.name}</strong><small>{t.hero.role}</small></span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  )
 }
 
-export default function Portfolio() {
+function About() {
   const { t } = useLanguage()
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [theme, setTheme] = useState<'dark' | 'light'>(() =>
-    typeof document !== 'undefined' && document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
-  )
   const [github, setGithub] = useState<GithubProfile>({})
-  const [activityRepo, setActivityRepo] = useState('')
-  const [loading, setLoading] = useState(true)
-
-  const navItems = [
-    { label: t.nav.home, href: '#hero' },
-    { label: t.nav.about, href: '#about' },
-    { label: t.nav.projects, href: '#projects' },
-    { label: t.nav.stack, href: '#tech-stack' },
-    { label: t.nav.contact, href: '#contact' },
-  ]
-
-  const activity = activityRepo ? `${t.status.latest} · ${activityRepo}` : t.status.building
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('markkop-theme') === 'light' ? 'light' : 'dark'
-    document.documentElement.dataset.theme = savedTheme
-
-    const seen = sessionStorage.getItem('markkop-loaded')
-    const timer = window.setTimeout(() => {
-      setLoading(false)
-      sessionStorage.setItem('markkop-loaded', 'true')
-    }, seen ? 120 : 900)
-
-    Promise.allSettled([
-      fetch('https://api.github.com/users/Markkop').then((response) => response.ok ? response.json() : Promise.reject()),
-      fetch('https://api.github.com/users/Markkop/events?per_page=5').then((response) => response.ok ? response.json() : Promise.reject()),
-    ]).then(([profileResult, eventsResult]) => {
-      if (profileResult.status === 'fulfilled') setGithub(profileResult.value as GithubProfile)
-      if (eventsResult.status === 'fulfilled') {
-        const event = (eventsResult.value as GithubEvent[]).find((item) => item.repo?.name)
-        if (event?.repo?.name) setActivityRepo(event.repo.name.replace('Markkop/', ''))
-      }
-    })
-
-    return () => window.clearTimeout(timer)
+    fetch('https://api.github.com/users/Markkop')
+      .then((response) => response.ok ? response.json() : Promise.reject())
+      .then((value: GithubProfile) => setGithub(value))
+      .catch(() => undefined)
   }, [])
 
-  function toggleTheme() {
-    const next = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
-    document.documentElement.dataset.theme = next
-    localStorage.setItem('markkop-theme', next)
-  }
-
-  const dynamicValue = (dynamic?: string, fallback?: string) => {
-    if (dynamic === 'repos' && github.public_repos) return String(github.public_repos)
-    if (dynamic === 'followers' && github.followers) return String(github.followers)
-    return fallback ?? ''
+  const valueFor = (index: number, fallback: string) => {
+    if (index === 0 && github.public_repos) return String(github.public_repos)
+    if (index === 1 && github.followers) return String(github.followers)
+    return fallback
   }
 
   return (
-    <>
-      <AnimatePresence>
-        {loading && (
-          <motion.div className="loader" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.35 }}>
-            <div className="loader-mark">markkop.dev<span>_</span></div>
-            <div className="loader-track"><motion.span initial={{ width: 0 }} animate={{ width: '100%' }} transition={{ duration: 0.75 }} /></div>
+    <section id="about" className="mk-about mk-section-dark">
+      <div className="mk-section-glow" />
+      <div className="mk-wide">
+        <SectionWrapper>
+          <div className="mk-stats">
+            {profile.stats.map((stat, index) => <div key={stat.label}><strong>{valueFor(index, stat.value)}</strong><span>{t.about.stats[index]}</span></div>)}
+          </div>
+        </SectionWrapper>
+
+        <SectionWrapper delay={0.1}>
+          <header className="mk-section-heading compact"><p>{t.about.eyebrow}</p><h2>{t.about.title}<br /><span>{t.about.titleHighlight}</span></h2></header>
+        </SectionWrapper>
+
+        <div className="mk-about-columns">
+          {t.about.cards.map((card, index) => (
+            <SectionWrapper key={card.title} delay={0.15 + index * 0.1}>
+              <article><p>{card.label}</p><h3>{card.title}</h3><div>{card.text}</div></article>
+            </SectionWrapper>
+          ))}
+        </div>
+
+        <SectionWrapper delay={0.4}>
+          <div className="mk-journey"><p>{t.about.journey}</p><div>{profile.milestones.map((milestone, index) => <span key={milestone.year}><i /><strong>{milestone.year}</strong><small>{t.about.milestones[index]}</small></span>)}</div></div>
+        </SectionWrapper>
+      </div>
+    </section>
+  )
+}
+
+function Now() {
+  const { t } = useLanguage()
+  return (
+    <section className="mk-now mk-section-dark">
+      <div className="mk-section-glow" />
+      <div className="mk-wide">
+        <SectionWrapper><h2 className="mk-kicker">CURRENTLY BUILDING</h2></SectionWrapper>
+        <SectionWrapper delay={0.1}>
+          <motion.div className="mk-now-card" whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(0,0,0,.35)' }}>
+            <p><motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>$</motion.span> cat /now.md</p>
+            {t.now.items.map((item, index) => (
+              <motion.div key={item} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 + index * 0.1 }}>
+                <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 2, repeat: Infinity, delay: index * 0.3 }}>&gt;</motion.span>{item}
+              </motion.div>
+            ))}
+            <small>{t.now.updated}</small>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </SectionWrapper>
+      </div>
+    </section>
+  )
+}
 
-      <a className="skip-link" href="#main-content">{t.accessibility.skip}</a>
-
-      <header className="site-header">
-        <nav className="nav-shell" aria-label={t.accessibility.primaryNav}>
-          <a className="brand" href="#hero" aria-label={`markkop.dev · ${t.nav.home}`}>markkop.dev<span>_</span></a>
-          <div className="desktop-nav">
-            {navItems.map((item) => <a key={item.href} href={item.href}>{item.label}</a>)}
+function Contact() {
+  const { t } = useLanguage()
+  return (
+    <section id="contact" className="mk-contact mk-section-dark">
+      <div className="mk-contact-glow" />
+      <div className="mk-wide">
+        <SectionWrapper><p className="mk-kicker">{t.contact.eyebrow}</p></SectionWrapper>
+        <SectionWrapper delay={0.1}><h2>{t.contact.title}<br /><motion.span animate={{ opacity: [1, 0.72, 1] }} transition={{ duration: 3, repeat: Infinity }}>{t.contact.titleHighlight}</motion.span></h2></SectionWrapper>
+        <SectionWrapper delay={0.2}><p className="mk-contact-copy">{t.contact.intro}</p></SectionWrapper>
+        <SectionWrapper delay={0.3}>
+          <div className="mk-contact-actions">
+            <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>{t.nav.connect}<ArrowRight size={15} /></motion.a>
+            <motion.a className="secondary" href={profile.links.github} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>{t.contact.github}<Github size={15} /></motion.a>
           </div>
-          <div className="nav-actions">
-            <LanguageToggle />
-            <button className="icon-button" onClick={toggleTheme} aria-label={t.accessibility.theme(theme)}>
-              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-            </button>
-            <a className="nav-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
-            <button className="icon-button menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>
-              {menuOpen ? <X size={19} /> : <Menu size={19} />}
-            </button>
+        </SectionWrapper>
+        <SectionWrapper delay={0.4}>
+          <div className="mk-contact-socials">
+            <a href={profile.links.github} target="_blank" rel="noreferrer"><Github size={14} />GitHub</a>
+            <a href={profile.links.linkedin} target="_blank" rel="noreferrer"><Linkedin size={14} />LinkedIn</a>
+            <a href={profile.links.x} target="_blank" rel="noreferrer"><Twitter size={14} />X</a>
+            <Link href="/links"><Code2 size={14} />{t.contact.allLinks}</Link>
           </div>
-        </nav>
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div className="mobile-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-              {navItems.map((item) => <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</a>)}
-              <Link href="/links" onClick={() => setMenuOpen(false)}>{t.nav.links}</Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
+        </SectionWrapper>
+      </div>
+    </section>
+  )
+}
 
-      <aside className="social-rail" aria-label={t.accessibility.socialProfiles}>
-        <a href={profile.links.github} target="_blank" rel="noreferrer" aria-label="GitHub"><Github size={17} /></a>
-        <a href={profile.links.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn"><Linkedin size={17} /></a>
-        <a href={profile.links.x} target="_blank" rel="noreferrer" aria-label="X"><Twitter size={17} /></a>
-        <span />
-      </aside>
+function Footer() {
+  const { t } = useLanguage()
+  return (
+    <footer className="mk-footer"><span>© 2026 {profile.name}</span><span>{t.footer.built}</span><span><motion.i animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 2, repeat: Infinity }}>$</motion.i> mark --version 2026</span></footer>
+  )
+}
 
+export default function Portfolio() {
+  return (
+    <PortfolioShell>
       <main id="main-content">
-        <section id="hero" className="hero-section">
-          <div className="hero-grid" aria-hidden="true" />
-          <div className="hero-glow" aria-hidden="true" />
-          <div className="container hero-layout">
-            <motion.div className="hero-copy" initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}>
-              <div className="status-line"><span /><Radio size={13} /> {activity}</div>
-              <p className="eyebrow">{profile.name}</p>
-              <h1>
-                <span>{t.hero.lead}</span>
-                <strong>{t.hero.highlight}</strong>
-              </h1>
-              <p className="hero-summary">{t.hero.summary}</p>
-              <div className="hero-actions">
-                <a className="button button-primary" href="#projects">{t.hero.explore} <ArrowDown size={15} /></a>
-                <a className="button button-secondary" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.hero.linkedin} <ArrowUpRight size={15} /></a>
-              </div>
-              <div className="identity-row">
-                <span><MapPin size={14} /> {t.hero.location}</span>
-                <span><Building2 size={14} /> {profile.company}</span>
-              </div>
-            </motion.div>
-
-            <motion.div className="terminal-wrap" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.75, delay: 0.25 }}>
-              <div className="terminal-window">
-                <div className="terminal-bar"><div><i /><i /><i /></div><span>markkop@dev:~</span><Terminal size={14} /></div>
-                <div className="terminal-body">
-                  <div className="terminal-profile">
-                    <div className="avatar-frame"><Image src="/avatar.png" alt="Marcelo Kopmann" fill priority sizes="140px" /></div>
-                    <div><small>whoami</small><strong>{profile.shortName}</strong><span>{t.hero.role}</span></div>
-                  </div>
-                  <div className="command"><span>$</span> cat focus.txt</div>
-                  <p className="output">{t.hero.focus}</p>
-                  <div className="command"><span>$</span> git status --short</div>
-                  <p className="output success">{t.hero.state}</p>
-                  <div className="terminal-footer"><span>main</span><span>UTF-8</span><span>TypeScript</span></div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        <section id="about" className="section about-section">
-          <div className="container">
-            <motion.div className="stats-grid" {...reveal}>
-              {profile.stats.map((stat, index) => (
-                <div key={stat.label}>
-                  <strong>{dynamicValue('dynamic' in stat ? stat.dynamic : undefined, stat.value)}</strong>
-                  <span>{t.about.stats[index]}</span>
-                </div>
-              ))}
-            </motion.div>
-
-            <motion.div className="section-heading" {...reveal}>
-              <p className="eyebrow">{t.about.eyebrow}</p>
-              <h2>{t.about.title}<br /><span>{t.about.titleHighlight}</span></h2>
-            </motion.div>
-
-            <div className="about-grid">
-              {t.about.cards.map((item, index) => (
-                <motion.article key={item.title} {...reveal} transition={{ duration: 0.55, delay: index * 0.08 }}>
-                  <p className="eyebrow">{item.label}</p>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                </motion.article>
-              ))}
-            </div>
-
-            <motion.div className="journey" {...reveal}>
-              <p className="eyebrow">{t.about.journey}</p>
-              <div className="journey-line">
-                {profile.milestones.map((milestone, index) => (
-                  <div key={milestone.year}><i /><strong>{milestone.year}</strong><span>{t.about.milestones[index]}</span></div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
+        <Hero />
+        <About />
         <ProjectShowcase />
-
-        <section id="tech-stack" className="section stack-section">
-          <div className="container">
-            <motion.div className="section-heading" {...reveal}>
-              <p className="eyebrow">{t.stack.eyebrow}</p>
-              <h2>{t.stack.title}<br /><span>{t.stack.titleHighlight}</span></h2>
-              <p>{t.stack.intro}</p>
-            </motion.div>
-            <div className="stack-grid">
-              {stack.map((group, index) => (
-                <motion.div className="stack-card" key={group.group} {...reveal} transition={{ duration: 0.5, delay: index * 0.07 }}>
-                  <span className="stack-number">0{index + 1}</span>
-                  <h3>{t.stack.groups[index]}</h3>
-                  <div>{group.items.map((item) => <span key={item}>{item}</span>)}</div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="now-section">
-          <div className="container">
-            <motion.div className="now-card" {...reveal}>
-              <div className="terminal-bar"><div><i /><i /><i /></div><span>cat /now.md</span><Radio size={14} /></div>
-              <div className="now-body">
-                {t.now.items.map((item) => <p key={item}><span>&gt;</span> {item}</p>)}
-              </div>
-              <small>{t.now.updated}</small>
-            </motion.div>
-          </div>
-        </section>
-
-        <section id="contact" className="contact-section">
-          <div className="container contact-layout">
-            <motion.div {...reveal}>
-              <p className="eyebrow">{t.contact.eyebrow}</p>
-              <h2>{t.contact.title}<br /><span>{t.contact.titleHighlight}</span></h2>
-              <p>{t.contact.intro}</p>
-            </motion.div>
-            <motion.div className="contact-links" {...reveal}>
-              <a href={profile.links.linkedin} target="_blank" rel="noreferrer"><Linkedin size={20} /><span><strong>LinkedIn</strong><small>{t.contact.linkedin}</small></span><ArrowUpRight size={18} /></a>
-              <a href={profile.links.github} target="_blank" rel="noreferrer"><Github size={20} /><span><strong>GitHub</strong><small>{t.contact.github}</small></span><ArrowUpRight size={18} /></a>
-              <a href={profile.links.x} target="_blank" rel="noreferrer"><Twitter size={20} /><span><strong>X / Twitter</strong><small>@heymarkkop</small></span><ArrowUpRight size={18} /></a>
-              <Link href="/links"><Code2 size={20} /><span><strong>{t.contact.allLinks}</strong><small>{t.contact.allLinksDescription}</small></span><ArrowUpRight size={18} /></Link>
-            </motion.div>
-          </div>
-        </section>
+        <StackShowcase />
+        <Now />
+        <Contact />
       </main>
-
-      <footer className="site-footer">
-        <div className="container"><span>© 2026 Marcelo Kopmann</span><span>{t.footer.built}</span><span>$ mark --version 2026</span></div>
-      </footer>
-    </>
+      <Footer />
+    </PortfolioShell>
   )
 }

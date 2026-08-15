@@ -2,170 +2,127 @@
 
 import Image from 'next/image'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
-import { ArrowDown, ArrowUpRight, Code2, Github } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown, Code2, ExternalLink, Github, Lock, RotateCw } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { projects, type Project } from '@/data/profile'
+import TextReveal from '@/components/ui/TextReveal'
 import { useLanguage } from '@/context/LanguageContext'
-import type { SiteContent } from '@/i18n/content'
+import { projects, type Project } from '@/data/profile'
 
-function ProjectVisual({ project, previewLabel, categoryLabel, priority = false }: { project: Project; previewLabel: string; categoryLabel: string; priority?: boolean }) {
+const techLogos: Record<string, string> = {
+  'Next.js': '/techstackicons/next.svg', React: '/techstackicons/react-svgrepo-com.svg', TypeScript: '/techstackicons/typescript-icon-svgrepo-com.svg',
+  'Tailwind CSS': '/techstackicons/tailwindcss-icon-svgrepo-com.svg', 'Node.js': '/techstackicons/nodejs-icon-svgrepo-com.svg',
+  PostgreSQL: '/techstackicons/postgresql-svgrepo-com.svg', Docker: '/techstackicons/docker-svgrepo-com.svg',
+}
+
+function ProjectSimulator({ project, label }: { project: Project; label: string }) {
+  const [hovered, setHovered] = useState(false)
+  const domain = project.live.replace(/^https?:\/\//, '').replace(/\/$/, '')
   return (
-    <div className="project-browser">
-      <div className="project-browser-bar">
-        <span /><span /><span />
-        <small>{project.live.replace(/^https?:\/\//, '').replace(/\/$/, '')}</small>
+    <div className={`mk-simulator${hovered ? ' hovered' : ''}`} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <div className="mk-simulator-bar">
+        <span className="dots"><i /><i /><i /></span>
+        <span className="controls"><ArrowLeft /><ArrowRight /><RotateCw /></span>
+        <span className="address"><Lock /><small>{domain}</small><a href={project.live} target="_blank" rel="noreferrer" aria-label={label}><ExternalLink /></a></span>
       </div>
-      <div className="project-browser-body">
+      <div className="mk-simulator-screen">
         {project.image ? (
-          <Image
-            src={project.image}
-            alt={previewLabel}
-            fill
-            priority={priority}
-            sizes="(max-width: 980px) 100vw, 56vw"
-          />
+          <>
+            <div className="mk-simulator-image"><Image src={project.image} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" /></div>
+            <span className="mk-hover-hint">🖱️ Hover to scroll preview</span>
+          </>
         ) : (
-          <div className="project-showcase-fallback">
-            <Code2 size={44} />
-            <strong>{project.title}</strong>
-            <span>{categoryLabel}</span>
-          </div>
+          <div className="mk-project-fallback"><Code2 size={44} /><strong>{project.title}</strong></div>
         )}
       </div>
     </div>
   )
 }
 
-function ProjectCopy({ project, index, t }: { project: Project; index: number; t: SiteContent }) {
+function ProjectDetails({ project, index, mobile = false }: { project: Project; index: number; mobile?: boolean }) {
+  const { t } = useLanguage()
   const copy = t.projects.items[project.slug] ?? project
-
   return (
-    <div className="project-showcase-copy">
-      <div className="project-showcase-meta">
-        <span>{String(index + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}</span>
-        <span>{copy.category}</span>
-        <strong>{copy.metric}</strong>
-      </div>
+    <div className="mk-project-details">
+      {mobile && <small className="mk-project-index">{String(index + 1).padStart(2, '0')}</small>}
+      <div className="mk-project-badges"><span>{copy.category}</span><strong>{copy.metric}</strong></div>
       <h3>{project.title}</h3>
       <p>{copy.description}</p>
-      <div className="project-showcase-tags">
-        {project.tech.map((tech) => <span key={tech}>{tech}</span>)}
-      </div>
-      <div className="project-showcase-links">
-        <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit} <ArrowUpRight size={16} /></a>
-        {project.code && (
-          <a className="secondary" href={project.code} target="_blank" rel="noreferrer">
-            <Github size={16} /> {t.projects.source}
-          </a>
-        )}
-        <small>{copy.timeframe}</small>
-      </div>
+      {!mobile && <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image src={techLogos[tech]} alt="" width={15} height={15} />}<small>{tech}</small></span>)}</div>}
+      {!mobile && <div className="mk-project-role"><span>{copy.category}</span><i /><span>{copy.timeframe}</span></div>}
+      {!mobile && (
+        <div className="mk-project-actions">
+          <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit}<ArrowRight size={14} /></a>
+          {project.code && <a className="secondary" href={project.code} target="_blank" rel="noreferrer"><Github size={14} />{t.projects.source}</a>}
+        </div>
+      )}
     </div>
+  )
+}
+
+function MobileProject({ project, index }: { project: Project; index: number }) {
+  const { t } = useLanguage()
+  return (
+    <motion.article className="mk-mobile-project" initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-10%' }} transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}>
+      <ProjectDetails project={project} index={index} mobile />
+      <div className="mk-mobile-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} /></div>
+      <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>
+      <div className="mk-project-actions mobile">
+        <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit}<ArrowRight size={14} /></a>
+        {project.code && <a className="secondary" href={project.code} target="_blank" rel="noreferrer"><Github size={14} />{t.projects.source}</a>}
+      </div>
+    </motion.article>
   )
 }
 
 export default function ProjectShowcase() {
   const { t } = useLanguage()
   const trackRef = useRef<HTMLDivElement>(null)
-  const activeIndexRef = useRef(0)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const activeRef = useRef(0)
+  const [active, setActive] = useState(0)
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
   const progress = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
-
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const nextIndex = Math.min(Math.floor(latest * projects.length), projects.length - 1)
-    if (nextIndex !== activeIndexRef.current) {
-      activeIndexRef.current = nextIndex
-      setActiveIndex(nextIndex)
-    }
+  useMotionValueEvent(scrollYProgress, 'change', (value) => {
+    const next = Math.max(0, Math.min(Math.floor(value * projects.length), projects.length - 1))
+    if (next !== activeRef.current) { activeRef.current = next; setActive(next) }
   })
 
-  const activeProject = projects[activeIndex]
-
-  function goToProject(index: number) {
-    const track = trackRef.current
-    if (!track) return
-    const availableDistance = track.offsetHeight - window.innerHeight
-    const top = track.offsetTop + (index / Math.max(projects.length - 1, 1)) * availableDistance
-    window.scrollTo({ top, behavior: 'smooth' })
-  }
-
+  const project = projects[active]
   return (
-    <section id="projects" className="projects-section">
-      <div className="container project-showcase-intro">
-        <motion.div
-          className="section-heading split-heading"
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.55 }}
-        >
-          <div><p className="eyebrow">{t.projects.eyebrow}</p><h2>{t.projects.title}<br /><span>{t.projects.titleHighlight}</span></h2></div>
-          <p>{t.projects.intro}</p>
-        </motion.div>
+    <section id="projects" className="mk-projects-root">
+      <div className="mk-projects-mobile mk-section-dark">
+        <header className="mk-project-heading"><h2><TextReveal text={`${t.projects.title} ${t.projects.titleHighlight}`} /></h2></header>
+        <div>{projects.map((item, index) => <MobileProject project={item} index={index} key={item.slug} />)}</div>
       </div>
-
-      <div ref={trackRef} className="project-scroll-track" style={{ height: `${projects.length * 100}vh` }}>
-        <div className="project-stage">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`background-${activeProject.slug}`}
-              className="project-stage-background"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.45 }}
-              aria-hidden="true"
-            >
-              {activeProject.image && <Image src={activeProject.image} alt="" fill sizes="100vw" />}
-              <span />
+      <div className="mk-project-intro mk-section-dark">
+        <h2><TextReveal text={t.projects.title} /><span><TextReveal text={t.projects.titleHighlight} delay={0.4} /></span></h2>
+        <p><ChevronDown />{t.projects.scroll}</p>
+      </div>
+      <div className="mk-project-track" ref={trackRef} style={{ height: `${projects.length * 100}vh` }}>
+        <div className="mk-project-stage">
+          <AnimatePresence mode="popLayout">
+            <motion.div className="mk-project-background" key={project.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
+              {project.image && <Image src={project.image} alt="" fill sizes="100vw" priority />}
+              <i />
             </motion.div>
           </AnimatePresence>
-
-          <motion.div className="project-stage-progress" style={{ width: progress }} />
-
-          <div className="project-stage-nav container">
-            <span>{String(activeIndex + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}</span>
-            <div aria-label={t.projects.choose}>
-              {projects.map((project, index) => (
-                <button
-                  key={project.slug}
-                  className={index === activeIndex ? 'active' : ''}
-                  onClick={() => goToProject(index)}
-                  aria-label={t.projects.show(project.title)}
-                  aria-current={index === activeIndex ? 'true' : undefined}
-                />
-              ))}
-            </div>
+          <motion.div className="mk-project-progress" style={{ width: progress }} />
+          <div className="mk-project-topbar">
+            <span><strong>{String(active + 1).padStart(2, '0')}</strong><i>/</i>{String(projects.length).padStart(2, '0')}</span>
+            <div>{projects.map((item, index) => <button key={item.slug} className={index === active ? 'active' : ''} aria-label={t.projects.show(item.title)} onClick={() => {
+              const track = trackRef.current
+              if (!track) return
+              const distance = track.offsetHeight - innerHeight
+              window.scrollTo({ top: track.offsetTop + (index / Math.max(projects.length - 1, 1)) * distance, behavior: 'smooth' })
+            }}><i />{index === active && <small>{item.title}</small>}</button>)}</div>
           </div>
-
-          <AnimatePresence mode="wait">
-            <motion.article
-              key={activeProject.slug}
-              className="project-stage-slide container"
-              initial={{ opacity: 0, y: 34 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -28 }}
-              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <ProjectCopy project={activeProject} index={activeIndex} t={t} />
-              <ProjectVisual project={activeProject} previewLabel={t.projects.preview(activeProject.title)} categoryLabel={(t.projects.items[activeProject.slug] ?? activeProject).category} priority={activeIndex === 0} />
+          <AnimatePresence mode="popLayout">
+            <motion.article className="mk-project-slide" key={project.slug} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.25 }}>
+              <ProjectDetails project={project} index={active} />
+              <div className="mk-project-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} /></div>
             </motion.article>
           </AnimatePresence>
-
-          <div className="project-scroll-cue"><ArrowDown size={14} /><span>{t.projects.scroll}</span></div>
+          <motion.div className="mk-project-cue" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}><small>{active < projects.length - 1 ? t.projects.scroll : 'Keep scrolling'}</small><ChevronDown /></motion.div>
         </div>
-      </div>
-
-      <div className="project-mobile-list">
-        {projects.map((project, index) => (
-          <article className="project-mobile-slide" key={project.slug}>
-            <div className="container">
-              <ProjectCopy project={project} index={index} t={t} />
-              <ProjectVisual project={project} previewLabel={t.projects.preview(project.title)} categoryLabel={(t.projects.items[project.slug] ?? project).category} />
-            </div>
-          </article>
-        ))}
       </div>
     </section>
   )

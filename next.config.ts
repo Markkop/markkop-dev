@@ -1,5 +1,21 @@
 import type { NextConfig } from "next";
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+const securityPolicy = [
+  "default-src 'self'",
+  "connect-src 'self' https://api.github.com",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data:",
+  "font-src 'self' data:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  isProduction ? 'upgrade-insecure-requests' : '',
+].filter(Boolean).join('; ')
+
 const nextConfig: NextConfig = {
   output: "standalone",
   trailingSlash: false,
@@ -47,7 +63,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; connect-src 'self' https://api.github.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+            value: securityPolicy
           }
         ]
       },
@@ -57,7 +73,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: isProduction ? 'public, max-age=31536000, immutable' : 'no-store',
           },
         ],
       },
@@ -66,7 +82,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: isProduction ? 'public, max-age=31536000, immutable' : 'no-store',
           },
         ],
       },
@@ -75,7 +91,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
+            value: isProduction ? 'public, max-age=31536000, immutable' : 'no-store',
           },
         ],
       },
