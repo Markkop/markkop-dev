@@ -282,7 +282,11 @@ function Navbar() {
       <motion.header className="mk-nav-mobile" animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
         <nav>
           <a href="#hero" aria-label={`markkop.dev · ${t.nav.home}`}><Brand compact /></a>
-          <button onClick={() => setOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>{open ? <X size={20} /> : <Menu size={20} />}</button>
+          <div className="mk-nav-mobile-actions">
+            <LanguageToggle compact />
+            <button className="mk-nav-icon" type="button" onClick={toggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
+            <button className="mk-nav-menu" type="button" onClick={() => setOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>{open ? <X size={20} /> : <Menu size={20} />}</button>
+          </div>
         </nav>
       </motion.header>
 
@@ -300,7 +304,6 @@ function Navbar() {
                 ))}
                 <Link href="/links" onClick={() => setOpen(false)}><i />{t.nav.links}</Link>
               </div>
-              <div className="mk-drawer-settings"><LanguageToggle compact /><button className="mk-nav-icon" onClick={toggleTheme}>{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button></div>
               <a className="mk-drawer-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
             </motion.aside>
           </>

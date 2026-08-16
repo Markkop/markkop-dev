@@ -4,15 +4,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Calendar, Code2, Download, Github, Linkedin, Twitter } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import PortfolioShell from '@/components/PortfolioShell'
 import ProjectShowcase from '@/components/ProjectShowcase'
 import StackShowcase from '@/components/StackShowcase'
 import SectionWrapper from '@/components/ui/SectionWrapper'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile } from '@/data/profile'
-
-type GithubProfile = { public_repos?: number; followers?: number }
 
 function Hero() {
   const { t } = useLanguage()
@@ -47,20 +44,6 @@ function Hero() {
 
 function About() {
   const { t } = useLanguage()
-  const [github, setGithub] = useState<GithubProfile>({})
-
-  useEffect(() => {
-    fetch('https://api.github.com/users/Markkop')
-      .then((response) => response.ok ? response.json() : Promise.reject())
-      .then((value: GithubProfile) => setGithub(value))
-      .catch(() => undefined)
-  }, [])
-
-  const valueFor = (index: number, fallback: string) => {
-    if (index === 0 && github.public_repos) return String(github.public_repos)
-    if (index === 1 && github.followers) return String(github.followers)
-    return fallback
-  }
 
   return (
     <section id="about" className="mk-about mk-section-dark">
@@ -68,7 +51,7 @@ function About() {
       <div className="mk-wide">
         <SectionWrapper>
           <div className="mk-stats">
-            {profile.stats.map((stat, index) => <div key={stat.label}><strong>{valueFor(index, stat.value)}</strong><span>{t.about.stats[index]}</span></div>)}
+            {profile.stats.map((stat, index) => <div key={stat.label}><strong>{stat.value}</strong><span>{t.about.stats[index]}</span></div>)}
           </div>
         </SectionWrapper>
 

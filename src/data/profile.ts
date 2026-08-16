@@ -26,26 +26,26 @@ export const profile = {
     x: 'https://x.com/heymarkkop',
   },
   stats: [
-    { value: '98', label: 'Public repos', dynamic: 'repos' },
-    { value: '128', label: 'GitHub followers', dynamic: 'followers' },
-    { value: '10+', label: 'Years on GitHub' },
-    { value: '181', label: 'Stars on top project' },
+    { value: '7', label: 'Years programming' },
+    { value: '3', label: 'Hackathon wins' },
+    { value: '7k', label: 'Blog followers' },
+    { value: '50+', label: 'Tech events attended' },
   ],
   about: [
     {
       label: '// THE WHY',
-      title: 'Why I Build',
-      text: 'I like turning vague ideas into real products people can use. The best projects teach something, remove friction, or make a routine more rewarding.',
+      title: 'Why I Code',
+      text: 'Coding feels like magic. Being able to turn any idea into something useful is a powerful skill, and I love it. Agentic coding is the last magical wand I needed to start building products people will really enjoy.',
     },
     {
-      label: '// HOW I THINK',
-      title: 'How I Work',
-      text: 'Ship a useful core, learn from it, then sharpen the experience. I care about clear systems, strong feedback loops, and code that stays understandable.',
+      label: '// VALUES',
+      title: 'What I Value',
+      text: 'I value proactivity, curiosity, creativity, teamwork, respect, and ownership. Working with people who share these same principles is where the magic happens.',
     },
     {
-      label: '// BEYOND CODE',
-      title: 'What Keeps Me Curious',
-      text: 'Gamification, open source, onchain incentives, AI-assisted workflows, community tools, and the small details that make software feel alive.',
+      label: '// MOTIVATION',
+      title: 'What Motivates Me',
+      text: 'I don’t want to impact the whole world with a product or give TED talks on behalf of a big tech company. I want to have a good time, working on what I like and doing my best at it. Feedback from managers and colleagues keeps telling me I’m on the right track.',
     },
   ],
   milestones: [
