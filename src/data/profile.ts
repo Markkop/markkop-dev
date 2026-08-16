@@ -45,16 +45,21 @@ export const profile = {
     {
       label: '// MOTIVATION',
       title: 'What Motivates Me',
-      text: 'I don’t want to impact the whole world with a product or give TED talks on behalf of a big tech company. I want to have a good time, working on what I like and doing my best at it. Feedback from managers and colleagues keeps telling me I’m on the right track.',
+      text: 'I want to have a good time, working on what I like and doing my best at it. Feedback from managers and colleagues keeps telling me I’m on the right track.',
     },
   ],
   milestones: [
-    { year: '2019', text: 'Full-stack Developer @ Linx' },
-    { year: '2020', text: 'First Tech Event Volunteer (Codecon)' },
-    { year: '2021', text: 'Senior Software Engineer @ ArcTouch' },
-    { year: '2022', text: 'Frontend Developer @ Halborn' },
-    { year: '2024', text: 'Senior Frontend Developer @ Halborn' },
-    { year: '2026', text: 'Halborn, Codecon, Side Projects' },
+    { year: '2019', role: 'Full-stack Developer', orgs: [{ name: 'Linx', logo: '/companies/linx-dark.png', logoLight: '/companies/linx.png', href: 'https://www.linx.com.br/' }] },
+    { year: '2021', role: 'Senior Software Engineer', orgs: [{ name: 'ArcTouch', logo: '/companies/arctouch.png', href: 'https://arctouch.com/' }] },
+    { year: '2022', role: 'Frontend Developer', orgs: [{ name: 'Halborn', logo: '/companies/halborn.png', href: 'https://www.halborn.com/' }] },
+    { year: '2024', role: 'Senior Frontend Developer', orgs: [{ name: 'Halborn', logo: '/companies/halborn.png', href: 'https://www.halborn.com/' }] },
+    { year: '2026', role: 'Halborn, Consulting, Freelance', orgs: [], now: true },
+  ],
+  journey: [
+    { year: '2020', role: 'Open source Discord bot reaching 1k+ users', orgs: [{ name: 'Corvo Astral', logo: '/companies/discord.svg', href: 'https://github.com/Markkop/corvo-astral' }] },
+    { year: '2021', role: 'First Tech Event Volunteer', orgs: [{ name: 'Codecon', logo: '/companies/codecon.png', logoLight: '/companies/codecon-light.png', href: 'https://www.codecon.dev/' }] },
+    { year: '2022', role: 'System Analysis and Development graduation', orgs: [{ name: 'Estácio', logo: '/companies/estacio.svg', href: 'https://estacio.br/' }] },
+    { year: '2025', role: 'Multiple hackathon wins', orgs: [{ name: 'HabitChain', logo: '/companies/habitchain.png', href: 'https://www.habitchain.xyz/' }] },
   ],
 } as const
 
@@ -181,7 +186,10 @@ export const projects: Project[] = [
 
 export const stack = [
   { group: 'Frontend', items: ['TypeScript', 'React', 'Next.js', 'Svelte', 'Tailwind CSS'] },
-  { group: 'Backend', items: ['Node.js', 'Elixir', 'PostgreSQL', 'Supabase', 'REST APIs'] },
+  { group: 'Backend & Data', items: ['Node.js', 'Elixir', 'PostgreSQL', 'Supabase'] },
   { group: 'Onchain', items: ['Solidity', 'Hardhat', 'Foundry', 'EVM', 'Polkadot'] },
-  { group: 'Tools', items: ['GitHub Actions', 'Docker', 'Vercel', 'OpenAI', 'Forgejo'] },
-]
+  { group: 'Delivery & Hosting', items: ['GitHub', 'Docker', 'Vercel', 'Forgejo'] },
+  { group: 'AI Development', items: ['OpenAI', 'Codex', 'Claude', 'Cursor', 'VS Code'] },
+] as const
+
+export type StackTech = (typeof stack)[number]['items'][number]

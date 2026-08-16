@@ -21,7 +21,7 @@ export default function LinksPageContent() {
       <div className="links-shell">
         <div className="links-topbar">
           <Link href="/" className="brand" aria-label={t.links.back}>markkop.dev<span>_</span></Link>
-          <LanguageToggle compact />
+          <LanguageToggle />
         </div>
         <header className="links-header">
           <div className="avatar-ring">

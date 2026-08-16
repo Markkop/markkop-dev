@@ -11,6 +11,58 @@ import SectionWrapper from '@/components/ui/SectionWrapper'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile } from '@/data/profile'
 
+type TimelineOrg = { name: string; logo: string; logoLight?: string; href?: string }
+type TimelineItem = { year: string; orgs: readonly TimelineOrg[]; now?: boolean }
+
+function JourneyOrgLogo({ org }: { org: TimelineOrg }) {
+  return (
+    <span className="mk-journey-logo-wrap" aria-hidden="true">
+      <Image className={org.logoLight ? 'mk-journey-logo-dark' : undefined} src={org.logo} alt="" width={16} height={16} />
+      {org.logoLight ? <Image className="mk-journey-logo-light" src={org.logoLight} alt="" width={16} height={16} /> : null}
+    </span>
+  )
+}
+
+function JourneyOrg({ org }: { org: TimelineOrg }) {
+  const content = (
+    <>
+      <JourneyOrgLogo org={org} />
+      {org.name}
+    </>
+  )
+
+  if (org.href) {
+    return (
+      <a className="mk-journey-org" href={org.href} target="_blank" rel="noreferrer">
+        {content}
+      </a>
+    )
+  }
+
+  return <span className="mk-journey-org">{content}</span>
+}
+
+function TimelineStrip({ label, items, roles }: { label: string; items: readonly TimelineItem[]; roles: readonly string[] }) {
+  return (
+    <div className="mk-journey">
+      <p>{label}</p>
+      <div style={{ '--mk-cols': items.length } as React.CSSProperties}>
+        {items.map((milestone, index) => (
+          <span className="mk-journey-item" key={`${milestone.year}-${roles[index] ?? ''}`}>
+            <span className="mk-journey-mark"><i /><strong>{milestone.year}</strong></span>
+            {milestone.now ? null : (
+              <div className="mk-journey-brands">
+                {milestone.orgs.map((org) => <JourneyOrg key={org.name} org={org} />)}
+              </div>
+            )}
+            {roles[index] ? <small className={milestone.now ? 'mk-journey-now' : undefined}>{roles[index]}</small> : null}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function Hero() {
   const { t } = useLanguage()
   return (
@@ -68,7 +120,10 @@ function About() {
         </div>
 
         <SectionWrapper delay={0.4}>
-          <div className="mk-journey"><p>{t.about.journey}</p><div>{profile.milestones.map((milestone, index) => <span key={milestone.year}><i /><strong>{milestone.year}</strong><small>{t.about.milestones[index]}</small></span>)}</div></div>
+          <div className="mk-timelines">
+            <TimelineStrip label={t.about.career} items={profile.milestones} roles={t.about.careerMilestones} />
+            <TimelineStrip label={t.about.journey} items={profile.journey} roles={t.about.milestones} />
+          </div>
         </SectionWrapper>
       </div>
     </section>
@@ -78,7 +133,7 @@ function About() {
 function Now() {
   const { t } = useLanguage()
   return (
-    <section className="mk-now mk-section-dark">
+    <section id="now" className="mk-now mk-section-dark">
       <div className="mk-section-glow" />
       <div className="mk-wide">
         <SectionWrapper><h2 className="mk-kicker">{t.now.eyebrow}</h2></SectionWrapper>

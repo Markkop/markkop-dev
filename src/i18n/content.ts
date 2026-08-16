@@ -12,7 +12,7 @@ type ProjectCopy = {
 export type SiteContent = {
   language: { label: string; switchLabel: string }
   nav: { home: string; about: string; projects: string; stack: string; contact: string; connect: string; links: string }
-  accessibility: { skip: string; backToTop: string; primaryNav: string; toggleMenu: string; socialProfiles: string; theme: (theme: 'dark' | 'light') => string }
+  accessibility: { skip: string; backToTop: string; nextSection: string; startupUi: (active: boolean) => string; primaryNav: string; toggleMenu: string; socialProfiles: string; theme: (theme: 'dark' | 'light') => string }
   status: { building: string; latest: string }
   hero: {
     lead: string
@@ -31,6 +31,8 @@ export type SiteContent = {
     titleHighlight: string
     stats: string[]
     cards: Array<{ label: string; title: string; text: string }>
+    career: string
+    careerMilestones: string[]
     journey: string
     milestones: string[]
   }
@@ -49,7 +51,7 @@ export type SiteContent = {
     keepScrolling: string
     items: Record<string, ProjectCopy>
   }
-  stack: { eyebrow: string; title: string; titleHighlight: string; intro: string; assemble: string; groups: string[] }
+  stack: { eyebrow: string; title: string; titleHighlight: string; intro: string; assemble: string }
   now: { eyebrow: string; items: string[]; updated: string }
   contact: {
     eyebrow: string
@@ -156,6 +158,8 @@ export const content: Record<Language, SiteContent> = {
     accessibility: {
       skip: 'Skip to content',
       backToTop: 'Scroll back to top',
+      nextSection: 'Go to next section',
+      startupUi: (active) => active ? 'Dismiss startup UI' : 'Replay startup UI',
       primaryNav: 'Primary navigation',
       toggleMenu: 'Toggle menu',
       socialProfiles: 'Social profiles',
@@ -179,8 +183,10 @@ export const content: Record<Language, SiteContent> = {
       titleHighlight: 'the prompt.',
       stats: profile.stats.map((stat) => stat.label),
       cards: profile.about.map((item) => ({ ...item })),
+      career: '// CAREER',
+      careerMilestones: profile.milestones.map((item) => item.role),
       journey: '// JOURNEY',
-      milestones: profile.milestones.map((item) => item.text),
+      milestones: profile.journey.map((item) => item.role),
     },
     projects: {
       eyebrow: '// SELECTED WORK',
@@ -199,27 +205,26 @@ export const content: Record<Language, SiteContent> = {
     },
     stack: {
       eyebrow: '// TOOLS OF THE TRADE',
-      title: 'My technical',
-      titleHighlight: 'constellation.',
-      intro: 'Different tools for different jobs—chosen for the problem, not the trend.',
+      title: 'My tech',
+      titleHighlight: 'stack.',
+      intro: 'Different tools for different jobs.',
       assemble: 'Scroll to assemble',
-      groups: ['Frontend', 'Backend', 'Onchain', 'Tools'],
     },
     now: {
-      eyebrow: 'CURRENTLY BUILDING',
+      eyebrow: 'Currently doing',
       items: [
-        'Building habit systems with meaningful incentives',
-        'Exploring AI-assisted product workflows',
-        'Maintaining open-source tools and community projects',
-        'Shipping small experiments that teach something',
+        'Building the best enterprise client portal',
+        'Launching a home purchase planner product',
+        'Participating in web3 and AI hackathons',
+        'Attending and volunteering at tech events',
       ],
       updated: 'Updated August 2026',
     },
     contact: {
-      eyebrow: '// LET\'S CONNECT',
-      title: 'Have an interesting',
-      titleHighlight: 'problem to solve?',
-      intro: 'I’m always interested in thoughtful products, open-source collaboration, and systems that make work or life more rewarding.',
+      eyebrow: 'START A PROJECT',
+      title: 'Let\'s Build Your Next',
+      titleHighlight: 'Web Project.',
+      intro: 'Full-stack developer in Santa Catarina, Brazil. Available for freelance, contracts, and remote collaborations worldwide.',
       linkedin: 'Start a conversation',
       github: 'Explore 98+ repositories',
       allLinks: 'All links',
@@ -246,6 +251,8 @@ export const content: Record<Language, SiteContent> = {
     accessibility: {
       skip: 'Pular para o conteúdo',
       backToTop: 'Voltar ao topo',
+      nextSection: 'Ir para a próxima seção',
+      startupUi: (active) => active ? 'Fechar tela inicial' : 'Reexibir tela inicial',
       primaryNav: 'Navegação principal',
       toggleMenu: 'Abrir ou fechar menu',
       socialProfiles: 'Perfis sociais',
@@ -271,16 +278,22 @@ export const content: Record<Language, SiteContent> = {
       cards: [
         { label: '// O PORQUÊ', title: 'Por que eu programo', text: 'Programar para mim é como mágica. Ter a habilidade de transformar qualquer ideia em algo útil é um poder enorme, e eu amo isso. O coding com agentes é a varinha mágica que faltava para eu começar a construir produtos que as pessoas realmente vão gostar.' },
         { label: '// VALORES', title: 'O que eu valorizo', text: 'Valorizo proatividade, curiosidade, criatividade, trabalho em equipe, respeito e senso de dono. A mágica acontece quando trabalho com pessoas que compartilham esses mesmos princípios.' },
-        { label: '// MOTIVAÇÃO', title: 'O que me motiva', text: 'Não quero impactar o mundo inteiro com um produto nem fazer TED talks em nome de uma big tech. Quero me divertir, trabalhar com o que gosto e dar o meu melhor nisso. O feedback de gestores e colegas sempre indica que estou no caminho certo.' },
+        { label: '// MOTIVAÇÃO', title: 'O que me motiva', text: 'Quero me divertir, trabalhar com o que gosto e dar o meu melhor nisso. O feedback de gestores e colegas sempre indica que estou no caminho certo.' },
+      ],
+      career: '// CARREIRA',
+      careerMilestones: [
+        'Full-stack Developer',
+        'Senior Software Engineer',
+        'Frontend Developer',
+        'Senior Frontend Developer',
+        'Halborn, Consulting e Freelance',
       ],
       journey: '// JORNADA',
       milestones: [
-        'Full-stack Developer @ Linx',
-        'Voluntário no primeiro evento tech (Codecon)',
-        'Senior Software Engineer @ ArcTouch',
-        'Frontend Developer @ Halborn',
-        'Senior Frontend Developer @ Halborn',
-        'Halborn, Codecon, Side Projects',
+        'Bot open source para Discord com 1k+ usuários',
+        'Voluntário no primeiro evento tech',
+        'Graduação em Análise e Desenvolvimento de Sistemas',
+        'Múltiplas vitórias em hackathons',
       ],
     },
     projects: {
@@ -300,27 +313,26 @@ export const content: Record<Language, SiteContent> = {
     },
     stack: {
       eyebrow: '// FERRAMENTAS DO OFÍCIO',
-      title: 'Minha constelação',
-      titleHighlight: 'técnica.',
-      intro: 'Ferramentas diferentes para trabalhos diferentes—escolhidas pelo problema, não pela tendência.',
+      title: 'Minha tech',
+      titleHighlight: 'stack.',
+      intro: 'Ferramentas diferentes para trabalhos diferentes.',
       assemble: 'Role para montar',
-      groups: ['Frontend', 'Backend', 'Onchain', 'Ferramentas'],
     },
     now: {
       eyebrow: 'CRIANDO AGORA',
       items: [
-        'Criando sistemas de hábitos com incentivos significativos',
-        'Explorando fluxos de produto assistidos por IA',
-        'Mantendo ferramentas open source e projetos comunitários',
-        'Lançando pequenos experimentos que ensinam algo',
+        'Construindo o melhor portal de clientes enterprise',
+        'Lançando um produto de planejamento de compra de imóvel',
+        'Participando de hackathons de web3 e IA',
+        'Voluntariando em eventos de tecnologia',
       ],
       updated: 'Atualizado em agosto de 2026',
     },
     contact: {
-      eyebrow: '// VAMOS CONVERSAR',
-      title: 'Tem um problema',
-      titleHighlight: 'interessante para resolver?',
-      intro: 'Estou sempre interessado em produtos bem pensados, colaboração open source e sistemas que tornam o trabalho ou a vida mais recompensadores.',
+      eyebrow: 'COMECE UM PROJETO',
+      title: 'Vamos construir seu próximo',
+      titleHighlight: 'projeto web.',
+      intro: 'Desenvolvedor full-stack em Santa Catarina, Brasil. Disponível para freelance, contratos e colaborações remotas no mundo todo.',
       linkedin: 'Iniciar uma conversa',
       github: 'Explorar mais de 98 repositórios',
       allLinks: 'Todos os links',

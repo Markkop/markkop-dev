@@ -1,15 +1,37 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useSpring } from 'framer-motion'
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { useLenis } from 'lenis/react'
-import { ArrowUp, Code2, Github, Linkedin, Menu, Moon, Sun, Twitter, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, Code2, Github, Linkedin, Menu, Moon, Sparkles, Sun, Twitter, X } from 'lucide-react'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
 import LanguageToggle from '@/components/LanguageToggle'
 import { useLanguage } from '@/context/LanguageContext'
-import { profile } from '@/data/profile'
+import { profile, projects } from '@/data/profile'
+
+const SECTION_IDS = ['hero', 'about', 'projects', 'tech-stack', 'now', 'contact'] as const
+const isDev = process.env.NODE_ENV === 'development'
+
+function subscribeTheme(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  return () => observer.disconnect()
+}
+
+function getThemeSnapshot(): 'dark' | 'light' {
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
+}
+
+function useTheme() {
+  const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, () => 'dark' as const)
+  const toggleTheme = useCallback(() => {
+    const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'
+    document.documentElement.dataset.theme = next
+    localStorage.setItem('markkop-theme', next)
+  }, [])
+  return { theme, toggleTheme }
+}
 
 function Brand({ compact = false }: { compact?: boolean }) {
   return <span className={`mk-brand${compact ? ' compact' : ''}`}>markkop.dev<span>_</span></span>
@@ -42,14 +64,22 @@ function WordReveal({ text, delay, accent = false }: { text: string; delay: numb
   )
 }
 
-function LoadingScreen() {
+function LoadingScreen({
+  forced = false,
+  dismissId,
+  onActiveChange,
+}: {
+  forced?: boolean
+  dismissId: number
+  onActiveChange: (active: boolean) => void
+}) {
   const pathname = usePathname()
   const lenis = useLenis()
   const { language } = useLanguage()
   const [mounted, setMounted] = useState(false)
   const [phase, setPhase] = useState<LoaderPhase>('loading')
   const [count, setCount] = useState(0)
-  const [visible, setVisible] = useState(true)
+  const [visible, setVisible] = useState(false)
   const raf = useRef(0)
   const enteringRef = useRef(false)
   const isLinks = pathname.startsWith('/links')
@@ -62,34 +92,59 @@ function LoadingScreen() {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
   }, [lenis])
 
-  const enter = useCallback(() => {
-    if (phase !== 'hint' || enteringRef.current) return
+  const finishEnter = useCallback(() => {
+    if (enteringRef.current) return
     enteringRef.current = true
+    sessionStorage.setItem('markkop-mubx-loaded', 'true')
     pinToTop()
     setPhase('entering')
     window.setTimeout(() => {
       pinToTop()
       setPhase('done')
       setVisible(false)
-      sessionStorage.setItem('markkop-mubx-loaded', 'true')
+      onActiveChange(false)
     }, 1100)
-  }, [phase, pinToTop])
+  }, [onActiveChange, pinToTop])
+
+  const finishEnterRef = useRef(finishEnter)
 
   useEffect(() => {
-    if (isLinks) return
+    finishEnterRef.current = finishEnter
+  }, [finishEnter])
 
-    const userAgent = navigator.userAgent.toLowerCase()
-    const isBot = /lighthouse|chrome-lighthouse|googlebot|bingbot|yandexbot|baiduspider|headlesschrome|speed insights|insights/i.test(userAgent)
-    const lighthouseWindow = window as Window & { _lighthouse?: unknown }
-    const isAutomated = navigator.webdriver || window.location.search.includes('lighthouse') || Boolean(lighthouseWindow._lighthouse)
-    if (isBot || isAutomated) return
+  const enter = useCallback(() => {
+    if (phase !== 'hint') return
+    finishEnter()
+  }, [finishEnter, phase])
 
-    const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.port !== ''
-    const isProduction = process.env.NODE_ENV === 'production' && !isLocalhost
-    if (isProduction && sessionStorage.getItem('markkop-mubx-loaded')) return
+  useEffect(() => {
+    if (isLinks) {
+      queueMicrotask(() => onActiveChange(false))
+      return
+    }
+
+    if (sessionStorage.getItem('markkop-mubx-loaded')) {
+      queueMicrotask(() => onActiveChange(false))
+      return
+    }
+
+    if (!forced) {
+      const userAgent = navigator.userAgent.toLowerCase()
+      const isBot = /lighthouse|chrome-lighthouse|googlebot|bingbot|yandexbot|baiduspider|headlesschrome|speed insights|insights/i.test(userAgent)
+      const lighthouseWindow = window as Window & { _lighthouse?: unknown }
+      const isAutomated = navigator.webdriver || window.location.search.includes('lighthouse') || Boolean(lighthouseWindow._lighthouse)
+      if (isBot || isAutomated) {
+        queueMicrotask(() => onActiveChange(false))
+        return
+      }
+    }
 
     const started = performance.now()
-    const mountTimer = window.setTimeout(() => setMounted(true), 0)
+    const mountTimer = window.setTimeout(() => {
+      setVisible(true)
+      setMounted(true)
+      onActiveChange(true)
+    }, 0)
     let greetingTimer = 0
     let hintTimer = 0
     const tick = (now: number) => {
@@ -110,16 +165,20 @@ function LoadingScreen() {
       window.clearTimeout(greetingTimer)
       window.clearTimeout(hintTimer)
     }
-  }, [isLinks])
+  }, [forced, isLinks, onActiveChange])
+
+  useEffect(() => {
+    if (dismissId === 0) return
+    if (sessionStorage.getItem('markkop-mubx-loaded')) return
+    finishEnterRef.current()
+  }, [dismissId])
 
   useEffect(() => {
     if (!mounted || !visible || isLinks) return
+    if (sessionStorage.getItem('markkop-mubx-loaded')) return
     lenis?.stop()
     pinToTop()
-    return () => {
-      pinToTop()
-      lenis?.start()
-    }
+    return () => { lenis?.start() }
   }, [isLinks, lenis, mounted, pinToTop, visible])
 
   useEffect(() => {
@@ -202,7 +261,7 @@ function LoadingScreen() {
   )
 }
 
-function Navbar() {
+function Navbar({ theme, onToggleTheme }: { theme: 'dark' | 'light'; onToggleTheme: () => void }) {
   const pathname = usePathname()
   const { t } = useLanguage()
   const { scrollY } = useScroll()
@@ -211,7 +270,6 @@ function Navbar() {
   const [hovered, setHovered] = useState<number | null>(null)
   const [active, setActive] = useState('hero')
   const previous = useRef(0)
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
 
   const links = [
     { label: t.nav.home, href: '#hero', id: 'hero' },
@@ -222,7 +280,6 @@ function Navbar() {
   ]
 
   useEffect(() => {
-    setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark')
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && setActive(entry.target.id)),
       { rootMargin: '-38% 0px -55%', threshold: 0 },
@@ -250,13 +307,6 @@ function Navbar() {
 
   if (pathname.startsWith('/links')) return null
 
-  const toggleTheme = () => {
-    const next = theme === 'dark' ? 'light' : 'dark'
-    setTheme(next)
-    document.documentElement.dataset.theme = next
-    localStorage.setItem('markkop-theme', next)
-  }
-
   const navMotion = { y: hidden ? -100 : 0, opacity: hidden ? 0 : 1 }
 
   return (
@@ -273,8 +323,8 @@ function Navbar() {
           ))}
           <i className="mk-nav-divider" />
           <Link className="mk-nav-secondary" href="/links"><Code2 size={14} /> {t.nav.links}</Link>
-          <LanguageToggle compact />
-          <button className="mk-nav-icon" onClick={toggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
+          <LanguageToggle />
+          <button className="mk-nav-icon" onClick={onToggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
           <a className="mk-nav-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
         </nav>
       </motion.header>
@@ -283,8 +333,8 @@ function Navbar() {
         <nav>
           <a href="#hero" aria-label={`markkop.dev · ${t.nav.home}`}><Brand compact /></a>
           <div className="mk-nav-mobile-actions">
-            <LanguageToggle compact />
-            <button className="mk-nav-icon" type="button" onClick={toggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
+            <LanguageToggle />
+            <button className="mk-nav-icon" type="button" onClick={onToggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
             <button className="mk-nav-menu" type="button" onClick={() => setOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>{open ? <X size={20} /> : <Menu size={20} />}</button>
           </div>
         </nav>
@@ -335,52 +385,150 @@ function SocialSidebar() {
   )
 }
 
-function FloatingLogo() {
-  const { scrollY } = useScroll()
-  const smoothY = useSpring(scrollY, { stiffness: 120, damping: 30 })
-  const [progress, setProgress] = useState(0)
-  useEffect(() => smoothY.on('change', (value) => {
-    const height = document.documentElement.scrollHeight - innerHeight
-    setProgress(Math.max(0, Math.min(1, value / Math.max(height, 1))))
-  }), [smoothY])
-  const circumference = 2 * Math.PI * 25.5
-  return (
-    <motion.div className="mk-floating-logo" animate={{ opacity: progress > 0.01 ? 1 : 0, scale: progress > 0.01 ? 1 : 0.7 }}>
-      <svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="25.5" /><circle className="progress" cx="28" cy="28" r="25.5" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress)} /></svg>
-      <span><Image src="/brand-icon.png" alt="markkop.dev" width={30} height={30} /></span>
-      <small>{Math.round(progress * 100)}%</small>
-    </motion.div>
-  )
+function getVisibleProjectTrack() {
+  const track = document.querySelector('.mk-project-track')
+  if (!(track instanceof HTMLElement)) return null
+  if (getComputedStyle(track).display === 'none') return null
+  return track
 }
 
-function ScrollProgress() {
+function projectScrollTop(track: HTMLElement, index: number) {
+  const distance = track.offsetHeight - innerHeight
+  return track.offsetTop + (index / Math.max(projects.length - 1, 1)) * distance
+}
+
+function projectIndexAt(track: HTMLElement, scrollY: number) {
+  const distance = Math.max(track.offsetHeight - innerHeight, 1)
+  const progress = (scrollY - track.offsetTop) / distance
+  return Math.max(0, Math.min(Math.floor(progress * projects.length), projects.length - 1))
+}
+
+function nextScrollTop(scrollY: number) {
+  const track = getVisibleProjectTrack()
+  if (track) {
+    const projectsSection = document.getElementById('projects')
+    if (projectsSection && scrollY >= projectsSection.offsetTop - 80 && scrollY < track.offsetTop - 8) {
+      return projectScrollTop(track, 0)
+    }
+    const trackEnd = track.offsetTop + track.offsetHeight - innerHeight
+    if (scrollY >= track.offsetTop - 8 && scrollY < trackEnd - 8) {
+      const index = projectIndexAt(track, scrollY)
+      if (index < projects.length - 1) return projectScrollTop(track, index + 1)
+      const stack = document.getElementById('tech-stack')
+      return stack ? stack.offsetTop : null
+    }
+  }
+
+  const threshold = scrollY + 80
+  for (const id of SECTION_IDS) {
+    const element = document.getElementById(id)
+    if (element && element.offsetTop > threshold) return element.offsetTop
+  }
+  return null
+}
+
+function ControlDock({
+  theme,
+  onToggleTheme,
+  loaderActive,
+  onToggleStartup,
+}: {
+  theme: 'dark' | 'light'
+  onToggleTheme: () => void
+  loaderActive: boolean
+  onToggleStartup: () => void
+}) {
   const { t } = useLanguage()
-  const { scrollYProgress } = useScroll()
+  const pathname = usePathname()
+  const lenis = useLenis()
+  const { scrollY, scrollYProgress } = useScroll()
   const [progress, setProgress] = useState(0)
+  const [canGoDown, setCanGoDown] = useState(true)
+  const isLinks = pathname.startsWith('/links')
+
+  useMotionValueEvent(scrollY, 'change', (latest) => {
+    setCanGoDown(nextScrollTop(latest) !== null)
+  })
   useMotionValueEvent(scrollYProgress, 'change', (value) => setProgress(Math.round(value * 100)))
+
+  const scrollToY = (top: number) => {
+    if (lenis) lenis.scrollTo(top)
+    else window.scrollTo({ top, behavior: 'smooth' })
+  }
+
   const circumference = 2 * Math.PI * 24
+  const atTop = progress <= 5
+
   return (
     <>
       <motion.div className="mk-top-progress" style={{ scaleX: scrollYProgress }} aria-hidden="true" />
-      <button type="button" className={`mk-to-top${progress > 5 ? ' visible' : ''}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} aria-label={t.accessibility.backToTop}>
-        <svg className="mk-to-top-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="24" /><circle className="progress" cx="30" cy="30" r="24" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} /></svg>
-        <span className="mk-to-top-arrows" aria-hidden="true"><ArrowUp /><ArrowUp /></span>
-        <small>{progress}%</small>
-      </button>
+      <aside className={`mk-dock${isDev ? ' debug' : ''}`}>
+        {isDev && !isLinks ? (
+          <button
+            type="button"
+            className={`mk-dock-btn${loaderActive ? ' active' : ''}`}
+            onClick={onToggleStartup}
+            aria-label={t.accessibility.startupUi(loaderActive)}
+            aria-pressed={loaderActive}
+          >
+            <Sparkles size={18} />
+          </button>
+        ) : null}
+        <LanguageToggle variant="dock" />
+        <button type="button" className="mk-dock-btn" onClick={onToggleTheme} aria-label={t.accessibility.theme(theme)}>
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+        <button
+          type="button"
+          className="mk-dock-btn mk-to-bottom"
+          onClick={() => {
+            const top = nextScrollTop(window.scrollY)
+            if (top !== null) scrollToY(top)
+          }}
+          disabled={loaderActive || isLinks || !canGoDown}
+          aria-label={t.accessibility.nextSection}
+        >
+          <span className="mk-to-bottom-arrows" aria-hidden="true"><ArrowDown /><ArrowDown /></span>
+        </button>
+        <button
+          type="button"
+          className="mk-dock-btn mk-to-top"
+          onClick={() => { if (lenis) lenis.scrollTo(0); else window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          disabled={loaderActive || atTop}
+          aria-label={t.accessibility.backToTop}
+        >
+          <svg className="mk-to-top-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="24" /><circle className="progress" cx="30" cy="30" r="24" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} /></svg>
+          <span className="mk-to-top-arrows" aria-hidden="true"><ArrowUp /><ArrowUp /></span>
+          <small>{progress}%</small>
+        </button>
+      </aside>
     </>
   )
 }
 
 export default function PortfolioShell({ children }: { children: ReactNode }) {
   const { t } = useLanguage()
+  const { theme, toggleTheme } = useTheme()
+  const [loaderPlayId, setLoaderPlayId] = useState(0)
+  const [loaderDismissId, setLoaderDismissId] = useState(0)
+  const [loaderActive, setLoaderActive] = useState(false)
+
+  const toggleStartupUi = useCallback(() => {
+    if (loaderActive) setLoaderDismissId((value) => value + 1)
+    else {
+      sessionStorage.removeItem('markkop-mubx-loaded')
+      setLoaderDismissId(0)
+      setLoaderPlayId((value) => value + 1)
+    }
+  }, [loaderActive])
+
   return (
     <>
-      <LoadingScreen />
+      <LoadingScreen key={loaderPlayId} forced={loaderPlayId > 0} dismissId={loaderDismissId} onActiveChange={setLoaderActive} />
       <a className="mk-skip" href="#main-content">{t.accessibility.skip}</a>
-      <Navbar />
+      <Navbar theme={theme} onToggleTheme={toggleTheme} />
       <SocialSidebar />
-      <FloatingLogo />
-      <ScrollProgress />
+      <ControlDock theme={theme} onToggleTheme={toggleTheme} loaderActive={loaderActive} onToggleStartup={toggleStartupUi} />
       {children}
     </>
   )
