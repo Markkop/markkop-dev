@@ -11,10 +11,16 @@ import SectionWrapper from '@/components/ui/SectionWrapper'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile } from '@/data/profile'
 
-type TimelineOrg = { name: string; logo: string; logoLight?: string; href?: string }
+type TimelineOrg = { name: string; logo?: string; logoLight?: string; href?: string; emoji?: string }
 type TimelineItem = { year: string; orgs: readonly TimelineOrg[]; now?: boolean }
 
 function JourneyOrgLogo({ org }: { org: TimelineOrg }) {
+  if (org.emoji) {
+    return <span className="mk-journey-logo-wrap mk-journey-emoji" aria-hidden="true">{org.emoji}</span>
+  }
+
+  if (!org.logo) return null
+
   return (
     <span className="mk-journey-logo-wrap" aria-hidden="true">
       <Image className={org.logoLight ? 'mk-journey-logo-dark' : undefined} src={org.logo} alt="" width={16} height={16} />
@@ -42,22 +48,40 @@ function JourneyOrg({ org }: { org: TimelineOrg }) {
   return <span className="mk-journey-org">{content}</span>
 }
 
-function TimelineStrip({ label, items, roles }: { label: string; items: readonly TimelineItem[]; roles: readonly string[] }) {
+function TimelineNode({ milestone, role, column, branch }: { milestone: TimelineItem; role?: string; column: number; branch?: boolean }) {
+  return (
+    <span className={branch ? 'mk-journey-item mk-journey-branch' : 'mk-journey-item'} style={{ '--mk-col': column } as React.CSSProperties}>
+      <span className="mk-journey-mark"><i /><strong>{milestone.year}</strong></span>
+      {milestone.now ? null : (
+        <div className="mk-journey-brands">
+          {milestone.orgs.map((org) => <JourneyOrg key={org.name} org={org} />)}
+        </div>
+      )}
+      {role ? <small className={milestone.now ? 'mk-journey-now' : undefined}>{role}</small> : null}
+    </span>
+  )
+}
+
+function Timeline({ label, items, roles, branches, branchRoles }: { label: string; items: readonly TimelineItem[]; roles: readonly string[]; branches: readonly TimelineItem[]; branchRoles: readonly string[] }) {
   return (
     <div className="mk-journey">
       <p>{label}</p>
-      <div style={{ '--mk-cols': items.length } as React.CSSProperties}>
-        {items.map((milestone, index) => (
-          <span className="mk-journey-item" key={`${milestone.year}-${roles[index] ?? ''}`}>
-            <span className="mk-journey-mark"><i /><strong>{milestone.year}</strong></span>
-            {milestone.now ? null : (
-              <div className="mk-journey-brands">
-                {milestone.orgs.map((org) => <JourneyOrg key={org.name} org={org} />)}
-              </div>
-            )}
-            {roles[index] ? <small className={milestone.now ? 'mk-journey-now' : undefined}>{roles[index]}</small> : null}
-          </span>
-        ))}
+      <div className="mk-journey-track" style={{ '--mk-cols': items.length } as React.CSSProperties}>
+        {items.map((milestone, index) => {
+          const column = index * 2 + 1
+          const branch = index < items.length - 1 ? branches[index] : undefined
+          return (
+            <div className="mk-journey-group" key={`${milestone.year}-${index}`}>
+              <TimelineNode milestone={milestone} role={roles[index]} column={column} />
+              {branch ? (
+                <>
+                  <i className="mk-journey-connector" style={{ '--mk-col': column + 1 } as React.CSSProperties} />
+                  <TimelineNode milestone={branch} role={branchRoles[index]} column={column + 1} branch />
+                </>
+              ) : null}
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -120,10 +144,13 @@ function About() {
         </div>
 
         <SectionWrapper delay={0.4}>
-          <div className="mk-timelines">
-            <TimelineStrip label={t.about.career} items={profile.milestones} roles={t.about.careerMilestones} />
-            <TimelineStrip label={t.about.journey} items={profile.journey} roles={t.about.milestones} />
-          </div>
+          <Timeline
+            label={t.about.journey}
+            items={profile.milestones}
+            roles={t.about.careerMilestones}
+            branches={profile.journey}
+            branchRoles={t.about.milestones}
+          />
         </SectionWrapper>
       </div>
     </section>

@@ -31,9 +31,8 @@ export type SiteContent = {
     titleHighlight: string
     stats: string[]
     cards: Array<{ label: string; title: string; text: string }>
-    career: string
-    careerMilestones: string[]
     journey: string
+    careerMilestones: string[]
     milestones: string[]
   }
   projects: {
@@ -183,9 +182,8 @@ export const content: Record<Language, SiteContent> = {
       titleHighlight: 'the prompt.',
       stats: profile.stats.map((stat) => stat.label),
       cards: profile.about.map((item) => ({ ...item })),
-      career: '// CAREER',
-      careerMilestones: profile.milestones.map((item) => item.role),
       journey: '// JOURNEY',
+      careerMilestones: profile.milestones.map((item) => item.role),
       milestones: profile.journey.map((item) => item.role),
     },
     projects: {
@@ -280,15 +278,14 @@ export const content: Record<Language, SiteContent> = {
         { label: '// VALORES', title: 'O que eu valorizo', text: 'Valorizo proatividade, curiosidade, criatividade, trabalho em equipe, respeito e senso de dono. A mágica acontece quando trabalho com pessoas que compartilham esses mesmos princípios.' },
         { label: '// MOTIVAÇÃO', title: 'O que me motiva', text: 'Quero me divertir, trabalhar com o que gosto e dar o meu melhor nisso. O feedback de gestores e colegas sempre indica que estou no caminho certo.' },
       ],
-      career: '// CARREIRA',
+      journey: '// JORNADA',
       careerMilestones: [
         'Full-stack Developer',
         'Senior Software Engineer',
         'Frontend Developer',
         'Senior Frontend Developer',
-        'Halborn, Consulting e Freelance',
+        'sites, consultoria e workshops',
       ],
-      journey: '// JORNADA',
       milestones: [
         'Bot open source para Discord com 1k+ usuários',
         'Voluntário no primeiro evento tech',
