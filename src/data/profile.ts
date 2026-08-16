@@ -49,10 +49,12 @@ export const profile = {
     },
   ],
   milestones: [
-    { year: '2015', text: 'Joined GitHub' },
-    { year: '2020', text: 'Open-source bots & tools' },
-    { year: '2022', text: 'Web3 products' },
-    { year: '2026', text: 'AI & habit systems' },
+    { year: '2019', text: 'Full-stack Developer @ Linx' },
+    { year: '2020', text: 'First Tech Event Volunteer (Codecon)' },
+    { year: '2021', text: 'Senior Software Engineer @ ArcTouch' },
+    { year: '2022', text: 'Frontend Developer @ Halborn' },
+    { year: '2024', text: 'Senior Frontend Developer @ Halborn' },
+    { year: '2026', text: 'Halborn, Codecon, Side Projects' },
   ],
 } as const
 

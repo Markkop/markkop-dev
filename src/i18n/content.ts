@@ -274,7 +274,14 @@ export const content: Record<Language, SiteContent> = {
         { label: '// MOTIVAÇÃO', title: 'O que me motiva', text: 'Não quero impactar o mundo inteiro com um produto nem fazer TED talks em nome de uma big tech. Quero me divertir, trabalhar com o que gosto e dar o meu melhor nisso. O feedback de gestores e colegas sempre indica que estou no caminho certo.' },
       ],
       journey: '// JORNADA',
-      milestones: ['Entrei no GitHub', 'Bots e ferramentas open source', 'Produtos Web3', 'IA e sistemas de hábitos'],
+      milestones: [
+        'Full-stack Developer @ Linx',
+        'Voluntário no primeiro evento tech (Codecon)',
+        'Senior Software Engineer @ ArcTouch',
+        'Frontend Developer @ Halborn',
+        'Senior Frontend Developer @ Halborn',
+        'Halborn, Codecon, Side Projects',
+      ],
     },
     projects: {
       eyebrow: '// TRABALHOS SELECIONADOS',
