@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: siteConfig.title,
   description: siteConfig.description,
   keywords: [
+    'Marcelo "Mark" Kopmann',
     'Marcelo Kopmann',
     'Mark Kop',
     'software engineer',
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     type: 'profile',
     locale: 'en_US',
-    images: [{ url: '/og.png', width: 1536, height: 1024, alt: 'Marcelo Kopmann — Software Engineer' }],
+    images: [{ url: '/og.png', width: 1536, height: 1024, alt: 'Marcelo "Mark" Kopmann — Software Engineer' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -49,8 +50,8 @@ export const viewport: Viewport = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: 'Marcelo Kopmann',
-  alternateName: 'Mark Kop',
+  name: 'Marcelo "Mark" Kopmann',
+  alternateName: ['Mark Kop', 'Marcelo Kopmann'],
   url: siteConfig.url,
   image: `${siteConfig.url}/LISBON_229.jpg`,
   jobTitle: 'Software Engineer',

@@ -1,6 +1,6 @@
 # markkop.dev
 
-Owner: Marcelo Kopmann (Mark Kop)
+Owner: Marcelo "Mark" Kopmann
 Role: Software Engineer
 Location: Santa Catarina, Brazil
 Website: https://markkop.dev

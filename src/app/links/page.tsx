@@ -3,8 +3,8 @@ import { siteConfig } from '@/config/seo'
 import LinksPageContent from '@/components/LinksPageContent'
 
 export const metadata: Metadata = {
-  title: 'Links — Marcelo Kopmann',
-  description: 'Projects, code, and social links for Marcelo Kopmann.',
+  title: 'Links — Marcelo "Mark" Kopmann',
+  description: 'Projects, code, and social links for Marcelo "Mark" Kopmann.',
   alternates: { canonical: '/links' },
   openGraph: { url: `${siteConfig.url}/links`, images: ['/og.png'] },
 }

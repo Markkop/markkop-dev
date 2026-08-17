@@ -127,7 +127,16 @@ function About() {
       <div className="mk-wide">
         <SectionWrapper>
           <div className="mk-stats">
-            {profile.stats.map((stat, index) => <div key={stat.label}><strong>{stat.value}</strong><span>{t.about.stats[index]}</span></div>)}
+            {profile.stats.map((stat, index) => {
+              const copy = t.about.stats[index]
+              return (
+                <div key={stat.label}>
+                  <span className="mk-stat-prefix">{copy.prefix}</span>
+                  <strong>{stat.value}</strong>
+                  <span>{copy.label}</span>
+                </div>
+              )
+            })}
           </div>
         </SectionWrapper>
 

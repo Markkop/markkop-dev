@@ -1,11 +1,11 @@
 export const siteConfig = {
   name: 'markkop.dev',
-  title: 'Marcelo Kopmann — Software Engineer | markkop.dev',
+  title: 'Marcelo "Mark" Kopmann — Software Engineer | markkop.dev',
   description:
-    'Marcelo Kopmann builds practical web, AI, gamified, open-source, and onchain products from Santa Catarina, Brazil.',
+    'Marcelo "Mark" Kopmann builds practical web, AI, gamified, open-source, and onchain products from Santa Catarina, Brazil.',
   url: 'https://markkop.dev',
   ogImage: 'https://markkop.dev/og.png',
-  author: 'Marcelo Kopmann',
+  author: 'Marcelo "Mark" Kopmann',
   handle: '@heymarkkop',
   links: {
     github: 'https://github.com/Markkop',

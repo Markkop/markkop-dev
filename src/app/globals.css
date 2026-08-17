@@ -67,7 +67,16 @@
 }
 
 * { box-sizing: border-box; }
-html { position: relative; scroll-behavior: smooth; scroll-padding-top: 90px; background: var(--background); }
+html {
+  position: relative;
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+  background: var(--background);
+  scrollbar-gutter: stable;
+}
+@supports not (scrollbar-gutter: stable) {
+  html { overflow-y: scroll; }
+}
 body {
   margin: 0;
   min-height: 100vh;
@@ -545,7 +554,9 @@ button { font: inherit; }
 .mk-stats > div { padding: 6px 24px; text-align: center; border-right: 1px solid var(--section-border); }
 .mk-stats > div:last-child { border: 0; }
 .mk-stats strong { display: block; color: var(--mk-accent); font: 850 clamp(38px, 4vw, 52px)/1 var(--font-mono); letter-spacing: -.05em; }
-.mk-stats span { display: block; margin-top: 10px; color: var(--section-muted); font: 10px/1.5 var(--font-mono); letter-spacing: .15em; text-transform: uppercase; }
+.mk-stats span { display: block; color: var(--section-muted); font: 10px/1.5 var(--font-mono); letter-spacing: .15em; text-transform: uppercase; }
+.mk-stat-prefix { margin-bottom: 10px; }
+.mk-stats strong + span { margin-top: 10px; }
 .mk-section-heading p, .mk-about-columns article > p, .mk-journey > p { margin: 0 0 15px; color: var(--mk-accent); font: 10px var(--font-mono); letter-spacing: .2em; text-transform: uppercase; }
 .mk-section-heading h2 { margin: 0 0 52px; color: var(--section-foreground); font: 300 clamp(34px, 4vw, 50px)/1.12 var(--font-mono); letter-spacing: -.04em; }
 .mk-section-heading h2 span { color: var(--mk-accent); }

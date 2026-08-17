@@ -1,6 +1,6 @@
 # markkop.dev
 
-Personal work and portfolio website for Marcelo Kopmann.
+Personal work and portfolio website for Marcelo "Mark" Kopmann.
 
 ## Local development
 

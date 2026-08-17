@@ -25,10 +25,10 @@ export default function LinksPageContent() {
         </div>
         <header className="links-header">
           <div className="avatar-ring">
-            <Image src="/LISBON_229.jpg" alt="Marcelo Kopmann" fill sizes="128px" priority />
+            <Image src="/LISBON_229.jpg" alt={profile.name} fill sizes="128px" priority />
           </div>
           <p className="eyebrow">{t.links.eyebrow}</p>
-          <h1>Marcelo <span>/</span> Kopmann</h1>
+          <h1>Marcelo <span>"Mark"</span> Kopmann</h1>
           <p>{t.links.summary}</p>
           <div className="tag-row"><span>TypeScript</span><span>{t.links.ai}</span><span>Web3</span><span>{t.links.openSource}</span></div>
         </header>

@@ -29,7 +29,7 @@ export type SiteContent = {
     eyebrow: string
     title: string
     titleHighlight: string
-    stats: string[]
+    stats: Array<{ prefix: string; label: string }>
     cards: Array<{ label: string; title: string; text: string }>
     journey: string
     careerMilestones: string[]
@@ -166,9 +166,9 @@ export const content: Record<Language, SiteContent> = {
     },
     status: { building: 'Building in public', latest: 'Latest activity' },
     hero: {
-      lead: 'I build practical products where',
-      highlight: 'web, AI, games & onchain systems meet.',
-      summary: profile.summary,
+      lead: 'I build web, blockchain and AI-powered products.',
+      highlight: 'Software Engineer. Frontend Specialist.',
+      summary: 'Custom landing pages, chatbots and web systems suited for your needs',
       explore: 'Explore my work',
       linkedin: 'Connect on LinkedIn',
       role: profile.role,
@@ -180,7 +180,7 @@ export const content: Record<Language, SiteContent> = {
       eyebrow: '// ABOUT ME',
       title: 'The person behind',
       titleHighlight: 'the prompt.',
-      stats: profile.stats.map((stat) => stat.label),
+      stats: profile.stats.map((stat) => ({ prefix: stat.prefix, label: stat.label })),
       cards: profile.about.map((item) => ({ ...item })),
       journey: '// JOURNEY',
       careerMilestones: profile.milestones.map((item) => item.role),
@@ -258,9 +258,9 @@ export const content: Record<Language, SiteContent> = {
     },
     status: { building: 'Construindo em público', latest: 'Atividade recente' },
     hero: {
-      lead: 'Eu crio produtos práticos onde',
-      highlight: 'web, IA, jogos e sistemas onchain se encontram.',
-      summary: 'Engenheiro full-stack que transforma ideias em ferramentas úteis, experiências divertidas e software open source.',
+      lead: 'Eu crio produtos web, blockchain e com IA.',
+      highlight: 'Engenheiro de Software. Especialista em Frontend.',
+      summary: 'Landing pages, chatbots e sistemas web sob medida para as suas necessidades',
       explore: 'Conheça meu trabalho',
       linkedin: 'Conectar no LinkedIn',
       role: 'Engenheiro de Software',
@@ -272,7 +272,12 @@ export const content: Record<Language, SiteContent> = {
       eyebrow: '// SOBRE MIM',
       title: 'A pessoa por trás',
       titleHighlight: 'do prompt.',
-      stats: ['Anos programando', 'Vitórias em hackathons', 'Seguidores no blog', 'Eventos de tech'],
+      stats: [
+        { prefix: 'Desde', label: 'Programando' },
+        { prefix: 'Cerca de', label: 'Seguidores no blog' },
+        { prefix: 'Mais de', label: 'Projetos concluídos' },
+        { prefix: 'Conquistou', label: 'Vitórias em hackathons' },
+      ],
       cards: [
         { label: '// O PORQUÊ', title: 'Por que eu programo', text: 'Programar para mim é como mágica. Ter a habilidade de transformar qualquer ideia em algo útil é um poder enorme, e eu amo isso. O coding com agentes é a varinha mágica que faltava para eu começar a construir produtos que as pessoas realmente vão gostar.' },
         { label: '// VALORES', title: 'O que eu valorizo', text: 'Valorizo proatividade, curiosidade, criatividade, trabalho em equipe, respeito e senso de dono. A mágica acontece quando trabalho com pessoas que compartilham esses mesmos princípios.' },

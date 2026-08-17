@@ -12,7 +12,7 @@ export type Project = {
 }
 
 export const profile = {
-  name: 'Marcelo Kopmann',
+  name: 'Marcelo "Mark" Kopmann',
   shortName: 'Mark Kop',
   role: 'Software Engineer',
   location: 'Santa Catarina, Brazil',
@@ -26,16 +26,16 @@ export const profile = {
     x: 'https://x.com/heymarkkop',
   },
   stats: [
-    { value: '7', label: 'Years programming' },
-    { value: '3', label: 'Hackathon wins' },
-    { value: '7k', label: 'Blog followers' },
-    { value: '50+', label: 'Tech events attended' },
+    { value: '2019', prefix: 'Since', label: 'Programming' },
+    { value: '7000', prefix: 'Around', label: 'Blog followers' },
+    { value: '100', prefix: 'Over', label: 'Projects completed' },
+    { value: '3', prefix: 'Secured', label: 'Hackathon wins' },
   ],
   about: [
     {
       label: '// THE WHY',
       title: 'Why I Code',
-      text: 'Coding feels like magic. Being able to turn any idea into something useful is a powerful skill, and I love it. Agentic coding is the last magical wand I needed to start building products people will really enjoy.',
+      text: 'Coding feels like magic. Being able to turn any idea into something useful is a powerful skill, and I love it.',
     },
     {
       label: '// VALUES',
