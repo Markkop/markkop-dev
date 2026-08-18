@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
-import { ArrowLeft, ArrowRight, ChevronDown, Code2, ExternalLink, Github, Globe, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown, Code2, ExternalLink, Github, Globe, Hand, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import TextReveal from '@/components/ui/TextReveal'
 import { useLanguage } from '@/context/LanguageContext'
@@ -50,12 +50,15 @@ function SimulatorEmbed({
   const [scale, setScale] = useState(0.5)
   const [embedSize, setEmbedSize] = useState({ width: EMBED_WIDTH, height: 800 })
   const [showFrame, setShowFrame] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [interacting, setInteracting] = useState(false)
 
   useLayoutEffect(() => {
     const node = scaleRef.current
     if (!node) return
     const media = window.matchMedia(MOBILE_PROJECT_MEDIA)
     const update = () => {
+      setIsMobile(media.matches)
       const width = node.clientWidth
       const height = node.clientHeight
       if (width <= 0 || height <= 0) return
@@ -96,8 +99,8 @@ function SimulatorEmbed({
   return (
     <div
       ref={scaleRef}
-      className="mk-simulator-scale"
-      data-lenis-prevent
+      className={`mk-simulator-scale${interacting ? ' interacting' : ''}`}
+      data-lenis-prevent={!isMobile || interacting ? true : undefined}
       style={{ '--embed-scale': scale, '--embed-width': `${embedSize.width}px`, '--embed-height': `${embedSize.height}px` } as CSSProperties}
     >
       {project.image ? (
@@ -118,6 +121,14 @@ function SimulatorEmbed({
           onLoad={onFrameLoad}
         />
       ) : null}
+      <button type="button" className="mk-mobile-interact" onClick={() => setInteracting(true)}>
+        <Hand aria-hidden="true" />
+        <strong>{t.projects.tapToInteract}</strong>
+        <small>{t.projects.tapToInteractHint}</small>
+      </button>
+      <button type="button" className="mk-mobile-interact-exit" onClick={() => setInteracting(false)}>
+        {t.projects.exitPreview}
+      </button>
       <span className="mk-hover-hint">🖱️ {t.projects.embedHint}</span>
     </div>
   )

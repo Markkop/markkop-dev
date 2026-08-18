@@ -687,6 +687,7 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
   transition: opacity .45s ease;
 }
 .mk-simulator-frame.ready { opacity: 1; pointer-events: auto; }
+.mk-mobile-interact, .mk-mobile-interact-exit { display: none; }
 .mk-hover-hint { position: absolute; top: 14px; right: 14px; z-index: 2; padding: 5px 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; color: #aaa; background: rgba(0,0,0,.82); font: 8px var(--font-mono); pointer-events: none; transition: opacity .3s; }
 .mk-simulator.hovered .mk-hover-hint,
 .mk-simulator-scale:has(.mk-simulator-frame.ready) .mk-hover-hint { opacity: 0; }
@@ -792,8 +793,8 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
   .mk-project-track { height: var(--project-mobile-track-height); }
   .mk-project-stage { top: 64px; height: calc(100dvh - 64px); }
   .mk-project-topbar { padding: 14px 24px; }
-  .mk-project-slide { padding: 58px 48px 30px; flex-direction: column; align-items: stretch; gap: 18px; }
-  .mk-project-simulator { order: -1; flex: none; max-width: none; height: clamp(240px, 42dvh, 380px); }
+  .mk-project-slide { padding: 58px 48px 30px; display: grid; grid-template-rows: auto minmax(0, 1fr); align-items: stretch; gap: 18px; }
+  .mk-project-simulator { min-height: 0; max-width: none; height: auto; }
   .mk-project-details { flex: none; max-width: none; }
   .mk-project-details h3 { margin: 14px 0 10px; font-size: clamp(34px, 7vw, 52px); }
   .mk-project-details > p { margin: 0; display: -webkit-box; overflow: hidden; font-size: 14px; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
@@ -801,6 +802,31 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
   .mk-project-role { display: none; }
   .mk-project-actions { margin-top: 14px; }
   .mk-project-cue { bottom: 6px; }
+  .mk-simulator { border-radius: 18px; box-shadow: 0 16px 42px rgba(0,0,0,.34), 0 0 0 1px rgba(var(--mk-accent-rgb), .05); }
+  .mk-simulator-tabs { order: 1; min-height: clamp(38px, 5dvh, 44px); padding: 6px; align-items: center; gap: 4px; border-bottom: 1px solid var(--section-border); background: color-mix(in srgb, var(--section-panel) 90%, black); }
+  .mk-simulator-tabs .dots { display: none; }
+  .mk-simulator-tabs [role='tab'] { max-width: none; height: clamp(28px, 3.8dvh, 32px); justify-content: center; border-radius: 9px; }
+  .mk-simulator-tabs [role='tab'].active { color: var(--section-foreground); background: rgba(var(--mk-accent-rgb), .13); box-shadow: inset 0 0 0 1px rgba(var(--mk-accent-rgb), .13); }
+  .mk-simulator-screen { order: 2; }
+  .mk-simulator-bar, .mk-simulator.tabbed .mk-simulator-bar { order: 3; height: clamp(48px, 6.5dvh, 56px); padding: 8px 10px; gap: 10px; border-top: 1px solid var(--section-border); border-bottom: 0; background: color-mix(in srgb, var(--section-panel) 94%, black); }
+  .mk-simulator-bar > .dots { display: none; }
+  .mk-simulator-bar .controls { display: flex; gap: 3px; }
+  .mk-simulator-bar .controls button { width: 30px; height: 30px; }
+  .mk-simulator-bar .address { min-height: 32px; border-radius: 10px; justify-content: center; background: color-mix(in srgb, var(--section-bg) 70%, transparent); }
+  .mk-simulator-bar .address a { justify-content: center; }
+  .mk-simulator-bar .address small { flex: 0 1 auto; text-align: center; }
+  .mk-hover-hint { display: none; }
+  .mk-simulator-frame.ready { pointer-events: none; }
+  .mk-simulator-scale.interacting .mk-simulator-frame.ready { pointer-events: auto; }
+  .mk-mobile-interact { position: absolute; inset: 0; z-index: 5; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; border: 0; color: white; background: linear-gradient(180deg, rgba(7,5,10,.18), rgba(7,5,10,.68)); backdrop-filter: blur(1px); cursor: pointer; touch-action: pan-y; transition: opacity .2s ease, visibility .2s ease; }
+  .mk-mobile-interact::before { content: ''; position: absolute; width: 112px; height: 112px; border-radius: 50%; background: rgba(var(--mk-accent-rgb), .18); filter: blur(28px); }
+  .mk-mobile-interact > * { position: relative; }
+  .mk-mobile-interact svg { width: 27px; height: 27px; padding: 6px; box-sizing: content-box; border: 1px solid rgba(255,255,255,.22); border-radius: 50%; background: rgba(0,0,0,.38); }
+  .mk-mobile-interact strong { font: 750 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+  .mk-mobile-interact small { color: rgba(255,255,255,.7); font: 9px var(--font-mono); }
+  .mk-simulator-scale.interacting .mk-mobile-interact { opacity: 0; visibility: hidden; pointer-events: none; }
+  .mk-mobile-interact-exit { position: absolute; top: 10px; right: 10px; z-index: 6; min-height: 32px; padding: 0 12px; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.2); border-radius: 999px; color: white; background: rgba(0,0,0,.76); font: 700 9px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; backdrop-filter: blur(12px); cursor: pointer; }
+  .mk-simulator-scale.interacting .mk-mobile-interact-exit { display: flex; }
   .mk-stack-stage .mk-stack-heading { padding: 80px 32px 4px; }
 }
 
@@ -846,17 +872,14 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
   .mk-project-intro h2 { font-size: 36px; }
   .mk-project-slide { padding: 50px 24px 26px; gap: 14px; }
   .mk-project-topbar button small { display: none; }
-  .mk-project-simulator { height: clamp(220px, 38dvh, 320px); }
   .mk-project-details h3 { margin: 11px 0 8px; font-size: 30px; }
   .mk-project-details > p { font-size: 13px; line-height: 1.5; -webkit-line-clamp: 2; }
   .mk-project-tech { display: none; }
   .mk-project-actions { margin-top: 12px; flex-wrap: nowrap; }
   .mk-project-actions a { min-width: 0; flex: 1; padding-inline: 12px; }
   .mk-simulator-bar { padding-inline: 10px; gap: 8px; }
-  .mk-simulator-bar .controls { display: none; }
-  .mk-simulator-tabs { min-height: 28px; padding: 4px 6px 0 8px; }
-  .mk-simulator-tabs .dots { margin: 0 6px 6px 0; }
-  .mk-simulator-tabs [role='tab'] { height: 22px; padding: 0 7px; gap: 5px; }
+  .mk-simulator-tabs { padding: 6px; }
+  .mk-simulator-tabs [role='tab'] { padding: 0 7px; gap: 5px; }
   .mk-stack-track { display: none; }
   .mk-stack-mobile { display: block; padding: 64px 24px; overflow: hidden; }
   .mk-stack-heading h2 { font-size: 30px; }
@@ -890,7 +913,6 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 
 @media (max-width: 767px) and (max-height: 700px) {
   .mk-project-slide { padding-top: 46px; gap: 10px; }
-  .mk-project-simulator { height: clamp(190px, 34dvh, 230px); }
   .mk-project-badges strong { display: none; }
   .mk-project-details h3 { margin-block: 8px 5px; font-size: 26px; }
   .mk-project-details > p { -webkit-line-clamp: 1; }

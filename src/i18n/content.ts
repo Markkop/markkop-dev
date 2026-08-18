@@ -51,6 +51,9 @@ export type SiteContent = {
     embedBack: string
     embedForward: string
     embedReload: string
+    tapToInteract: string
+    tapToInteractHint: string
+    exitPreview: string
     livePreview: string
     scroll: string
     keepScrolling: string
@@ -179,6 +182,9 @@ export const content: Record<Language, SiteContent> = {
       embedBack: 'Back to start',
       embedForward: 'Forward',
       embedReload: 'Reload preview',
+      tapToInteract: 'Tap to interact',
+      tapToInteractHint: 'Scroll outside the preview to continue',
+      exitPreview: 'Done',
       livePreview: 'Live preview',
       scroll: 'Scroll to explore',
       keepScrolling: 'Keep scrolling',
@@ -296,6 +302,9 @@ export const content: Record<Language, SiteContent> = {
       embedBack: 'Voltar ao início',
       embedForward: 'Avançar',
       embedReload: 'Recarregar prévia',
+      tapToInteract: 'Toque para interagir',
+      tapToInteractHint: 'Role fora da prévia para continuar',
+      exitPreview: 'Concluir',
       livePreview: 'Prévia ao vivo',
       scroll: 'Role para explorar',
       keepScrolling: 'Continue rolando',
