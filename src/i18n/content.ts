@@ -238,7 +238,7 @@ export const content: Record<Language, SiteContent> = {
       eyebrow: 'START A PROJECT',
       title: 'Let\'s Build Your Next',
       titleHighlight: 'Web Project.',
-      intro: 'Full-stack developer in Santa Catarina, Brazil. Available for freelance, contracts, and remote collaborations worldwide.',
+      intro: 'Full-stack developer in Florianópolis, Brazil. Available for freelance, contracts, and remote collaborations worldwide.',
       linkedin: 'Start a conversation',
       github: 'Explore 98+ repositories',
       allLinks: 'All links',
