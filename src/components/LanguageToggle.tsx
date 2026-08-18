@@ -3,19 +3,20 @@
 import { Languages } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 
-export default function LanguageToggle({ variant = 'nav' }: { variant?: 'nav' | 'dock' }) {
+export default function LanguageToggle({ variant = 'nav' }: { variant?: 'nav' | 'dock' | 'bar' }) {
   const { toggleLanguage, t } = useLanguage()
-  const isDock = variant === 'dock'
+  const className = variant === 'dock' ? 'mk-dock-btn' : variant === 'bar' ? 'mk-nav-icon' : 'language-toggle'
+  const iconSize = variant === 'dock' ? 18 : variant === 'bar' ? 20 : 15
 
   return (
     <button
-      className={isDock ? 'mk-dock-btn' : 'language-toggle'}
+      className={className}
       type="button"
       onClick={toggleLanguage}
       aria-label={t.language.switchLabel}
       title={t.language.switchLabel}
     >
-      <Languages size={isDock ? 18 : 15} aria-hidden="true" />
+      <Languages size={iconSize} aria-hidden="true" />
     </button>
   )
 }

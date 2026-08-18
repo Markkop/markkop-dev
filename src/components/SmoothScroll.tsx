@@ -7,6 +7,15 @@ import { useEffect, type ReactNode } from 'react'
 
 gsap.registerPlugin(ScrollTrigger)
 
+function syncVisualViewport() {
+  const viewport = window.visualViewport
+  const height = viewport?.height ?? window.innerHeight
+  const bottom = viewport ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop) : 0
+  const root = document.documentElement.style
+  root.setProperty('--mk-vvh', `${height}px`)
+  root.setProperty('--mk-vv-bottom', `${bottom}px`)
+}
+
 function LenisSync() {
   const lenis = useLenis()
 
@@ -21,6 +30,18 @@ function LenisSync() {
       gsap.ticker.remove(tick)
     }
   }, [lenis])
+
+  useEffect(() => {
+    syncVisualViewport()
+    window.addEventListener('resize', syncVisualViewport)
+    window.visualViewport?.addEventListener('resize', syncVisualViewport)
+    window.visualViewport?.addEventListener('scroll', syncVisualViewport)
+    return () => {
+      window.removeEventListener('resize', syncVisualViewport)
+      window.visualViewport?.removeEventListener('resize', syncVisualViewport)
+      window.visualViewport?.removeEventListener('scroll', syncVisualViewport)
+    }
+  }, [])
 
   return null
 }

@@ -3,8 +3,8 @@
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Github, Globe, Hand, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
-import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react'
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Github, Globe, Image as ImageIcon, Lock, Pointer, RotateCw, Video } from 'lucide-react'
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
 import TextReveal from '@/components/ui/TextReveal'
 import ShowcaseProgress from '@/components/ShowcaseProgress'
 import { useLanguage } from '@/context/LanguageContext'
@@ -30,6 +30,54 @@ function getThemeSnapshot(): 'dark' | 'light' {
 const EMBED_WIDTH = 1200
 const MOBILE_EMBED_WIDTH = 390
 const MOBILE_PROJECT_MEDIA = '(max-width: 1024px)'
+
+function useMobileProjectMedia() {
+  const [isMobile, setIsMobile] = useState(false)
+  useLayoutEffect(() => {
+    const media = window.matchMedia(MOBILE_PROJECT_MEDIA)
+    const update = () => setIsMobile(media.matches)
+    update()
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+  return isMobile
+}
+
+function useDismissOnOutsidePointer(
+  active: boolean,
+  containerRef: RefObject<HTMLElement | null>,
+  onDismiss: () => void,
+) {
+  const onDismissRef = useRef(onDismiss)
+  onDismissRef.current = onDismiss
+
+  useEffect(() => {
+    if (!active) return
+
+    const dismiss = () => onDismissRef.current()
+    const onClick = (event: MouseEvent) => {
+      if (containerRef.current?.contains(event.target as Node)) return
+      dismiss()
+    }
+
+    document.addEventListener('click', onClick, true)
+    window.addEventListener('scroll', dismiss, { passive: true })
+    return () => {
+      document.removeEventListener('click', onClick, true)
+      window.removeEventListener('scroll', dismiss)
+    }
+  }, [active, containerRef])
+}
+
+function MobileInteractOverlay({ onEnter }: { onEnter: () => void }) {
+  const { t } = useLanguage()
+  return (
+    <button type="button" className="mk-mobile-interact" onClick={onEnter}>
+      <Pointer aria-hidden="true" />
+      <strong>{t.projects.tapToInteract}</strong>
+    </button>
+  )
+}
 
 function liveUrl(project: Project, item?: ProjectMedia) {
   if (item?.kind === 'live' && item.src) return item.src
@@ -59,13 +107,13 @@ function SimulatorEmbed({
   frameLoaded: boolean
   onFrameLoad: () => void
 }) {
-  const { t } = useLanguage()
   const scaleRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.5)
   const [embedSize, setEmbedSize] = useState({ width: EMBED_WIDTH, height: 800 })
   const [showFrame, setShowFrame] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const [interacting, setInteracting] = useState(false)
+  useDismissOnOutsidePointer(interacting, scaleRef, () => setInteracting(false))
 
   useLayoutEffect(() => {
     const node = scaleRef.current
@@ -134,14 +182,25 @@ function SimulatorEmbed({
           onLoad={onFrameLoad}
         />
       ) : null}
-      <button type="button" className="mk-mobile-interact" onClick={() => setInteracting(true)}>
-        <Hand aria-hidden="true" />
-        <strong>{t.projects.tapToInteract}</strong>
-        <small>{t.projects.tapToInteractHint}</small>
-      </button>
-      <button type="button" className="mk-mobile-interact-exit" onClick={() => setInteracting(false)}>
-        {t.projects.exitPreview}
-      </button>
+      <MobileInteractOverlay onEnter={() => setInteracting(true)} />
+    </div>
+  )
+}
+
+function SimulatorScrollImage({ src, label }: { src: string; label: string }) {
+  const isMobile = useMobileProjectMedia()
+  const imageRef = useRef<HTMLDivElement>(null)
+  const [interacting, setInteracting] = useState(false)
+  useDismissOnOutsidePointer(interacting, imageRef, () => setInteracting(false))
+
+  return (
+    <div
+      ref={imageRef}
+      className={`mk-simulator-image${interacting ? ' interacting' : ''}`}
+      data-lenis-prevent={!isMobile || interacting ? true : undefined}
+    >
+      <Image src={src} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" />
+      <MobileInteractOverlay onEnter={() => setInteracting(true)} />
     </div>
   )
 }
@@ -151,11 +210,7 @@ function SimulatorPreview({ project, label }: { project: Project; label: string 
     return <video className="mk-simulator-video" src={project.video} poster={project.image} autoPlay muted loop playsInline aria-label={label} />
   }
   if (project.image) {
-    return (
-      <div className="mk-simulator-image" data-lenis-prevent>
-        <Image src={project.image} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" />
-      </div>
-    )
+    return <SimulatorScrollImage src={project.image} label={label} />
   }
   return <div className="mk-project-fallback"><Code2 size={44} /><strong>{project.title}</strong></div>
 }
@@ -482,7 +537,14 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
                 onKeyDown={(event) => onTabKeyDown(event, index)}
               >
                 <MediaFavicon kind={item.kind} />
-                <small>{tabLabel(item)}</small>
+                <small>
+                  {item.id === 'pitch' ? (
+                    <>
+                      <span className="mk-tab-wide">{tabLabel(item)}</span>
+                      <span className="mk-tab-narrow">{t.projects.pitchShort}</span>
+                    </>
+                  ) : tabLabel(item)}
+                </small>
               </button>
             )
           })}
@@ -493,7 +555,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
         {hasTabs ? null : <span className="dots"><i /><i /><i /></span>}
         <span className="controls">
           <button type="button" aria-label={t.projects.embedBack} disabled={!canControl} onClick={reloadPreview}><ArrowLeft /></button>
-          <button type="button" aria-label={t.projects.embedForward} disabled><ArrowRight /></button>
+          <button type="button" className="forward" aria-label={t.projects.embedForward} disabled><ArrowRight /></button>
           <button type="button" className={activeEmbed?.reloading ? 'reloading' : ''} aria-label={t.projects.embedReload} disabled={!canControl} onClick={reloadPreview}><RotateCw /></button>
         </span>
         <span className="address">
@@ -540,7 +602,15 @@ function ProjectDetails({ project }: { project: Project }) {
   return (
     <div className="mk-project-details">
       <div className="mk-project-badges"><span>{copy.category}</span><strong>{copy.metric}</strong></div>
-      <h3>{project.title}</h3>
+      <div className="mk-project-heading">
+        <h3>
+          {project.title}
+          <span className="mk-project-heading-links">
+            <a href={project.live} target="_blank" rel="noreferrer" aria-label={t.projects.visit}><ExternalLink size={18} aria-hidden="true" /></a>
+            {project.code && <a href={project.code} target="_blank" rel="noreferrer" aria-label={t.projects.source}><Github size={18} aria-hidden="true" /></a>}
+          </span>
+        </h3>
+      </div>
       <p>{copy.description}</p>
       <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image className={invertOnLightLogos.has(tech) ? 'mk-tech-invert' : undefined} src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>
       <div className="mk-project-role"><span>{copy.category}</span><i /><span>{copy.timeframe}</span></div>
@@ -613,7 +683,7 @@ export default function ProjectShowcase() {
         ref={trackRef}
         style={{
           '--project-track-height': `${projects.length * 100}vh`,
-          '--project-mobile-track-height': `${(projects.length + 1) * 100}dvh`,
+          '--project-count': projects.length,
         } as CSSProperties}
       >
         <div className="mk-project-stage" style={accentVars}>

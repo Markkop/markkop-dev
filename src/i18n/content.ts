@@ -54,9 +54,8 @@ export type SiteContent = {
     galleryPrev: string
     galleryNext: string
     tapToInteract: string
-    tapToInteractHint: string
-    exitPreview: string
     livePreview: string
+    pitchShort: string
     scroll: string
     keepScrolling: string
     items: Record<string, ProjectCopy>
@@ -210,9 +209,8 @@ export const content: Record<Language, SiteContent> = {
       galleryPrev: 'Previous screenshot',
       galleryNext: 'Next screenshot',
       tapToInteract: 'Tap to interact',
-      tapToInteractHint: 'Scroll outside the preview to continue',
-      exitPreview: 'Done',
       livePreview: 'Live preview',
+      pitchShort: 'Pitch',
       scroll: 'Scroll to explore',
       keepScrolling: 'Keep scrolling',
       items: englishProjects,
@@ -332,9 +330,8 @@ export const content: Record<Language, SiteContent> = {
       galleryPrev: 'Captura anterior',
       galleryNext: 'Próxima captura',
       tapToInteract: 'Toque para interagir',
-      tapToInteractHint: 'Role fora da prévia para continuar',
-      exitPreview: 'Concluir',
       livePreview: 'Prévia ao vivo',
+      pitchShort: 'Pitch',
       scroll: 'Role para explorar',
       keepScrolling: 'Continue rolando',
       items: portugueseProjects,

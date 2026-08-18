@@ -3,10 +3,10 @@
 import Link from 'next/link'
 import { AnimatePresence, LayoutGroup, motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
 import { useLenis } from 'lenis/react'
-import { ArrowDown, ArrowUp, Code2, Github, Linkedin, Menu, Moon, Sparkles, Sun, Twitter, X } from 'lucide-react'
+import { ChevronDown, ChevronsUp, Code2, Github, Linkedin, Menu, Moon, Sparkles, Sun, Twitter, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
-import { forwardRef, useCallback, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react'
+import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react'
 import LanguageToggle from '@/components/LanguageToggle'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile, projects } from '@/data/profile'
@@ -602,12 +602,14 @@ function LoadingScreen({
 function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
   const pathname = usePathname()
   const { t } = useLanguage()
+  const { theme, toggleTheme } = useTheme()
   const { scrollY } = useScroll()
   const [hidden, setHidden] = useState(false)
   const [open, setOpen] = useState(false)
   const [hovered, setHovered] = useState<number | null>(null)
   const [active, setActive] = useState('hero')
   const previous = useRef(0)
+  const navHidden = hidden && !open && !pathname.startsWith('/links')
 
   const handleBrandClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
@@ -641,6 +643,11 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
+  useLayoutEffect(() => {
+    document.documentElement.toggleAttribute('data-nav-hidden', navHidden)
+    return () => document.documentElement.removeAttribute('data-nav-hidden')
+  }, [navHidden])
+
   useMotionValueEvent(scrollY, 'change', (latest) => {
     const diff = latest - previous.current
     if (latest < 80) setHidden(false)
@@ -651,11 +658,11 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
 
   if (pathname.startsWith('/links')) return null
 
-  const navMotion = { y: hidden ? -100 : 0, opacity: hidden ? 0 : 1 }
+  const navMotion = { y: navHidden ? '-100%' : 0, opacity: navHidden ? 0 : 1 }
 
   return (
     <>
-      <motion.header className="mk-nav-desktop" animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }} onMouseEnter={() => setHidden(false)}>
+      <motion.header className={`mk-nav-desktop${navHidden ? ' is-hidden' : ''}`} animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }} onMouseEnter={() => setHidden(false)}>
         <nav onMouseLeave={() => setHovered(null)} aria-label={t.accessibility.primaryNav}>
           <a className="mk-nav-logo" href="#hero" aria-label={`markkop.dev · ${t.nav.home}`} onClick={handleBrandClick}><Brand compact /></a>
           <i className="mk-nav-divider" />
@@ -671,10 +678,14 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
         </nav>
       </motion.header>
 
-      <motion.header className="mk-nav-mobile" animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
+      <motion.header className={`mk-nav-mobile${navHidden ? ' is-hidden' : ''}`} animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
         <nav>
           <a href="#hero" aria-label={`markkop.dev · ${t.nav.home}`} onClick={handleBrandClick}><Brand compact /></a>
           <div className="mk-nav-mobile-actions">
+            <LanguageToggle variant="bar" />
+            <button className="mk-nav-icon" type="button" onClick={toggleTheme} aria-label={t.accessibility.theme(theme)}>
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <button className="mk-nav-menu" type="button" onClick={() => setOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>{open ? <X size={20} /> : <Menu size={20} />}</button>
           </div>
         </nav>
@@ -828,7 +839,7 @@ function ControlDock({
         ) : null}
         <AnimatePresence>
           {showUtilities ? (
-            <motion.span key="dock-language" className="mk-dock-btn-wrap" {...fade}>
+            <motion.span key="dock-language" className="mk-dock-utilities mk-dock-btn-wrap" {...fade}>
               <LanguageToggle variant="dock" />
             </motion.span>
           ) : null}
@@ -836,7 +847,7 @@ function ControlDock({
             <motion.button
               key="dock-theme"
               type="button"
-              className="mk-dock-btn"
+              className="mk-dock-utilities mk-dock-btn"
               onClick={onToggleTheme}
               aria-label={t.accessibility.theme(theme)}
               {...fade}
@@ -858,7 +869,7 @@ function ControlDock({
               {...rise}
               transition={reduceMotion ? rise.transition : { duration: 0.48, delay: 0.06, ease: DOCK_NAV_EASE }}
             >
-              <span className="mk-to-bottom-arrows" aria-hidden="true"><ArrowDown /><ArrowDown /></span>
+              <span className="mk-to-bottom-arrows" aria-hidden="true"><ChevronDown /><ChevronDown /></span>
             </motion.button>
           ) : null}
           {showScrollButtons ? (
@@ -873,7 +884,7 @@ function ControlDock({
               transition={reduceMotion ? rise.transition : { duration: 0.48, delay: 0.16, ease: DOCK_NAV_EASE }}
             >
               <svg className="mk-to-top-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="24" /><circle className="progress" cx="30" cy="30" r="24" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} /></svg>
-              <span className="mk-to-top-arrows" aria-hidden="true"><ArrowUp /><ArrowUp /></span>
+              <span className="mk-to-top-arrows" aria-hidden="true"><ChevronsUp /><ChevronsUp /></span>
               <small>{progress}%</small>
             </motion.button>
           ) : null}
