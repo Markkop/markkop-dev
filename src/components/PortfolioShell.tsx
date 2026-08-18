@@ -6,7 +6,7 @@ import { useLenis } from 'lenis/react'
 import { ArrowDown, ArrowUp, Code2, Github, Linkedin, Menu, Moon, Sparkles, Sun, Twitter, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
-import { forwardRef, useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react'
+import { forwardRef, useCallback, useEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react'
 import LanguageToggle from '@/components/LanguageToggle'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile, projects } from '@/data/profile'
@@ -599,7 +599,7 @@ function LoadingScreen({
   )
 }
 
-function Navbar({ theme, onToggleTheme }: { theme: 'dark' | 'light'; onToggleTheme: () => void }) {
+function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
   const pathname = usePathname()
   const { t } = useLanguage()
   const { scrollY } = useScroll()
@@ -608,6 +608,12 @@ function Navbar({ theme, onToggleTheme }: { theme: 'dark' | 'light'; onToggleThe
   const [hovered, setHovered] = useState<number | null>(null)
   const [active, setActive] = useState('hero')
   const previous = useRef(0)
+
+  const handleBrandClick = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+    setOpen(false)
+    onBrandClick()
+  }, [onBrandClick])
 
   const links = [
     { label: t.nav.home, href: '#hero', id: 'hero' },
@@ -651,7 +657,7 @@ function Navbar({ theme, onToggleTheme }: { theme: 'dark' | 'light'; onToggleThe
     <>
       <motion.header className="mk-nav-desktop" animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }} onMouseEnter={() => setHidden(false)}>
         <nav onMouseLeave={() => setHovered(null)} aria-label={t.accessibility.primaryNav}>
-          <a className="mk-nav-logo" href="#hero" aria-label={`markkop.dev · ${t.nav.home}`}><Brand compact /></a>
+          <a className="mk-nav-logo" href="#hero" aria-label={`markkop.dev · ${t.nav.home}`} onClick={handleBrandClick}><Brand compact /></a>
           <i className="mk-nav-divider" />
           {links.map((link, index) => (
             <a key={link.id} className={active === link.id ? 'active' : ''} href={link.href} onMouseEnter={() => setHovered(index)}>
@@ -661,18 +667,14 @@ function Navbar({ theme, onToggleTheme }: { theme: 'dark' | 'light'; onToggleThe
           ))}
           <i className="mk-nav-divider" />
           <Link className="mk-nav-secondary" href="/links"><Code2 size={14} /> {t.nav.links}</Link>
-          <LanguageToggle />
-          <button className="mk-nav-icon" onClick={onToggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
           <a className="mk-nav-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
         </nav>
       </motion.header>
 
       <motion.header className="mk-nav-mobile" animate={navMotion} transition={{ type: 'spring', stiffness: 260, damping: 30 }}>
         <nav>
-          <a href="#hero" aria-label={`markkop.dev · ${t.nav.home}`}><Brand compact /></a>
+          <a href="#hero" aria-label={`markkop.dev · ${t.nav.home}`} onClick={handleBrandClick}><Brand compact /></a>
           <div className="mk-nav-mobile-actions">
-            <LanguageToggle />
-            <button className="mk-nav-icon" type="button" onClick={onToggleTheme} aria-label={t.accessibility.theme(theme)}>{theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}</button>
             <button className="mk-nav-menu" type="button" onClick={() => setOpen((value) => !value)} aria-label={t.accessibility.toggleMenu}>{open ? <X size={20} /> : <Menu size={20} />}</button>
           </div>
         </nav>
@@ -889,20 +891,22 @@ export default function PortfolioShell({ children }: { children: ReactNode }) {
   const [loaderActive, setLoaderActive] = useState(true)
   const [loaderChrome, setLoaderChrome] = useState(false)
 
+  const replaySplash = useCallback(() => {
+    sessionStorage.removeItem('markkop-mubx-loaded')
+    setLoaderDismissId(0)
+    setLoaderPlayId((value) => value + 1)
+  }, [])
+
   const toggleStartupUi = useCallback(() => {
     if (loaderActive) setLoaderDismissId((value) => value + 1)
-    else {
-      sessionStorage.removeItem('markkop-mubx-loaded')
-      setLoaderDismissId(0)
-      setLoaderPlayId((value) => value + 1)
-    }
-  }, [loaderActive])
+    else replaySplash()
+  }, [loaderActive, replaySplash])
 
   return (
     <>
       <LoadingScreen key={loaderPlayId} forced={loaderPlayId > 0} dismissId={loaderDismissId} onActiveChange={setLoaderActive} onChromeChange={setLoaderChrome} />
       <a className="mk-skip" href="#main-content">{t.accessibility.skip}</a>
-      <Navbar theme={theme} onToggleTheme={toggleTheme} />
+      <Navbar onBrandClick={replaySplash} />
       <SocialSidebar />
       <ControlDock theme={theme} onToggleTheme={toggleTheme} loaderActive={loaderActive} loaderChrome={loaderChrome} onToggleStartup={toggleStartupUi} />
       {children}

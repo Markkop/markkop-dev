@@ -1,10 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion'
+import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { ArrowLeft, ArrowRight, ChevronDown, Code2, ExternalLink, Github, Globe, Hand, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
 import TextReveal from '@/components/ui/TextReveal'
+import ShowcaseProgress from '@/components/ShowcaseProgress'
 import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectMedia } from '@/data/profile'
 import { techLogos } from '@/data/techLogos'
@@ -369,7 +370,6 @@ export default function ProjectShowcase() {
   const activeRef = useRef(0)
   const [active, setActive] = useState(0)
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
-  const progress = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     const next = Math.max(0, Math.min(Math.floor(value * projects.length), projects.length - 1))
     if (next !== activeRef.current) { activeRef.current = next; setActive(next) }
@@ -401,7 +401,7 @@ export default function ProjectShowcase() {
               <i />
             </motion.div>
           </AnimatePresence>
-          <motion.div className="mk-project-progress" style={{ width: progress }} />
+          <ShowcaseProgress progress={scrollYProgress} segments={projects.length} />
           <div className="mk-project-topbar">
             <span><strong>{String(active + 1).padStart(2, '0')}</strong><i>/</i>{String(projects.length).padStart(2, '0')}</span>
             <div>{projects.map((item, index) => <button key={item.slug} className={index === active ? 'active' : ''} aria-label={t.projects.show(item.title)} onClick={() => {

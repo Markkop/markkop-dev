@@ -30,10 +30,12 @@ function JourneyOrgLogo({ org }: { org: TimelineOrg }) {
 }
 
 function JourneyOrg({ org }: { org: TimelineOrg }) {
+  const { t } = useLanguage()
+  const name = org.name === 'Me and You' ? t.about.meAndYou : org.name
   const content = (
     <>
       <JourneyOrgLogo org={org} />
-      {org.name}
+      {name}
     </>
   )
 
@@ -62,21 +64,30 @@ function TimelineNode({ milestone, role, column, branch }: { milestone: Timeline
   )
 }
 
-function Timeline({ label, items, roles, branches, branchRoles }: { label: string; items: readonly TimelineItem[]; roles: readonly string[]; branches: readonly TimelineItem[]; branchRoles: readonly string[] }) {
+function Timeline({ label, milestonesLabel, items, roles, branches, branchRoles }: { label: string; milestonesLabel: string; items: readonly TimelineItem[]; roles: readonly string[]; branches: readonly TimelineItem[]; branchRoles: readonly string[] }) {
   return (
-    <div className="mk-journey">
-      <p>{label}</p>
-      <div className="mk-journey-track" style={{ '--mk-cols': items.length } as React.CSSProperties}>
+    <div className="mk-journey" style={{ '--mk-cols': items.length } as React.CSSProperties}>
+      <div className="mk-journey-headings">
+        <p>{label}</p>
+      </div>
+      <div className="mk-journey-track">
+        <p className="mk-journey-milestones-heading">{milestonesLabel}</p>
         {items.map((milestone, index) => {
           const column = index * 2 + 1
           const branch = index < items.length - 1 ? branches[index] : undefined
+          const node = branch ? <TimelineNode milestone={branch} role={branchRoles[index]} column={column + 1} branch /> : null
           return (
             <div className="mk-journey-group" key={`${milestone.year}-${index}`}>
               <TimelineNode milestone={milestone} role={roles[index]} column={column} />
               {branch ? (
                 <>
                   <i className="mk-journey-connector" style={{ '--mk-col': column + 1 } as React.CSSProperties} />
-                  <TimelineNode milestone={branch} role={branchRoles[index]} column={column + 1} branch />
+                  {index === 0 ? (
+                    <div className="mk-journey-milestone-start" style={{ '--mk-col': column + 1 } as React.CSSProperties}>
+                      <p className="mk-journey-milestones-heading">{milestonesLabel}</p>
+                      {node}
+                    </div>
+                  ) : node}
                 </>
               ) : null}
             </div>
@@ -155,6 +166,7 @@ function About() {
         <SectionWrapper delay={0.4}>
           <Timeline
             label={t.about.journey}
+            milestonesLabel={t.about.milestonesHeading}
             items={profile.milestones}
             roles={t.about.careerMilestones}
             branches={profile.journey}

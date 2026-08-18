@@ -33,6 +33,8 @@ export type SiteContent = {
     stats: Array<{ prefix: string; label: string }>
     cards: Array<{ label: string; title: string; text: string }>
     journey: string
+    milestonesHeading: string
+    meAndYou: string
     careerMilestones: string[]
     milestones: string[]
   }
@@ -163,7 +165,9 @@ export const content: Record<Language, SiteContent> = {
       titleHighlight: 'the prompt.',
       stats: profile.stats.map((stat) => ({ prefix: stat.prefix, label: stat.label })),
       cards: profile.about.map((item) => ({ ...item })),
-      journey: '// JOURNEY',
+      journey: '// Career',
+      milestonesHeading: '// Milestones',
+      meAndYou: 'Me and You',
       careerMilestones: profile.milestones.map((item) => item.role),
       milestones: profile.journey.map((item) => item.role),
     },
@@ -268,11 +272,13 @@ export const content: Record<Language, SiteContent> = {
         { prefix: 'Conquistou', label: 'Vitórias em hackathons' },
       ],
       cards: [
-        { label: '// O PORQUÊ', title: 'Por que eu programo', text: 'Programar para mim é como mágica. Ter a habilidade de transformar qualquer ideia em algo útil é um poder enorme, e eu amo isso. O coding com agentes é a varinha mágica que faltava para eu começar a construir produtos que as pessoas realmente vão gostar.' },
+        { label: '// O PORQUÊ', title: 'Por que eu programo', text: 'Programar para mim é como mágica. Ter a habilidade de transformar qualquer ideia em algo útil é um poder enorme, e eu amo isso.' },
         { label: '// VALORES', title: 'O que eu valorizo', text: 'Valorizo proatividade, curiosidade, criatividade, trabalho em equipe, respeito e senso de dono. A mágica acontece quando trabalho com pessoas que compartilham esses mesmos princípios.' },
         { label: '// MOTIVAÇÃO', title: 'O que me motiva', text: 'Quero me divertir, trabalhar com o que gosto e dar o meu melhor nisso. O feedback de gestores e colegas sempre indica que estou no caminho certo.' },
       ],
-      journey: '// JORNADA',
+      journey: '// Carreira',
+      milestonesHeading: '// Marcos',
+      meAndYou: 'Eu e Você',
       careerMilestones: [
         'Full-stack Developer',
         'Senior Software Engineer',
@@ -281,8 +287,8 @@ export const content: Record<Language, SiteContent> = {
         'sites, consultoria e workshops',
       ],
       milestones: [
-        'Bot open source para Discord com 1k+ usuários',
-        'Voluntário no primeiro evento tech',
+        'Bot de Discord com 1k+ usuários',
+        'Voluntário em eventos tech desde então',
         'Graduação em Análise e Desenvolvimento de Sistemas',
         'Múltiplas vitórias em hackathons',
       ],
@@ -331,7 +337,7 @@ export const content: Record<Language, SiteContent> = {
       eyebrow: 'COMECE UM PROJETO',
       title: 'Vamos construir seu próximo',
       titleHighlight: 'projeto web.',
-      intro: 'Desenvolvedor full-stack em Santa Catarina, Brasil. Disponível para freelance, contratos e colaborações remotas no mundo todo.',
+      intro: 'Desenvolvedor full-stack em Florianópolis, Brasil. Disponível para freelance, contratos e colaborações remotas no mundo todo.',
       linkedin: 'Iniciar uma conversa',
       github: 'Explorar mais de 98 repositórios',
       allLinks: 'Todos os links',

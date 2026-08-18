@@ -66,8 +66,8 @@ export const profile = {
     { year: '2026', role: 'websites, consulting and workshops', orgs: [{ name: 'Me and You', emoji: '🤝' }] },
   ],
   journey: [
-    { year: '2020', role: 'Open source Discord bot reaching 1k+ users', orgs: [{ name: 'Corvo Astral', logo: '/companies/discord.svg', href: 'https://github.com/Markkop/corvo-astral' }] },
-    { year: '2021', role: 'First Tech Event Volunteer', orgs: [{ name: 'Codecon', logo: '/companies/codecon.png', logoLight: '/companies/codecon-light.png', href: 'https://www.codecon.dev/' }] },
+    { year: '2020', role: '1k+ users Discord bot', orgs: [{ name: 'Corvo Astral', logo: '/companies/discord.svg', href: 'https://github.com/Markkop/corvo-astral' }] },
+    { year: '2021', role: 'Tech Event Volunteer since then', orgs: [{ name: 'Codecon', logo: '/companies/codecon.png', logoLight: '/companies/codecon-light.png', href: 'https://www.codecon.dev/' }] },
     { year: '2022', role: 'System Analysis and Development graduation', orgs: [{ name: 'Estácio', logo: '/companies/estacio.svg', href: 'https://estacio.br/' }] },
     { year: '2025', role: 'Multiple hackathon wins', orgs: [{ name: 'HabitChain', logo: '/companies/habitchain.png', href: 'https://www.habitchain.xyz/' }] },
   ],
