@@ -597,12 +597,19 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 .mk-project-intro h2 > span { display: block; color: var(--mk-accent); }
 .mk-project-intro > p { margin: 18px 0 0; display: flex; align-items: center; gap: 8px; color: var(--section-muted); font: 11px var(--font-mono); }
 .mk-project-intro > p svg { width: 16px; animation: cue 1.6s ease-in-out infinite; }
-.mk-project-track { height: var(--project-track-height); position: relative; color: var(--section-foreground); background: var(--section-bg); }
-.mk-project-stage { position: sticky; top: 0; height: 100dvh; overflow: hidden; contain: layout style; }
-.mk-project-background { position: absolute; inset: 0; }
-.mk-project-background > img, .mk-project-background > video { object-fit: cover; object-position: top; filter: blur(5px); transform: scale(1.04); }
-.mk-project-background > video { position: absolute; inset: 0; width: 100%; height: 100%; }
-.mk-project-background > i { position: absolute; inset: 0; background: color-mix(in srgb, var(--section-bg) 82%, transparent); }
+.mk-project-track { height: var(--project-track-height); position: relative; color: var(--section-foreground); background: #03060f; }
+.mk-project-stage {
+  position: sticky; top: 0; height: 100dvh; overflow: hidden; contain: layout style;
+  --section-bg: #0d0a12;
+  --section-panel: #100b16;
+  --section-foreground: #f2edf7;
+  --section-muted: #a59bab;
+  --section-subtle: #776d80;
+  --section-border: rgba(255, 255, 255, 0.09);
+}
+.mk-project-background { position: absolute; inset: 0; background: #03060f; transition: background-color .4s ease; }
+.mk-project-background canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.mk-project-background > i { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 100% at 50% 40%, transparent 58%, rgb(0 0 0 / 36%) 100%); }
 .mk-showcase-progress { position: absolute; inset: 0 auto 0 0; z-index: 400; width: 2px; transform-origin: top; background: var(--mk-accent); box-shadow: 0 0 8px rgba(var(--mk-accent-rgb), .55); pointer-events: none; }
 .mk-project-topbar { position: absolute; inset: 0 0 auto; z-index: 6; padding: 25px 32px; display: flex; justify-content: space-between; align-items: center; }
 .mk-project-topbar > span { color: var(--section-muted); font: 12px var(--font-mono); }

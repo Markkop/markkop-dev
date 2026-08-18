@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { ArrowLeft, ArrowRight, ChevronDown, Code2, ExternalLink, Github, Globe, Hand, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
@@ -10,6 +11,9 @@ import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectMedia } from '@/data/profile'
 import { techLogos } from '@/data/techLogos'
 import { projectScrollTop } from '@/lib/projectScroll'
+import { starPaletteFor } from '@/data/starPalettes'
+
+const StarsBackground = dynamic(() => import('@/components/StarsBackground'), { ssr: false })
 
 /** Fallback desktop width for the iframe before the preview has been measured. */
 const EMBED_WIDTH = 1200
@@ -391,16 +395,7 @@ export default function ProjectShowcase() {
         } as CSSProperties}
       >
         <div className="mk-project-stage">
-          <AnimatePresence mode="popLayout">
-            <motion.div className="mk-project-background" key={project.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
-              {project.video ? (
-                <video src={project.video} poster={project.image} autoPlay muted loop playsInline />
-              ) : project.image ? (
-                <Image src={project.image} alt="" fill sizes="100vw" priority />
-              ) : null}
-              <i />
-            </motion.div>
-          </AnimatePresence>
+          <StarsBackground palette={starPaletteFor(project.slug)} />
           <ShowcaseProgress progress={scrollYProgress} segments={projects.length} />
           <div className="mk-project-topbar">
             <span><strong>{String(active + 1).padStart(2, '0')}</strong><i>/</i>{String(projects.length).padStart(2, '0')}</span>
