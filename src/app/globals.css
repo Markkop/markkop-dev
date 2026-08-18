@@ -839,8 +839,17 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
   .mk-loader-greeting { padding: 0 20px; }
   .mk-loader-greeting h2, .mk-loader-name { font-size: clamp(42px, 13vw, 62px); }
   .mk-loader-greeting h3 { font-size: 16px; }
-  .mk-dock { right: max(22px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); }
-  .mk-dock-btn, .mk-dock-btn-wrap { width: 54px; height: 54px; }
+  .mk-dock { right: max(22px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); gap: 7px; }
+  .mk-dock-btn, .mk-dock-btn-wrap { width: 36px; height: 36px; }
+  .mk-dock-btn > svg:not(.mk-to-top-ring) { width: 12px; height: 12px; }
+  .mk-to-top-ring { padding: 1px; }
+  .mk-to-top-arrows, .mk-to-bottom-arrows { width: 13px; height: 13px; }
+  .mk-to-top-arrows svg, .mk-to-bottom-arrows svg { width: 13px; height: 13px; }
+  .mk-to-top-arrows svg:last-child { transform: translateY(16px); }
+  .mk-to-bottom-arrows svg:last-child { transform: translateY(-16px); }
+  .mk-to-top:hover:not(:disabled) .mk-to-top-arrows svg:first-child { transform: translateY(-16px); }
+  .mk-to-bottom:hover:not(:disabled) .mk-to-bottom-arrows svg:first-child { transform: translateY(16px); }
+  .mk-to-top small { right: 44px; }
   .mk-hero { align-items: flex-start; }
   .mk-hero-inner { width: calc(100% - 48px); padding: 96px 0 70px; gap: 56px; }
   .mk-portrait { max-width: none; }

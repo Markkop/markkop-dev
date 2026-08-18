@@ -10,12 +10,21 @@ import { stackLogos } from '@/data/techLogos'
 
 type Tech = { name: StackTech; logo: string }
 
-const tech: Tech[] = stack.flatMap(({ items }) => items.map((name) => ({ name, logo: stackLogos[name] })))
+const tech: Tech[] = (Object.keys(stackLogos) as StackTech[]).map((name) => ({ name, logo: stackLogos[name] }))
 
-const related = new Map<StackTech, Set<StackTech>>()
+const stacksByTech = new Map<StackTech, ReadonlySet<StackTech>[]>()
 for (const { items } of stack) {
-  const family = new Set<StackTech>(items)
-  for (const name of items) related.set(name, family)
+  const members = new Set<StackTech>(items)
+  for (const name of items) {
+    const matches = stacksByTech.get(name) ?? []
+    matches.push(members)
+    stacksByTech.set(name, matches)
+  }
+}
+
+function randomStack(name: StackTech) {
+  const matches = stacksByTech.get(name) ?? [new Set<StackTech>([name])]
+  return matches[Math.floor(Math.random() * matches.length)]
 }
 
 function Hex({ item, index, mobile = false, lit = false, onEnter, onLeave, onToggle }: {
@@ -167,20 +176,20 @@ function useElementSize(ref: RefObject<HTMLElement | null>) {
 export default function StackShowcase() {
   const { t } = useLanguage()
   const ref = useRef<HTMLDivElement>(null)
-  const [hovered, setHovered] = useState<StackTech | null>(null)
+  const [activeStack, setActiveStack] = useState<{ tech: StackTech; members: ReadonlySet<StackTech> } | null>(null)
   const leaveTimer = useRef(0)
   const cells = tech
-  const highlighted = hovered ? related.get(hovered) ?? new Set([hovered]) : null
+  const highlighted = activeStack?.members ?? null
   const onEnter = useCallback((name: StackTech) => {
     window.clearTimeout(leaveTimer.current)
-    setHovered(name)
+    setActiveStack({ tech: name, members: randomStack(name) })
   }, [])
   const onLeave = useCallback(() => {
-    leaveTimer.current = window.setTimeout(() => setHovered(null), 80)
+    leaveTimer.current = window.setTimeout(() => setActiveStack(null), 80)
   }, [])
   const onToggle = useCallback((name: StackTech) => {
     window.clearTimeout(leaveTimer.current)
-    setHovered((current) => current === name ? null : name)
+    setActiveStack((current) => current?.tech === name ? null : { tech: name, members: randomStack(name) })
   }, [])
   const mobileRows = useMemo(() => {
     const rows: Tech[][] = []

@@ -133,11 +133,12 @@ export const projects: Project[] = [
 ]
 
 export const stack = [
-  { group: 'Frontend', items: ['TypeScript', 'React', 'Next.js', 'Svelte', 'Tailwind CSS'] },
-  { group: 'Backend & Data', items: ['Node.js', 'Elixir', 'PostgreSQL', 'Supabase'] },
-  { group: 'Onchain', items: ['Solidity', 'Hardhat', 'Foundry', 'EVM', 'Polkadot'] },
-  { group: 'Delivery & Hosting', items: ['GitHub', 'Docker', 'Vercel', 'Forgejo'] },
-  { group: 'AI Development', items: ['OpenAI', 'Codex', 'Claude', 'Cursor', 'VS Code'] },
+  { group: 'Next.js Product', items: ['Next.js', 'Node.js', 'PostgreSQL', 'GitHub', 'Vercel', 'Codex'] },
+  { group: 'React AI App', items: ['React', 'Tailwind CSS', 'Supabase', 'GitHub', 'Vercel', 'OpenAI'] },
+  { group: 'Self-hosted Svelte App', items: ['Svelte', 'Elixir', 'PostgreSQL', 'Forgejo', 'Docker', 'Claude'] },
+  { group: 'Hardhat EVM dApp', items: ['React', 'TypeScript', 'Node.js', 'Solidity', 'Hardhat', 'EVM', 'GitHub', 'VS Code'] },
+  { group: 'Foundry EVM dApp', items: ['Next.js', 'TypeScript', 'Node.js', 'Solidity', 'Foundry', 'EVM', 'GitHub', 'Cursor'] },
+  { group: 'Polkadot dApp', items: ['Next.js', 'TypeScript', 'Node.js', 'Polkadot', 'Docker', 'GitHub'] },
 ] as const
 
 export type StackTech = (typeof stack)[number]['items'][number]
