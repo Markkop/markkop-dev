@@ -104,6 +104,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
     timeframe: '2025–2026',
     tabs: {
       live: 'Prévia ao vivo',
+      app: 'App',
       pitch: 'Pitch de um slide',
     },
   },

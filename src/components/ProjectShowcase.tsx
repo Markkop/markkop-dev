@@ -8,19 +8,38 @@ import TextReveal from '@/components/ui/TextReveal'
 import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectMedia } from '@/data/profile'
 import { techLogos } from '@/data/techLogos'
+import { projectScrollTop } from '@/lib/projectScroll'
 
-/** Virtual desktop size inside the iframe. Higher = more desktop layout, smaller UI in the frame. */
+/** Fallback desktop width for the iframe before the preview has been measured. */
 const EMBED_WIDTH = 1200
-const EMBED_HEIGHT = 900
+const MOBILE_EMBED_WIDTH = 390
+const MOBILE_PROJECT_MEDIA = '(max-width: 1024px)'
+
+function liveUrl(project: Project, item?: ProjectMedia) {
+  if (item?.kind === 'live' && item.src) return item.src
+  return project.live
+}
+
+function displayAddress(href: string) {
+  try {
+    const url = new URL(href)
+    const path = url.pathname === '/' ? '' : url.pathname
+    return `${url.host}${path || (url.search ? '/' : '')}${url.search}`.replace(/\/$/, '')
+  } catch {
+    return href.replace(/^https?:\/\//, '').replace(/\/$/, '')
+  }
+}
 
 function SimulatorEmbed({
   project,
+  src,
   label,
   frameKey,
   frameLoaded,
   onFrameLoad,
 }: {
   project: Project
+  src: string
   label: string
   frameKey: number
   frameLoaded: boolean
@@ -29,19 +48,44 @@ function SimulatorEmbed({
   const { t } = useLanguage()
   const scaleRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.5)
+  const [embedSize, setEmbedSize] = useState({ width: EMBED_WIDTH, height: 800 })
   const [showFrame, setShowFrame] = useState(false)
 
   useLayoutEffect(() => {
     const node = scaleRef.current
     if (!node) return
+    const media = window.matchMedia(MOBILE_PROJECT_MEDIA)
     const update = () => {
       const width = node.clientWidth
-      if (width > 0) setScale(width / EMBED_WIDTH)
+      const height = node.clientHeight
+      if (width <= 0 || height <= 0) return
+
+      if (media.matches) {
+        const nextScale = width / MOBILE_EMBED_WIDTH
+        setScale(nextScale)
+        setEmbedSize({ width: MOBILE_EMBED_WIDTH, height: height / nextScale })
+        return
+      }
+
+      // Inner 100dvh / visualViewport often resolve against the top-level window, not the iframe.
+      const outerHeight = window.visualViewport?.height ?? window.innerHeight
+      if (outerHeight <= 0) return
+      const nextScale = height / outerHeight
+      setScale(nextScale)
+      setEmbedSize({ width: width / nextScale, height: outerHeight })
     }
     update()
     const observer = new ResizeObserver(update)
     observer.observe(node)
-    return () => observer.disconnect()
+    window.addEventListener('resize', update)
+    window.visualViewport?.addEventListener('resize', update)
+    media.addEventListener('change', update)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', update)
+      window.visualViewport?.removeEventListener('resize', update)
+      media.removeEventListener('change', update)
+    }
   }, [])
 
   useEffect(() => {
@@ -54,7 +98,7 @@ function SimulatorEmbed({
       ref={scaleRef}
       className="mk-simulator-scale"
       data-lenis-prevent
-      style={{ '--embed-scale': scale, '--embed-width': `${EMBED_WIDTH}px`, '--embed-height': `${EMBED_HEIGHT}px` } as CSSProperties}
+      style={{ '--embed-scale': scale, '--embed-width': `${embedSize.width}px`, '--embed-height': `${embedSize.height}px` } as CSSProperties}
     >
       {project.image ? (
         <div className={`mk-simulator-poster${frameLoaded ? ' hidden' : ''}`}>
@@ -65,9 +109,9 @@ function SimulatorEmbed({
         <iframe
           key={frameKey}
           className={`mk-simulator-frame${frameLoaded ? ' ready' : ''}`}
-          src={project.live}
-          width={EMBED_WIDTH}
-          height={EMBED_HEIGHT}
+          src={src}
+          width={Math.round(embedSize.width)}
+          height={Math.round(embedSize.height)}
           title={label}
           loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
@@ -126,26 +170,42 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const media = project.media ?? []
   const hasTabs = media.length > 1
   const [activeId, setActiveId] = useState(media[0]?.id ?? '')
+  const [visited, setVisited] = useState<Set<string>>(() => new Set(media[0]?.id ? [media[0].id] : []))
   const [hovered, setHovered] = useState(false)
-  const [frameKey, setFrameKey] = useState(0)
-  const [frameLoaded, setFrameLoaded] = useState(false)
-  const [reloading, setReloading] = useState(false)
-  const fadeTimer = useRef(0)
+  const [embedState, setEmbedState] = useState<Record<string, { key: number; loaded: boolean; reloading: boolean }>>({})
+  const fadeTimers = useRef<Record<string, number>>({})
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const embed = interactive && Boolean(project.embed)
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0]
   const liveActive = !hasTabs || activeMedia?.kind === 'live'
-  const canControl = embed && frameLoaded && liveActive
-  const domain = project.live.replace(/^https?:\/\//, '').replace(/\/$/, '')
-  const address = liveActive ? domain : (activeMedia?.src?.split('/').pop() ?? '')
+  const activeEmbedId = liveActive ? (activeMedia?.id ?? 'live') : null
+  const activeEmbed = activeEmbedId ? embedState[activeEmbedId] : undefined
+  const canControl = embed && liveActive && Boolean(activeEmbed?.loaded)
+  const href = liveUrl(project, liveActive ? activeMedia : undefined)
+  const address = liveActive ? displayAddress(href) : (activeMedia?.src?.split('/').pop() ?? '')
   const hoverable = !embed && !hasTabs
 
-  useEffect(() => () => window.clearTimeout(fadeTimer.current), [])
+  useEffect(() => () => {
+    Object.values(fadeTimers.current).forEach((id) => window.clearTimeout(id))
+  }, [])
+
+  const selectTab = (id: string) => {
+    setActiveId(id)
+    setVisited((current) => {
+      if (current.has(id)) return current
+      const next = new Set(current)
+      next.add(id)
+      return next
+    })
+  }
 
   const reloadPreview = () => {
-    setReloading(true)
-    setFrameLoaded(false)
-    setFrameKey((key) => key + 1)
+    if (!activeEmbedId) return
+    const id = activeEmbedId
+    setEmbedState((current) => ({
+      ...current,
+      [id]: { key: (current[id]?.key ?? 0) + 1, loaded: false, reloading: true },
+    }))
   }
 
   const tabLabel = (item: ProjectMedia) => (
@@ -161,32 +221,38 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
     else if (event.key === 'End') next = last
     else return
     event.preventDefault()
-    setActiveId(media[next].id)
+    selectTab(media[next].id)
     tabRefs.current[next]?.focus()
   }
 
-  const onFrameLoad = () => {
-    window.clearTimeout(fadeTimer.current)
-    fadeTimer.current = window.setTimeout(() => {
-      setFrameLoaded(true)
-      setReloading(false)
+  const onFrameLoad = (id: string) => {
+    window.clearTimeout(fadeTimers.current[id])
+    fadeTimers.current[id] = window.setTimeout(() => {
+      setEmbedState((current) => ({
+        ...current,
+        [id]: { key: current[id]?.key ?? 0, loaded: true, reloading: false },
+      }))
     }, 280)
   }
 
-  const livePanel = embed ? (
-    <SimulatorEmbed
-      project={project}
-      label={label}
-      frameKey={frameKey}
-      frameLoaded={frameLoaded}
-      onFrameLoad={onFrameLoad}
-    />
-  ) : (
-    <SimulatorPreview project={project} label={label} />
-  )
+  const livePanel = (item?: ProjectMedia) => {
+    if (!embed) return <SimulatorPreview project={project} label={label} />
+    const id = item?.id ?? 'live'
+    const state = embedState[id] ?? { key: 0, loaded: false, reloading: false }
+    return (
+      <SimulatorEmbed
+        project={project}
+        src={liveUrl(project, item)}
+        label={label}
+        frameKey={state.key}
+        frameLoaded={state.loaded}
+        onFrameLoad={() => onFrameLoad(id)}
+      />
+    )
+  }
 
   const renderMedia = (item: ProjectMedia, active: boolean) => {
-    if (item.kind === 'live') return livePanel
+    if (item.kind === 'live') return livePanel(item)
     if (item.kind === 'image' && item.src) return <SimulatorContainImage src={item.src} label={tabLabel(item)} />
     if (item.kind === 'video' && item.src) return <SimulatorVideo src={item.src} poster={project.image} label={tabLabel(item)} active={active} />
     return <SimulatorPreview project={project} label={label} />
@@ -214,7 +280,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
                 aria-selected={selected}
                 tabIndex={selected ? 0 : -1}
                 className={selected ? 'active' : ''}
-                onClick={() => setActiveId(item.id)}
+                onClick={() => selectTab(item.id)}
                 onKeyDown={(event) => onTabKeyDown(event, index)}
               >
                 <MediaFavicon kind={item.kind} />
@@ -229,14 +295,14 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
         <span className="controls">
           <button type="button" aria-label={t.projects.embedBack} disabled={!canControl} onClick={reloadPreview}><ArrowLeft /></button>
           <button type="button" aria-label={t.projects.embedForward} disabled><ArrowRight /></button>
-          <button type="button" className={reloading ? 'reloading' : ''} aria-label={t.projects.embedReload} disabled={!canControl} onClick={reloadPreview}><RotateCw /></button>
+          <button type="button" className={activeEmbed?.reloading ? 'reloading' : ''} aria-label={t.projects.embedReload} disabled={!canControl} onClick={reloadPreview}><RotateCw /></button>
         </span>
         <span className="address">
           {liveActive ? (
             <>
               <Lock aria-hidden="true" />
-              <a href={project.live} target="_blank" rel="noreferrer" aria-label={label}>
-                <small>{domain}</small>
+              <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
+                <small>{address}</small>
                 <ExternalLink />
               </a>
             </>
@@ -248,6 +314,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
       <div className="mk-simulator-screen">
         {hasTabs ? media.map((item) => {
           const selected = item.id === activeId
+          if (!selected && !visited.has(item.id)) return null
           return (
             <div
               key={item.id}
@@ -261,45 +328,27 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
               {renderMedia(item, selected)}
             </div>
           )
-        }) : livePanel}
+        }) : livePanel()}
       </div>
     </div>
   )
 }
 
-function ProjectDetails({ project, index, mobile = false }: { project: Project; index: number; mobile?: boolean }) {
+function ProjectDetails({ project }: { project: Project }) {
   const { t } = useLanguage()
   const copy = t.projects.items[project.slug] ?? project
   return (
     <div className="mk-project-details">
-      {mobile && <small className="mk-project-index">{String(index + 1).padStart(2, '0')}</small>}
       <div className="mk-project-badges"><span>{copy.category}</span><strong>{copy.metric}</strong></div>
       <h3>{project.title}</h3>
       <p>{copy.description}</p>
-      {!mobile && <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>}
-      {!mobile && <div className="mk-project-role"><span>{copy.category}</span><i /><span>{copy.timeframe}</span></div>}
-      {!mobile && (
-        <div className="mk-project-actions">
-          <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit}<ArrowRight size={14} /></a>
-          {project.code && <a className="secondary" href={project.code} target="_blank" rel="noreferrer"><Github size={14} />{t.projects.source}</a>}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function MobileProject({ project, index }: { project: Project; index: number }) {
-  const { t } = useLanguage()
-  return (
-    <motion.article className="mk-mobile-project" initial={{ opacity: 0, y: 60 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-10%' }} transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}>
-      <ProjectDetails project={project} index={index} mobile />
-      <div className="mk-mobile-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} interactive={false} /></div>
-      <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image src={techLogos[tech]} alt="" width={11} height={11} />}<small>{tech}</small></span>)}</div>
-      <div className="mk-project-actions mobile">
+      <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>
+      <div className="mk-project-role"><span>{copy.category}</span><i /><span>{copy.timeframe}</span></div>
+      <div className="mk-project-actions">
         <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit}<ArrowRight size={14} /></a>
         {project.code && <a className="secondary" href={project.code} target="_blank" rel="noreferrer"><Github size={14} />{t.projects.source}</a>}
       </div>
-    </motion.article>
+    </div>
   )
 }
 
@@ -318,15 +367,18 @@ export default function ProjectShowcase() {
   const project = projects[active]
   return (
     <section id="projects" className="mk-projects-root">
-      <div className="mk-projects-mobile mk-section-dark">
-        <header className="mk-project-heading"><h2><TextReveal text={`${t.projects.title} ${t.projects.titleHighlight}`} /></h2></header>
-        <div>{projects.map((item, index) => <MobileProject project={item} index={index} key={item.slug} />)}</div>
-      </div>
       <div className="mk-project-intro mk-section-dark">
         <h2><TextReveal text={t.projects.title} /><span><TextReveal text={t.projects.titleHighlight} delay={0.4} /></span></h2>
         <p><ChevronDown />{t.projects.scroll}</p>
       </div>
-      <div className="mk-project-track" ref={trackRef} style={{ height: `${projects.length * 100}vh` }}>
+      <div
+        className="mk-project-track"
+        ref={trackRef}
+        style={{
+          '--project-track-height': `${projects.length * 100}vh`,
+          '--project-mobile-track-height': `${(projects.length + 1) * 100}dvh`,
+        } as CSSProperties}
+      >
         <div className="mk-project-stage">
           <AnimatePresence mode="popLayout">
             <motion.div className="mk-project-background" key={project.slug} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}>
@@ -344,13 +396,12 @@ export default function ProjectShowcase() {
             <div>{projects.map((item, index) => <button key={item.slug} className={index === active ? 'active' : ''} aria-label={t.projects.show(item.title)} onClick={() => {
               const track = trackRef.current
               if (!track) return
-              const distance = track.offsetHeight - innerHeight
-              window.scrollTo({ top: track.offsetTop + (index / Math.max(projects.length - 1, 1)) * distance, behavior: 'smooth' })
+              window.scrollTo({ top: projectScrollTop(track, index, projects.length), behavior: 'smooth' })
             }}><i />{index === active && <small>{item.title}</small>}</button>)}</div>
           </div>
           <AnimatePresence mode="popLayout">
             <motion.article className="mk-project-slide" key={project.slug} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.25 }}>
-              <ProjectDetails project={project} index={active} />
+              <ProjectDetails project={project} />
               <div className="mk-project-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} /></div>
             </motion.article>
           </AnimatePresence>

@@ -10,6 +10,7 @@ import { forwardRef, useCallback, useEffect, useRef, useState, useSyncExternalSt
 import LanguageToggle from '@/components/LanguageToggle'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile, projects } from '@/data/profile'
+import { projectIndexAt, projectScrollTop } from '@/lib/projectScroll'
 
 const SECTION_IDS = ['hero', 'about', 'projects', 'tech-stack', 'now', 'contact'] as const
 const isDev = process.env.NODE_ENV === 'development'
@@ -729,28 +730,17 @@ function getVisibleProjectTrack() {
   return track
 }
 
-function projectScrollTop(track: HTMLElement, index: number) {
-  const distance = track.offsetHeight - innerHeight
-  return track.offsetTop + (index / Math.max(projects.length - 1, 1)) * distance
-}
-
-function projectIndexAt(track: HTMLElement, scrollY: number) {
-  const distance = Math.max(track.offsetHeight - innerHeight, 1)
-  const progress = (scrollY - track.offsetTop) / distance
-  return Math.max(0, Math.min(Math.floor(progress * projects.length), projects.length - 1))
-}
-
 function nextScrollTop(scrollY: number) {
   const track = getVisibleProjectTrack()
   if (track) {
     const projectsSection = document.getElementById('projects')
     if (projectsSection && scrollY >= projectsSection.offsetTop - 80 && scrollY < track.offsetTop - 8) {
-      return projectScrollTop(track, 0)
+      return projectScrollTop(track, 0, projects.length)
     }
     const trackEnd = track.offsetTop + track.offsetHeight - innerHeight
     if (scrollY >= track.offsetTop - 8 && scrollY < trackEnd - 8) {
-      const index = projectIndexAt(track, scrollY)
-      if (index < projects.length - 1) return projectScrollTop(track, index + 1)
+      const index = projectIndexAt(track, scrollY, projects.length)
+      if (index < projects.length - 1) return projectScrollTop(track, index + 1, projects.length)
       const stack = document.getElementById('tech-stack')
       return stack ? stack.offsetTop : null
     }

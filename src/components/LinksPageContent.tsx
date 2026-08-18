@@ -28,7 +28,7 @@ export default function LinksPageContent() {
             <Image src="/LISBON_229.jpg" alt={profile.name} fill sizes="128px" priority />
           </div>
           <p className="eyebrow">{t.links.eyebrow}</p>
-          <h1>Marcelo <span>"Mark"</span> Kopmann</h1>
+          <h1>Marcelo <span>&quot;Mark&quot;</span> Kopmann</h1>
           <p>{t.links.summary}</p>
           <div className="tag-row"><span>TypeScript</span><span>{t.links.ai}</span><span>Web3</span><span>{t.links.openSource}</span></div>
         </header>

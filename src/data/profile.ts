@@ -88,6 +88,7 @@ export const projects: Project[] = [
     embed: true,
     media: [
       { id: 'live', kind: 'live', label: 'Live preview' },
+      { id: 'app', kind: 'live', src: 'https://app.habitchain.xyz/?mode=demo', label: 'App' },
       { id: 'pitch', kind: 'image', src: '/projects/habitchain-pitch.png', label: 'One-slide pitch' },
     ],
   },
