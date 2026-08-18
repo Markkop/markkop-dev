@@ -3,17 +3,28 @@
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { ArrowLeft, ArrowRight, ChevronDown, Code2, ExternalLink, Github, Globe, Hand, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react'
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Github, Globe, Hand, Image as ImageIcon, Lock, RotateCw, Video } from 'lucide-react'
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent, type PointerEvent } from 'react'
 import TextReveal from '@/components/ui/TextReveal'
 import ShowcaseProgress from '@/components/ShowcaseProgress'
 import { useLanguage } from '@/context/LanguageContext'
-import { projects, type Project, type ProjectMedia } from '@/data/profile'
+import { projects, type Project, type ProjectGalleryImage, type ProjectMedia } from '@/data/profile'
 import { techLogos } from '@/data/techLogos'
 import { projectScrollTop } from '@/lib/projectScroll'
-import { starPaletteFor } from '@/data/starPalettes'
+import { starAccentVars } from '@/data/starPalettes'
 
 const StarsBackground = dynamic(() => import('@/components/StarsBackground'), { ssr: false })
+const ScrollDownCue = dynamic(() => import('@/components/ScrollDownCue'), { ssr: false })
+
+function subscribeTheme(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  return () => observer.disconnect()
+}
+
+function getThemeSnapshot(): 'dark' | 'light' {
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
+}
 
 /** Fallback desktop width for the iframe before the preview has been measured. */
 const EMBED_WIDTH = 1200
@@ -36,14 +47,12 @@ function displayAddress(href: string) {
 }
 
 function SimulatorEmbed({
-  project,
   src,
   label,
   frameKey,
   frameLoaded,
   onFrameLoad,
 }: {
-  project: Project
   src: string
   label: string
   frameKey: number
@@ -106,13 +115,12 @@ function SimulatorEmbed({
       ref={scaleRef}
       className={`mk-simulator-scale${interacting ? ' interacting' : ''}`}
       data-lenis-prevent={!isMobile || interacting ? true : undefined}
+      aria-busy={!frameLoaded}
       style={{ '--embed-scale': scale, '--embed-width': `${embedSize.width}px`, '--embed-height': `${embedSize.height}px` } as CSSProperties}
     >
-      {project.image ? (
-        <div className={`mk-simulator-poster${frameLoaded ? ' hidden' : ''}`}>
-          <Image src={project.image} alt="" width={1200} height={800} sizes="(max-width: 1024px) 100vw, 50vw" />
-        </div>
-      ) : null}
+      <div className={`mk-simulator-loading${frameLoaded ? ' hidden' : ''}`} aria-hidden="true">
+        <i />
+      </div>
       {showFrame ? (
         <iframe
           key={frameKey}
@@ -134,22 +142,19 @@ function SimulatorEmbed({
       <button type="button" className="mk-mobile-interact-exit" onClick={() => setInteracting(false)}>
         {t.projects.exitPreview}
       </button>
-      <span className="mk-hover-hint">🖱️ {t.projects.embedHint}</span>
     </div>
   )
 }
 
 function SimulatorPreview({ project, label }: { project: Project; label: string }) {
-  const { t } = useLanguage()
   if (project.video) {
     return <video className="mk-simulator-video" src={project.video} poster={project.image} autoPlay muted loop playsInline aria-label={label} />
   }
   if (project.image) {
     return (
-      <>
-        <div className="mk-simulator-image"><Image src={project.image} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" /></div>
-        <span className="mk-hover-hint">🖱️ {t.projects.hoverPreview}</span>
-      </>
+      <div className="mk-simulator-image" data-lenis-prevent>
+        <Image src={project.image} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" />
+      </div>
     )
   }
   return <div className="mk-project-fallback"><Code2 size={44} /><strong>{project.title}</strong></div>
@@ -174,6 +179,174 @@ function SimulatorVideo({ src, poster, label, active }: { src: string; poster?: 
   return <video ref={ref} className="mk-simulator-video" src={src} poster={poster} muted loop playsInline aria-label={label} />
 }
 
+function SimulatorGallery({
+  images,
+  index,
+  onIndexChange,
+  caption,
+  prevLabel,
+  nextLabel,
+}: {
+  images: ProjectGalleryImage[]
+  index: number
+  onIndexChange: (index: number) => void
+  caption: (id: string) => string
+  prevLabel: string
+  nextLabel: string
+}) {
+  const viewportRef = useRef<HTMLDivElement>(null)
+  const indexRef = useRef(index)
+  const drag = useRef<{ id: number; x: number; dx: number } | null>(null)
+  const wheelLock = useRef(false)
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const [instant, setInstant] = useState(false)
+  const slideCount = images.length
+  indexRef.current = index
+
+  const goTo = (next: number) => {
+    const wrapped = (next + slideCount) % slideCount
+    if (wrapped === indexRef.current) return
+    if (Math.abs(wrapped - indexRef.current) !== 1) setInstant(true)
+    onIndexChange(wrapped)
+  }
+
+  const go = (dir: -1 | 1) => goTo(indexRef.current + dir)
+
+  useEffect(() => {
+    if (!instant) return
+    const id = window.requestAnimationFrame(() => setInstant(false))
+    return () => window.cancelAnimationFrame(id)
+  }, [instant])
+
+  useEffect(() => {
+    const node = viewportRef.current
+    if (!node) return
+    const onWheel = (event: WheelEvent) => {
+      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return
+      event.preventDefault()
+      if (wheelLock.current || Math.abs(event.deltaX) < 24) return
+      wheelLock.current = true
+      const dir = event.deltaX > 0 ? 1 : -1
+      const current = indexRef.current
+      const next = (current + dir + slideCount) % slideCount
+      if (Math.abs(next - current) !== 1) setInstant(true)
+      onIndexChange(next)
+      window.setTimeout(() => { wheelLock.current = false }, 520)
+    }
+    node.addEventListener('wheel', onWheel, { passive: false })
+    return () => node.removeEventListener('wheel', onWheel)
+  }, [onIndexChange, slideCount])
+
+  const endDrag = () => {
+    if (!drag.current) return
+    const dx = drag.current.dx
+    const width = viewportRef.current?.clientWidth ?? 1
+    drag.current = null
+    setDragging(false)
+    setDragX(0)
+    if (Math.abs(dx) < Math.max(48, width * 0.16)) return
+    go(dx < 0 ? 1 : -1)
+  }
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    drag.current = { id: event.pointerId, x: event.clientX, dx: 0 }
+    setDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (drag.current?.id !== event.pointerId) return
+    const dx = event.clientX - drag.current.x
+    const atStart = indexRef.current === 0 && dx > 0
+    const atEnd = indexRef.current === slideCount - 1 && dx < 0
+    const next = atStart || atEnd ? dx * 0.28 : dx
+    drag.current.dx = dx
+    setDragX(next)
+  }
+
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      go(1)
+    } else if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      go(-1)
+    } else if (event.key === 'Home') {
+      event.preventDefault()
+      goTo(0)
+    } else if (event.key === 'End') {
+      event.preventDefault()
+      goTo(slideCount - 1)
+    }
+  }
+
+  const currentCaption = caption(images[index]?.id ?? '')
+
+  return (
+    <div
+      className="mk-simulator-gallery"
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      aria-roledescription="carousel"
+      aria-label={currentCaption}
+    >
+      <div className="mk-simulator-gallery-stage">
+        <div
+          ref={viewportRef}
+          className="mk-simulator-gallery-viewport"
+          data-lenis-prevent
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onLostPointerCapture={endDrag}
+        >
+          <div
+            className={`mk-simulator-gallery-track${dragging || instant ? ' instant' : ''}`}
+            style={{ transform: `translate3d(calc(${-index * 100}% + ${dragX}px), 0, 0)` }}
+          >
+            {images.map((image, i) => (
+              <figure key={image.id} className="mk-simulator-gallery-slide">
+                <Image
+                  src={image.src}
+                  alt={caption(image.id)}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  priority={Math.abs(i - index) <= 1}
+                  draggable={false}
+                />
+              </figure>
+            ))}
+          </div>
+        </div>
+        <button type="button" className="mk-simulator-gallery-nav prev" aria-label={prevLabel} onClick={() => go(-1)}>
+          <ChevronLeft />
+        </button>
+        <button type="button" className="mk-simulator-gallery-nav next" aria-label={nextLabel} onClick={() => go(1)}>
+          <ChevronRight />
+        </button>
+        <div className="mk-simulator-gallery-dots" role="group">
+          {images.map((image, i) => (
+            <button
+              key={image.id}
+              type="button"
+              aria-label={caption(image.id)}
+              aria-current={i === index ? 'true' : undefined}
+              className={i === index ? 'active' : ''}
+              onClick={() => goTo(i)}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="mk-simulator-gallery-bar">
+        <small key={images[index]?.id} aria-live="polite">{currentCaption}</small>
+      </div>
+    </div>
+  )
+}
+
 function MediaFavicon({ kind }: { kind: ProjectMedia['kind'] }) {
   if (kind === 'live') return <Globe aria-hidden="true" />
   if (kind === 'video') return <Video aria-hidden="true" />
@@ -187,19 +360,21 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const hasTabs = media.length > 1
   const [activeId, setActiveId] = useState(media[0]?.id ?? '')
   const [visited, setVisited] = useState<Set<string>>(() => new Set(media[0]?.id ? [media[0].id] : []))
-  const [hovered, setHovered] = useState(false)
   const [embedState, setEmbedState] = useState<Record<string, { key: number; loaded: boolean; reloading: boolean }>>({})
+  const [galleryIndex, setGalleryIndex] = useState(0)
   const fadeTimers = useRef<Record<string, number>>({})
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const embed = interactive && Boolean(project.embed)
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0]
-  const liveActive = !hasTabs || activeMedia?.kind === 'live'
+  const galleryImages = activeMedia?.kind === 'gallery' ? (activeMedia.images ?? []) : []
+  const galleryActive = galleryImages.length > 0
+  const liveActive = !galleryActive && (!hasTabs || activeMedia?.kind === 'live')
   const activeEmbedId = liveActive ? (activeMedia?.id ?? 'live') : null
   const activeEmbed = activeEmbedId ? embedState[activeEmbedId] : undefined
   const canControl = embed && liveActive && Boolean(activeEmbed?.loaded)
   const href = liveUrl(project, liveActive ? activeMedia : undefined)
+  const galleryCaption = (id: string) => copy?.tabs?.[id] ?? galleryImages.find((image) => image.id === id)?.label ?? id
   const address = liveActive ? displayAddress(href) : (activeMedia?.src?.split('/').pop() ?? '')
-  const hoverable = !embed && !hasTabs
 
   useEffect(() => () => {
     Object.values(fadeTimers.current).forEach((id) => window.clearTimeout(id))
@@ -257,7 +432,6 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
     const state = embedState[id] ?? { key: 0, loaded: false, reloading: false }
     return (
       <SimulatorEmbed
-        project={project}
         src={liveUrl(project, item)}
         label={label}
         frameKey={state.key}
@@ -268,6 +442,18 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   }
 
   const renderMedia = (item: ProjectMedia, active: boolean) => {
+    if (item.kind === 'gallery' && item.images?.length) {
+      return (
+        <SimulatorGallery
+          images={item.images}
+          index={galleryIndex}
+          onIndexChange={setGalleryIndex}
+          caption={galleryCaption}
+          prevLabel={t.projects.galleryPrev}
+          nextLabel={t.projects.galleryNext}
+        />
+      )
+    }
     if (item.kind === 'live') return livePanel(item)
     if (item.kind === 'image' && item.src) return <SimulatorContainImage src={item.src} label={tabLabel(item)} />
     if (item.kind === 'video' && item.src) return <SimulatorVideo src={item.src} poster={project.image} label={tabLabel(item)} active={active} />
@@ -275,12 +461,8 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   }
 
   return (
-    <div
-      className={`mk-simulator${hovered ? ' hovered' : ''}${embed ? ' embed' : ''}${hasTabs ? ' tabbed' : ''}`}
-      onMouseEnter={hoverable ? () => setHovered(true) : undefined}
-      onMouseLeave={hoverable ? () => setHovered(false) : undefined}
-    >
-      {hasTabs ? (
+    <div className={`mk-simulator${embed ? ' embed' : ''}${hasTabs ? ' tabbed' : ''}${galleryActive ? ' gallery' : ''}`} data-slug={project.slug}>
+      {galleryActive ? null : hasTabs ? (
         <div className="mk-simulator-tabs" role="tablist" aria-label={label}>
           <span className="dots"><i /><i /><i /></span>
           {media.map((item, index) => {
@@ -306,6 +488,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
           })}
         </div>
       ) : null}
+      {galleryActive ? null : (
       <div className="mk-simulator-bar">
         {hasTabs ? null : <span className="dots"><i /><i /><i /></span>}
         <span className="controls">
@@ -327,6 +510,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
           )}
         </span>
       </div>
+      )}
       <div className="mk-simulator-screen">
         {hasTabs ? media.map((item) => {
           const selected = item.id === activeId
@@ -344,7 +528,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
               {renderMedia(item, selected)}
             </div>
           )
-        }) : livePanel()}
+        }) : (activeMedia ? renderMedia(activeMedia, true) : livePanel())}
       </div>
     </div>
   )
@@ -370,6 +554,7 @@ function ProjectDetails({ project }: { project: Project }) {
 
 export default function ProjectShowcase() {
   const { t } = useLanguage()
+  const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, () => 'dark' as const)
   const trackRef = useRef<HTMLDivElement>(null)
   const activeRef = useRef(0)
   const [active, setActive] = useState(0)
@@ -380,6 +565,43 @@ export default function ProjectShowcase() {
   })
 
   const project = projects[active]
+  const accentVars = starAccentVars(project.slug, theme) as CSSProperties
+  const progressVisible = useRef(false)
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    const root = document.documentElement
+    const observer = new IntersectionObserver(([entry]) => {
+      progressVisible.current = entry.isIntersecting
+      if (!entry.isIntersecting) {
+        root.style.removeProperty('--mk-top-progress')
+        root.style.removeProperty('--mk-top-progress-rgb')
+        return
+      }
+      const vars = starAccentVars(
+        projects[activeRef.current].slug,
+        document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
+      )
+      root.style.setProperty('--mk-top-progress', vars['--mk-accent'])
+      root.style.setProperty('--mk-top-progress-rgb', vars['--mk-accent-rgb'])
+    })
+    observer.observe(track)
+    return () => {
+      observer.disconnect()
+      progressVisible.current = false
+      root.style.removeProperty('--mk-top-progress')
+      root.style.removeProperty('--mk-top-progress-rgb')
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!progressVisible.current) return
+    const vars = starAccentVars(project.slug, theme)
+    document.documentElement.style.setProperty('--mk-top-progress', vars['--mk-accent'])
+    document.documentElement.style.setProperty('--mk-top-progress-rgb', vars['--mk-accent-rgb'])
+  }, [project.slug, theme])
+
   return (
     <section id="projects" className="mk-projects-root">
       <div className="mk-project-intro mk-section-dark">
@@ -394,8 +616,8 @@ export default function ProjectShowcase() {
           '--project-mobile-track-height': `${(projects.length + 1) * 100}dvh`,
         } as CSSProperties}
       >
-        <div className="mk-project-stage">
-          <StarsBackground palette={starPaletteFor(project.slug)} />
+        <div className="mk-project-stage" style={accentVars}>
+          <StarsBackground slug={project.slug} />
           <ShowcaseProgress progress={scrollYProgress} segments={projects.length} />
           <div className="mk-project-topbar">
             <span><strong>{String(active + 1).padStart(2, '0')}</strong><i>/</i>{String(projects.length).padStart(2, '0')}</span>
@@ -406,12 +628,15 @@ export default function ProjectShowcase() {
             }}><i />{index === active && <small>{item.title}</small>}</button>)}</div>
           </div>
           <AnimatePresence mode="popLayout">
-            <motion.article className="mk-project-slide" key={project.slug} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.25 }}>
+            <motion.article className="mk-project-slide" key={project.slug} style={accentVars} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.25 }}>
               <ProjectDetails project={project} />
               <div className="mk-project-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} /></div>
             </motion.article>
           </AnimatePresence>
-          <motion.div className="mk-project-cue" animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}><small>{active < projects.length - 1 ? t.projects.scroll : t.projects.keepScrolling}</small><ChevronDown /></motion.div>
+          <div className="mk-project-cue">
+            <ScrollDownCue />
+            <small>{active < projects.length - 1 ? t.projects.scroll : t.projects.keepScrolling}</small>
+          </div>
         </div>
       </div>
     </section>

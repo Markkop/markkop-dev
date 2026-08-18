@@ -48,11 +48,11 @@ export type SiteContent = {
     choose: string
     show: (title: string) => string
     preview: (title: string) => string
-    hoverPreview: string
-    embedHint: string
     embedBack: string
     embedForward: string
     embedReload: string
+    galleryPrev: string
+    galleryNext: string
     tapToInteract: string
     tapToInteractHint: string
     exitPreview: string
@@ -96,12 +96,23 @@ const englishProjects = Object.fromEntries(
     metric: project.metric,
     timeframe: project.timeframe,
     ...(project.media ? {
-      tabs: Object.fromEntries(project.media.flatMap((item) => item.label ? [[item.id, item.label]] : [])),
+      tabs: Object.fromEntries(project.media.flatMap((item) => {
+        if (item.kind === 'gallery' && item.images) {
+          return item.images.flatMap((image) => image.label ? [[image.id, image.label]] : [])
+        }
+        return item.label ? [[item.id, item.label]] : []
+      })),
     } : {}),
   }]),
 )
 
 const portugueseProjects: Record<string, ProjectCopy> = {
+  halborn: {
+    description: 'O site público de uma empresa elite de segurança blockchain. Liderei a migração de WordPress para Next.js, a integração do CMS e a experiência de marketing.',
+    category: 'Site Institucional',
+    metric: 'WordPress → Next.js',
+    timeframe: '2022–presente',
+  },
   habitchain: {
     description: 'Um rastreador de hábitos com compromisso real, usando incentivos onchain para transformar consistência em responsabilidade.',
     category: 'Produto Onchain',
@@ -128,8 +139,20 @@ const portugueseProjects: Record<string, ProjectCopy> = {
   'corvo-astral': {
     description: 'Um bot comunitário para Discord que reúne e disponibiliza informações úteis para jogadores de Wakfu.',
     category: 'Bot Comunitário',
-    metric: '30 estrelas no GitHub',
-    timeframe: '2020–presente',
+    metric: '500+ servidores no Discord',
+    timeframe: '2020–2025',
+    tabs: {
+      alma: 'Almanax',
+      'alma-daily': 'Almanax diário',
+      party: 'Listagem de grupos',
+      'i18n-lang': 'Idiomas',
+      'i18n-translate': 'Tradução',
+      equip: 'Busca de equipamentos',
+      'subli-name': 'Sublimação por nome',
+      'subli-slots': 'Sublimação por slots',
+      recipe: 'Busca de receitas',
+      calc: 'Calculadora de dano',
+    },
   },
 }
 
@@ -181,11 +204,11 @@ export const content: Record<Language, SiteContent> = {
       choose: 'Choose a project',
       show: (title) => `Show ${title}`,
       preview: (title) => `${title} project preview`,
-      hoverPreview: 'Hover to scroll preview',
-      embedHint: 'Scroll to explore',
       embedBack: 'Back to start',
       embedForward: 'Forward',
       embedReload: 'Reload preview',
+      galleryPrev: 'Previous screenshot',
+      galleryNext: 'Next screenshot',
       tapToInteract: 'Tap to interact',
       tapToInteractHint: 'Scroll outside the preview to continue',
       exitPreview: 'Done',
@@ -303,11 +326,11 @@ export const content: Record<Language, SiteContent> = {
       choose: 'Escolha um projeto',
       show: (title) => `Mostrar ${title}`,
       preview: (title) => `Prévia do projeto ${title}`,
-      hoverPreview: 'Passe o mouse para rolar a prévia',
-      embedHint: 'Role para explorar',
       embedBack: 'Voltar ao início',
       embedForward: 'Avançar',
       embedReload: 'Recarregar prévia',
+      galleryPrev: 'Captura anterior',
+      galleryNext: 'Próxima captura',
       tapToInteract: 'Toque para interagir',
       tapToInteractHint: 'Role fora da prévia para continuar',
       exitPreview: 'Concluir',

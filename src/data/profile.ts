@@ -1,7 +1,14 @@
+export type ProjectGalleryImage = {
+  id: string
+  src: string
+  label?: string
+}
+
 export type ProjectMedia = {
   id: string
-  kind: 'live' | 'image' | 'video'
+  kind: 'live' | 'image' | 'video' | 'gallery'
   src?: string
+  images?: ProjectGalleryImage[]
   label?: string
 }
 
@@ -75,6 +82,17 @@ export const profile = {
 
 export const projects: Project[] = [
   {
+    title: 'Halborn',
+    slug: 'halborn',
+    description: 'The public site for an elite blockchain security firm. I led the WordPress to Next.js migration, CMS integration, and the marketing experience.',
+    category: 'Company Website',
+    metric: 'WordPress → Next.js',
+    timeframe: '2022–present',
+    tech: ['Next.js', 'TypeScript', 'React', 'Tailwind CSS'],
+    live: 'https://www.halborn.com/',
+    image: '/projects/halborn.jpg',
+  },
+  {
     title: 'HabitChain',
     slug: 'habitchain',
     description: 'A habit tracker with real skin in the game, using onchain incentives to turn consistency into commitment.',
@@ -123,12 +141,28 @@ export const projects: Project[] = [
     slug: 'corvo-astral',
     description: 'A community-driven Discord bot that collects and serves useful information for Wakfu players.',
     category: 'Community Bot',
-    metric: '30 GitHub stars',
-    timeframe: '2020–present',
+    metric: '500+ Discord servers',
+    timeframe: '2020–2025',
     tech: ['TypeScript', 'Node.js', 'Discord'],
     live: 'https://github.com/Markkop/corvo-astral',
     code: 'https://github.com/Markkop/corvo-astral',
-    image: '/projects/corvo.png',
+    image: '/projects/corvo-astral/alma.png',
+    media: [{
+      id: 'gallery',
+      kind: 'gallery',
+      images: [
+        { id: 'alma', src: '/projects/corvo-astral/alma.png', label: 'Almanax' },
+        { id: 'alma-daily', src: '/projects/corvo-astral/alma-daily.png', label: 'Daily Almanax' },
+        { id: 'party', src: '/projects/corvo-astral/party.png', label: 'Party listing' },
+        { id: 'i18n-lang', src: '/projects/corvo-astral/i18n-lang.png', label: 'Languages' },
+        { id: 'i18n-translate', src: '/projects/corvo-astral/i18n-translate.png', label: 'Translation' },
+        { id: 'equip', src: '/projects/corvo-astral/equip.png', label: 'Equipment search' },
+        { id: 'subli-name', src: '/projects/corvo-astral/subli-name.png', label: 'Sublimation by name' },
+        { id: 'subli-slots', src: '/projects/corvo-astral/subli-slots.png', label: 'Sublimation by slots' },
+        { id: 'recipe', src: '/projects/corvo-astral/recipe.png', label: 'Recipe search' },
+        { id: 'calc', src: '/projects/corvo-astral/calc.png', label: 'Damage calculator' },
+      ],
+    }],
   },
 ]
 

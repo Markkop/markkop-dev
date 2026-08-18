@@ -1,7 +1,17 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { type StarPalette } from '@/data/starPalettes'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { starPaletteFor, type StarPalette } from '@/data/starPalettes'
+
+function subscribeTheme(onStoreChange: () => void) {
+  const observer = new MutationObserver(onStoreChange)
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  return () => observer.disconnect()
+}
+
+function getThemeSnapshot(): 'dark' | 'light' {
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
+}
 
 type Three = typeof import('three')
 
@@ -11,16 +21,22 @@ function pickColor(THREE: Three, palette: StarPalette, random: number) {
   return new THREE.Color(palette.ice)
 }
 
-function radialSprite(THREE: Three, palette: StarPalette) {
+function radialSprite(THREE: Three, palette: StarPalette, light: boolean) {
   const canvas = document.createElement('canvas')
   canvas.width = 64
   canvas.height = 64
   const context = canvas.getContext('2d')
   if (!context) return new THREE.Texture()
   const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32)
-  gradient.addColorStop(0, '#ffffff')
-  gradient.addColorStop(0.25, palette.glow)
-  gradient.addColorStop(1, `${palette.primary}00`)
+  if (light) {
+    gradient.addColorStop(0, palette.glow)
+    gradient.addColorStop(0.28, palette.primary)
+    gradient.addColorStop(1, `${palette.primary}00`)
+  } else {
+    gradient.addColorStop(0, '#ffffff')
+    gradient.addColorStop(0.25, palette.glow)
+    gradient.addColorStop(1, `${palette.primary}00`)
+  }
   context.fillStyle = gradient
   context.fillRect(0, 0, 64, 64)
   const texture = new THREE.CanvasTexture(canvas)
@@ -28,16 +44,19 @@ function radialSprite(THREE: Three, palette: StarPalette) {
   return texture
 }
 
-export default function StarsBackground({ palette }: { palette: StarPalette }) {
+export default function StarsBackground({ slug }: { slug: string }) {
+  const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, () => 'dark' as const)
+  const palette = starPaletteFor(slug, theme)
+  const light = theme === 'light'
   const hostRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const paletteRef = useRef(palette)
-  const applyPaletteRef = useRef<(next: StarPalette) => void>(() => {})
-  paletteRef.current = palette
+  const lookRef = useRef({ palette, light })
+  const applyLookRef = useRef<(next: StarPalette, nextLight: boolean) => void>(() => {})
+  lookRef.current = { palette, light }
 
   useEffect(() => {
-    applyPaletteRef.current(palette)
-  }, [palette])
+    applyLookRef.current(palette, light)
+  }, [palette, light])
 
   useEffect(() => {
     const host = hostRef.current
@@ -71,7 +90,7 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
 
       let sprite: InstanceType<Three['Texture']> | undefined
       try {
-        sprite = radialSprite(THREE, paletteRef.current)
+        sprite = radialSprite(THREE, lookRef.current.palette, lookRef.current.light)
 
         const renderer = new THREE.WebGLRenderer({
           canvas,
@@ -82,11 +101,11 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
           powerPreference: 'high-performance',
         })
         renderer.setPixelRatio(pixelRatio)
-        renderer.setClearColor(new THREE.Color(paletteRef.current.fog), 0)
+        renderer.setClearColor(new THREE.Color(lookRef.current.palette.fog), 0)
         disposables.push(renderer)
 
         const scene = new THREE.Scene()
-        scene.fog = new THREE.FogExp2(paletteRef.current.fog, 0.00085)
+        scene.fog = new THREE.FogExp2(lookRef.current.palette.fog, lookRef.current.light ? 0.00055 : 0.00085)
         const camera = new THREE.PerspectiveCamera(60, 1, 1, 3000)
         camera.position.set(0, 0, 620)
 
@@ -108,7 +127,7 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
         const rolls = new Float32Array(maxParticles)
         for (let index = 0; index < maxParticles; index += 1) {
           rolls[index] = Math.random()
-          const color = pickColor(THREE, paletteRef.current, rolls[index])
+          const color = pickColor(THREE, lookRef.current.palette, rolls[index])
           colors[index * 3] = color.r
           colors[index * 3 + 1] = color.g
           colors[index * 3 + 2] = color.b
@@ -149,6 +168,7 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
             uTime: { value: 0 },
             uTex: { value: sprite },
             uPix: { value: pixelRatio },
+            uPaper: { value: lookRef.current.light ? 1 : 0 },
           },
           vertexShader: `
             attribute float aSize;
@@ -168,17 +188,19 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
           fragmentShader: `
             varying vec3 vColor;
             uniform sampler2D uTex;
+            uniform float uPaper;
             void main() {
               vec4 textureColor = texture2D(uTex, gl_PointCoord);
               if (textureColor.a < 0.02) discard;
-              vec3 luminousColor = mix(vColor, vec3(1.0), 0.22);
-              gl_FragColor = vec4(luminousColor, textureColor.a * 0.94);
+              vec3 luminousColor = mix(vColor, vec3(1.0), 0.22 * (1.0 - uPaper));
+              float alpha = textureColor.a * mix(0.94, 0.82, uPaper);
+              gl_FragColor = vec4(luminousColor, alpha);
             }
           `,
           transparent: true,
           depthTest: false,
           depthWrite: false,
-          blending: THREE.AdditiveBlending,
+          blending: lookRef.current.light ? THREE.NormalBlending : THREE.AdditiveBlending,
           vertexColors: true,
         })
         disposables.push(particleMaterial)
@@ -190,7 +212,7 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
           renderer.render(scene, camera)
         }
 
-        function applyPalette(next: StarPalette) {
+        function applyLook(next: StarPalette, nextLight: boolean) {
           if (stopped) return
           for (let index = 0; index < maxParticles; index += 1) {
             const color = pickColor(THREE, next, rolls[index])
@@ -200,16 +222,19 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
           }
           const attribute = particleGeometry.getAttribute('color') as InstanceType<Three['BufferAttribute']>
           attribute.needsUpdate = true
-          scene.fog = new THREE.FogExp2(next.fog, 0.00085)
+          scene.fog = new THREE.FogExp2(next.fog, nextLight ? 0.00055 : 0.00085)
           renderer.setClearColor(new THREE.Color(next.fog), 0)
-          const nextSprite = radialSprite(THREE, next)
+          particleMaterial.blending = nextLight ? THREE.NormalBlending : THREE.AdditiveBlending
+          particleMaterial.uniforms.uPaper.value = nextLight ? 1 : 0
+          particleMaterial.needsUpdate = true
+          const nextSprite = radialSprite(THREE, next, nextLight)
           particleMaterial.uniforms.uTex.value = nextSprite
           sprite?.dispose()
           sprite = nextSprite
           if (reduceMotion) renderStatic()
         }
 
-        applyPaletteRef.current = applyPalette
+        applyLookRef.current = applyLook
 
         function resize() {
           if (stopped) return
@@ -270,7 +295,7 @@ export default function StarsBackground({ palette }: { palette: StarPalette }) {
 
         cleanup = () => {
           stopped = true
-          applyPaletteRef.current = () => {}
+          applyLookRef.current = () => {}
           window.cancelAnimationFrame(frame)
           window.clearTimeout(resizeTimer)
           for (const timer of timers) window.clearTimeout(timer)
