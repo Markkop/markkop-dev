@@ -30,3 +30,5 @@ export const techLogos: Record<string, string> = {
   ...stackLogos,
   Discord: '/companies/discord.svg',
 }
+
+export const invertOnLightLogos = new Set<string>(['Solidity', 'GitHub', 'OpenAI', 'Codex', 'Vercel'])

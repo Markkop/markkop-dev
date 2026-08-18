@@ -616,6 +616,8 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 .mk-journey-logo-light { opacity: 0; pointer-events: none; }
 [data-theme="light"] .mk-journey-logo-dark { opacity: 0; pointer-events: none; }
 [data-theme="light"] .mk-journey-logo-light { opacity: 1; pointer-events: auto; }
+[data-theme="light"] img.mk-tech-invert,
+[data-theme="light"] .mk-tech-invert img { filter: invert(1); }
 .mk-journey-item > small { max-width: 100%; color: var(--section-muted); font: 10px/1.45 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; }
 .mk-journey-item > small.mk-journey-now { letter-spacing: .02em; text-transform: none; }
 

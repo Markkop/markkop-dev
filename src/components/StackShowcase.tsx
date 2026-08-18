@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react'
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { stack, type StackTech } from '@/data/profile'
-import { stackLogos } from '@/data/techLogos'
+import { invertOnLightLogos, stackLogos } from '@/data/techLogos'
 
 type Tech = { name: StackTech; logo: string }
 
@@ -52,7 +52,7 @@ function Hex({ item, index, mobile = false, lit = false, onEnter, onLeave, onTog
         <polygon className="inner" points="50 5,89 27,89 88,50 110,11 88,11 27" />
       </svg>
       <div className="mk-hex-content">
-        <span className="mk-hex-icon"><Image src={item.logo} alt="" fill sizes="56px" /></span>
+        <span className={`mk-hex-icon${invertOnLightLogos.has(item.name) ? ' mk-tech-invert' : ''}`}><Image src={item.logo} alt="" fill sizes="56px" /></span>
         <small>{item.name}</small>
       </div>
     </button>

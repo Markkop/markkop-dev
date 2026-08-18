@@ -9,7 +9,7 @@ import TextReveal from '@/components/ui/TextReveal'
 import ShowcaseProgress from '@/components/ShowcaseProgress'
 import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectGalleryImage, type ProjectMedia } from '@/data/profile'
-import { techLogos } from '@/data/techLogos'
+import { invertOnLightLogos, techLogos } from '@/data/techLogos'
 import { projectScrollTop } from '@/lib/projectScroll'
 import { starAccentVars } from '@/data/starPalettes'
 
@@ -542,7 +542,7 @@ function ProjectDetails({ project }: { project: Project }) {
       <div className="mk-project-badges"><span>{copy.category}</span><strong>{copy.metric}</strong></div>
       <h3>{project.title}</h3>
       <p>{copy.description}</p>
-      <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>
+      <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image className={invertOnLightLogos.has(tech) ? 'mk-tech-invert' : undefined} src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>
       <div className="mk-project-role"><span>{copy.category}</span><i /><span>{copy.timeframe}</span></div>
       <div className="mk-project-actions">
         <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit}<ArrowRight size={14} /></a>
