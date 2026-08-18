@@ -1,3 +1,10 @@
+export type ProjectMedia = {
+  id: string
+  kind: 'live' | 'image' | 'video'
+  src?: string
+  label?: string
+}
+
 export type Project = {
   title: string
   slug: string
@@ -9,6 +16,9 @@ export type Project = {
   live: string
   code?: string
   image?: string
+  video?: string
+  embed?: boolean
+  media?: ProjectMedia[]
 }
 
 export const profile = {
@@ -75,31 +85,27 @@ export const projects: Project[] = [
     live: 'https://www.habitchain.xyz/',
     code: 'https://github.com/Markkop/habitchain-2',
     image: '/projects/habitchain.png',
+    embed: true,
+    media: [
+      { id: 'live', kind: 'live', label: 'Live preview' },
+      { id: 'pitch', kind: 'image', src: '/projects/habitchain-pitch.png', label: 'One-slide pitch' },
+    ],
   },
   {
-    title: 'Minha Casa',
-    slug: 'minha-casa',
+    title: 'Prisma',
+    slug: 'prisma',
     description: 'A workspace for collecting real-estate listings, comparing properties, and planning a home purchase.',
     category: 'Property Platform',
     metric: 'AI-assisted workflow',
     timeframe: '2025–2026',
     tech: ['Svelte', 'TypeScript', 'PostgreSQL', 'Elixir'],
     live: 'https://casas.markkop.dev/',
+    image: '/projects/minha-casa.png',
+    video: '/projects/minha-casa.webm',
+    embed: true,
   },
   {
-    title: 'Stipend Helper',
-    slug: 'stipend',
-    description: 'Extracts receipt data from PDFs with AI, converts currencies, and prepares stipend information quickly.',
-    category: 'AI Utility',
-    metric: 'PDF to structured data',
-    timeframe: '2025',
-    tech: ['JavaScript', 'Next.js', 'AI'],
-    live: 'https://stipend.markkop.dev/',
-    code: 'https://github.com/Markkop/stipend-helper',
-    image: '/projects/stipend.png',
-  },
-  {
-    title: 'Wedding Guest Planner',
+    title: 'Guest Planner',
     slug: 'wedding',
     description: 'A focused tool to organize guest lists, invitations, ordering, details, and RSVP status.',
     category: 'Planning Tool',
@@ -109,18 +115,7 @@ export const projects: Project[] = [
     live: 'https://guests.markkop.dev/',
     code: 'https://github.com/Markkop/wedding-guest-planner',
     image: '/projects/wedding.png',
-  },
-  {
-    title: 'NFT Marketplace',
-    slug: 'nft-marketplace',
-    description: 'A complete NFT marketplace built to explore smart-contract commerce and decentralized ownership.',
-    category: 'Web3 Marketplace',
-    metric: '181 GitHub stars',
-    timeframe: '2022',
-    tech: ['Next.js', 'Hardhat', 'Solidity', 'JavaScript'],
-    live: 'https://nft-marketplace-markkop.vercel.app/',
-    code: 'https://github.com/Markkop/nft-marketplace',
-    image: '/projects/nft.png',
+    embed: true,
   },
   {
     title: 'Corvo Astral',
@@ -133,54 +128,6 @@ export const projects: Project[] = [
     live: 'https://github.com/Markkop/corvo-astral',
     code: 'https://github.com/Markkop/corvo-astral',
     image: '/projects/corvo.png',
-  },
-  {
-    title: 'RepoGPT',
-    slug: 'repogpt',
-    description: 'Merges repository files into a clean text bundle for LLM context and code conversations.',
-    category: 'Developer Tool',
-    metric: 'Repository to context',
-    timeframe: '2023–2024',
-    tech: ['TypeScript', 'Next.js', 'GitHub'],
-    live: 'https://repo-gpt-black.vercel.app/',
-    code: 'https://github.com/Markkop/RepoGPT',
-    image: '/projects/repogpt.png',
-  },
-  {
-    title: 'Repo Env Generator',
-    slug: 'repo-env-generator',
-    description: 'Scans a repository and identifies its environment-variable surface for faster project setup.',
-    category: 'Developer Tool',
-    metric: 'Automatic env discovery',
-    timeframe: '2024',
-    tech: ['TypeScript', 'Next.js', 'GitHub'],
-    live: 'https://repoenvgen.markkop.dev/',
-    code: 'https://github.com/Markkop/RepoEnvGenerator',
-    image: '/projects/repoenv.png',
-  },
-  {
-    title: 'Spotify Playlist Deleter',
-    slug: 'spotify-playlist-deleter',
-    description: 'A small utility for selecting and deleting many Spotify playlists in one pass.',
-    category: 'Productivity Tool',
-    metric: '14 GitHub stars',
-    timeframe: '2023',
-    tech: ['TypeScript', 'Next.js', 'Spotify API'],
-    live: 'https://multiple-playlist-deleter-markkop.vercel.app/',
-    code: 'https://github.com/Markkop/Multiple-Playlist-deleter',
-    image: '/projects/spotify.png',
-  },
-  {
-    title: 'Werewolf Moderator',
-    slug: 'werewolf-moderator',
-    description: 'A game-night companion that helps moderators manage roles and state in Werewolf and Mafia sessions.',
-    category: 'Game Utility',
-    metric: 'Live game state',
-    timeframe: '2023–2024',
-    tech: ['TypeScript', 'Next.js', 'React'],
-    live: 'https://werewolf-moderator-helper-mu.vercel.app/',
-    code: 'https://github.com/Markkop/werewolf-moderator-helper',
-    image: '/projects/werewolf.png',
   },
 ]
 

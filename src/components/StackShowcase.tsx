@@ -6,36 +6,11 @@ import { ChevronDown } from 'lucide-react'
 import { useCallback, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { useLanguage } from '@/context/LanguageContext'
 import { stack, type StackTech } from '@/data/profile'
+import { stackLogos } from '@/data/techLogos'
 
 type Tech = { name: StackTech; logo: string }
 
-const logos = {
-  TypeScript: '/techstackicons/typescript-icon-svgrepo-com.svg',
-  React: '/techstackicons/react-svgrepo-com.svg',
-  'Next.js': '/techstackicons/next.svg',
-  Svelte: '/techstackicons/svelte.svg',
-  'Tailwind CSS': '/techstackicons/tailwindcss-icon-svgrepo-com.svg',
-  'Node.js': '/techstackicons/nodejs-icon-svgrepo-com.svg',
-  Elixir: '/techstackicons/elixir.svg',
-  PostgreSQL: '/techstackicons/postgresql-svgrepo-com.svg',
-  Supabase: '/techstackicons/supabase-logo-icon.svg',
-  Solidity: '/techstackicons/solidity.svg',
-  Hardhat: '/techstackicons/hardhat.svg',
-  Foundry: '/techstackicons/foundry.png',
-  EVM: '/techstackicons/ethereum.svg',
-  Polkadot: '/techstackicons/polkadot.svg',
-  GitHub: '/techstackicons/github (1).svg',
-  Docker: '/techstackicons/docker-svgrepo-com.svg',
-  Vercel: '/techstackicons/vercel.svg',
-  Forgejo: '/techstackicons/forgejo.svg',
-  OpenAI: '/techstackicons/openai.svg',
-  Codex: '/techstackicons/codex.svg',
-  Claude: '/techstackicons/Claude_AI_symbol.svg',
-  Cursor: '/techstackicons/cursor.png',
-  'VS Code': '/techstackicons/Visual Studio Code (VS Code).svg',
-} satisfies Record<StackTech, string>
-
-const tech: Tech[] = stack.flatMap(({ items }) => items.map((name) => ({ name, logo: logos[name] })))
+const tech: Tech[] = stack.flatMap(({ items }) => items.map((name) => ({ name, logo: stackLogos[name] })))
 
 const related = new Map<StackTech, Set<StackTech>>()
 for (const { items } of stack) {

@@ -9,4 +9,4 @@ LinkedIn: https://www.linkedin.com/in/markkopmann
 X: https://x.com/heymarkkop
 
 Marcelo builds practical web, AI, gamified, open-source, and onchain products.
-Highlighted work includes HabitChain, Minha Casa, Stipend Helper, Wedding Guest Planner, NFT Marketplace, Corvo Astral, RepoGPT, and Repo Env Generator.
+Highlighted work includes HabitChain, Prisma, Guest Planner, and Corvo Astral.

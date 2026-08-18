@@ -12,6 +12,7 @@ const securityPolicy = [
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+  "frame-src 'self' https://*.markkop.dev https://habitchain.xyz https://*.habitchain.xyz",
   "frame-ancestors 'none'",
   isProduction ? 'upgrade-insecure-requests' : '',
 ].filter(Boolean).join('; ')

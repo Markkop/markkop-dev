@@ -7,6 +7,7 @@ type ProjectCopy = {
   category: string
   metric: string
   timeframe: string
+  tabs?: Record<string, string>
 }
 
 export type SiteContent = {
@@ -46,6 +47,11 @@ export type SiteContent = {
     show: (title: string) => string
     preview: (title: string) => string
     hoverPreview: string
+    embedHint: string
+    embedBack: string
+    embedForward: string
+    embedReload: string
+    livePreview: string
     scroll: string
     keepScrolling: string
     items: Record<string, ProjectCopy>
@@ -84,6 +90,9 @@ const englishProjects = Object.fromEntries(
     category: project.category,
     metric: project.metric,
     timeframe: project.timeframe,
+    ...(project.media ? {
+      tabs: Object.fromEntries(project.media.flatMap((item) => item.label ? [[item.id, item.label]] : [])),
+    } : {}),
   }]),
 )
 
@@ -93,18 +102,16 @@ const portugueseProjects: Record<string, ProjectCopy> = {
     category: 'Produto Onchain',
     metric: 'Hábitos com valor em stake',
     timeframe: '2025–2026',
+    tabs: {
+      live: 'Prévia ao vivo',
+      pitch: 'Pitch de um slide',
+    },
   },
-  'minha-casa': {
+  prisma: {
     description: 'Um espaço para reunir anúncios de imóveis, comparar propriedades e planejar a compra de uma casa.',
     category: 'Plataforma Imobiliária',
     metric: 'Fluxo assistido por IA',
     timeframe: '2025–2026',
-  },
-  stipend: {
-    description: 'Extrai dados de recibos em PDF com IA, converte moedas e prepara rapidamente as informações de reembolso.',
-    category: 'Utilitário com IA',
-    metric: 'PDF para dados estruturados',
-    timeframe: '2025',
   },
   wedding: {
     description: 'Uma ferramenta focada em organizar convidados, convites, ordenação, detalhes e confirmações de presença.',
@@ -112,41 +119,11 @@ const portugueseProjects: Record<string, ProjectCopy> = {
     metric: 'Fluxo de convidados',
     timeframe: '2025–2026',
   },
-  'nft-marketplace': {
-    description: 'Um marketplace completo de NFTs criado para explorar comércio com smart contracts e propriedade descentralizada.',
-    category: 'Marketplace Web3',
-    metric: '181 estrelas no GitHub',
-    timeframe: '2022',
-  },
   'corvo-astral': {
     description: 'Um bot comunitário para Discord que reúne e disponibiliza informações úteis para jogadores de Wakfu.',
     category: 'Bot Comunitário',
     metric: '30 estrelas no GitHub',
     timeframe: '2020–presente',
-  },
-  repogpt: {
-    description: 'Combina os arquivos de um repositório em um pacote de texto limpo para contexto de LLMs e conversas sobre código.',
-    category: 'Ferramenta para Devs',
-    metric: 'Repositório para contexto',
-    timeframe: '2023–2024',
-  },
-  'repo-env-generator': {
-    description: 'Analisa um repositório e identifica suas variáveis de ambiente para acelerar a configuração do projeto.',
-    category: 'Ferramenta para Devs',
-    metric: 'Descoberta automática de envs',
-    timeframe: '2024',
-  },
-  'spotify-playlist-deleter': {
-    description: 'Um pequeno utilitário para selecionar e excluir várias playlists do Spotify de uma só vez.',
-    category: 'Ferramenta de Produtividade',
-    metric: '14 estrelas no GitHub',
-    timeframe: '2023',
-  },
-  'werewolf-moderator': {
-    description: 'Um companheiro para noites de jogo que ajuda moderadores a gerenciar papéis e estados em partidas de Lobisomem e Máfia.',
-    category: 'Utilitário para Jogos',
-    metric: 'Estado da partida ao vivo',
-    timeframe: '2023–2024',
   },
 }
 
@@ -197,6 +174,11 @@ export const content: Record<Language, SiteContent> = {
       show: (title) => `Show ${title}`,
       preview: (title) => `${title} project preview`,
       hoverPreview: 'Hover to scroll preview',
+      embedHint: 'Scroll to explore',
+      embedBack: 'Back to start',
+      embedForward: 'Forward',
+      embedReload: 'Reload preview',
+      livePreview: 'Live preview',
       scroll: 'Scroll to explore',
       keepScrolling: 'Keep scrolling',
       items: englishProjects,
@@ -309,6 +291,11 @@ export const content: Record<Language, SiteContent> = {
       show: (title) => `Mostrar ${title}`,
       preview: (title) => `Prévia do projeto ${title}`,
       hoverPreview: 'Passe o mouse para rolar a prévia',
+      embedHint: 'Role para explorar',
+      embedBack: 'Voltar ao início',
+      embedForward: 'Avançar',
+      embedReload: 'Recarregar prévia',
+      livePreview: 'Prévia ao vivo',
       scroll: 'Role para explorar',
       keepScrolling: 'Continue rolando',
       items: portugueseProjects,
