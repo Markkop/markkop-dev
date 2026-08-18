@@ -8,6 +8,7 @@ export type ProjectMedia = {
   id: string
   kind: 'live' | 'image' | 'video' | 'gallery'
   src?: string
+  srcMobile?: string
   images?: ProjectGalleryImage[]
   label?: string
 }
@@ -23,6 +24,7 @@ export type Project = {
   live: string
   code?: string
   image?: string
+  imageMobile?: string
   video?: string
   embed?: boolean
   media?: ProjectMedia[]
@@ -91,13 +93,14 @@ export const projects: Project[] = [
     tech: ['Next.js', 'TypeScript', 'React', 'Tailwind CSS'],
     live: 'https://www.halborn.com/',
     image: '/projects/halborn.jpg',
+    imageMobile: '/projects/halborn-mobile.jpg',
   },
   {
     title: 'HabitChain',
     slug: 'habitchain',
     description: 'A habit tracker with real skin in the game, using onchain incentives to turn consistency into commitment.',
     category: 'Onchain Product',
-    metric: 'Stake-backed habits',
+    metric: 'Hackathon winner',
     timeframe: '2025–2026',
     tech: ['TypeScript', 'Next.js', 'Solidity', 'Polkadot'],
     live: 'https://www.habitchain.xyz/',
@@ -107,7 +110,7 @@ export const projects: Project[] = [
     media: [
       { id: 'live', kind: 'live', label: 'Live preview' },
       { id: 'app', kind: 'live', src: 'https://app.habitchain.xyz/?mode=demo', label: 'App' },
-      { id: 'pitch', kind: 'image', src: '/projects/habitchain-pitch.png', label: 'One-slide pitch' },
+      { id: 'pitch', kind: 'image', src: '/projects/habitchain-pitch.png', srcMobile: '/projects/habitchain-pitch-mobile.png', label: 'One-slide pitch' },
     ],
   },
   {

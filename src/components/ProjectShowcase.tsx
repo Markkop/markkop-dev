@@ -3,18 +3,16 @@
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { ArrowLeft, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Github, Globe, Image as ImageIcon, Lock, Pointer, RotateCw, Video } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Github, Globe, Image as ImageIcon, Lock, MonitorSmartphone, Pointer, RotateCw, Video } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
 import TextReveal from '@/components/ui/TextReveal'
 import ShowcaseProgress from '@/components/ShowcaseProgress'
 import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectGalleryImage, type ProjectMedia } from '@/data/profile'
 import { invertOnLightLogos, techLogos } from '@/data/techLogos'
-import { projectScrollTop } from '@/lib/projectScroll'
 import { starAccentVars } from '@/data/starPalettes'
 
 const StarsBackground = dynamic(() => import('@/components/StarsBackground'), { ssr: false })
-const ScrollDownCue = dynamic(() => import('@/components/ScrollDownCue'), { ssr: false })
 
 function subscribeTheme(onStoreChange: () => void) {
   const observer = new MutationObserver(onStoreChange)
@@ -199,26 +197,29 @@ function SimulatorScrollImage({ src, label }: { src: string; label: string }) {
       className={`mk-simulator-image${interacting ? ' interacting' : ''}`}
       data-lenis-prevent={!isMobile || interacting ? true : undefined}
     >
-      <Image src={src} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" />
+      <Image src={src} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" style={{ width: '100%', height: 'auto' }} />
       <MobileInteractOverlay onEnter={() => setInteracting(true)} />
     </div>
   )
 }
 
-function SimulatorPreview({ project, label }: { project: Project; label: string }) {
+function SimulatorPreview({ project, label, phone = false }: { project: Project; label: string; phone?: boolean }) {
   if (project.video) {
     return <video className="mk-simulator-video" src={project.video} poster={project.image} autoPlay muted loop playsInline aria-label={label} />
   }
   if (project.image) {
-    return <SimulatorScrollImage src={project.image} label={label} />
+    const src = phone && project.imageMobile ? project.imageMobile : project.image
+    return <SimulatorScrollImage key={src} src={src} label={label} />
   }
   return <div className="mk-project-fallback"><Code2 size={44} /><strong>{project.title}</strong></div>
 }
 
-function SimulatorContainImage({ src, label }: { src: string; label: string }) {
+function SimulatorContainImage({ src, srcMobile, label }: { src: string; srcMobile?: string; label: string }) {
+  const isMobile = useMobileProjectMedia()
+  const imageSrc = isMobile && srcMobile ? srcMobile : src
   return (
     <div className="mk-simulator-contain">
-      <Image src={src} alt={label} fill sizes="(max-width: 1024px) 100vw, 50vw" style={{ objectFit: 'contain' }} />
+      <Image src={imageSrc} alt={label} fill sizes="(max-width: 1024px) 100vw, 50vw" style={{ objectFit: 'contain' }} />
     </div>
   )
 }
@@ -347,6 +348,9 @@ function SimulatorGallery({
       aria-roledescription="carousel"
       aria-label={currentCaption}
     >
+      <div className="mk-simulator-gallery-bar">
+        <small key={images[index]?.id} aria-live="polite">{currentCaption}</small>
+      </div>
       <div className="mk-simulator-gallery-stage">
         <div
           ref={viewportRef}
@@ -395,9 +399,6 @@ function SimulatorGallery({
           ))}
         </div>
       </div>
-      <div className="mk-simulator-gallery-bar">
-        <small key={images[index]?.id} aria-live="polite">{currentCaption}</small>
-      </div>
     </div>
   )
 }
@@ -410,6 +411,7 @@ function MediaFavicon({ kind }: { kind: ProjectMedia['kind'] }) {
 
 function ProjectSimulator({ project, label, interactive = true }: { project: Project; label: string; interactive?: boolean }) {
   const { t } = useLanguage()
+  const isMobile = useMobileProjectMedia()
   const copy = t.projects.items[project.slug]
   const media = project.media ?? []
   const hasTabs = media.length > 1
@@ -417,9 +419,13 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const [visited, setVisited] = useState<Set<string>>(() => new Set(media[0]?.id ? [media[0].id] : []))
   const [embedState, setEmbedState] = useState<Record<string, { key: number; loaded: boolean; reloading: boolean }>>({})
   const [galleryIndex, setGalleryIndex] = useState(0)
+  const [phonePreview, setPhonePreview] = useState(false)
   const fadeTimers = useRef<Record<string, number>>({})
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const embed = interactive && Boolean(project.embed)
+  const canToggleDevice = Boolean(project.imageMobile)
+  const showMobileImage = canToggleDevice && (isMobile !== phonePreview)
+  const compactChrome = showMobileImage && !isMobile
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0]
   const galleryImages = activeMedia?.kind === 'gallery' ? (activeMedia.images ?? []) : []
   const galleryActive = galleryImages.length > 0
@@ -429,7 +435,12 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const canControl = embed && liveActive && Boolean(activeEmbed?.loaded)
   const href = liveUrl(project, liveActive ? activeMedia : undefined)
   const galleryCaption = (id: string) => copy?.tabs?.[id] ?? galleryImages.find((image) => image.id === id)?.label ?? id
-  const address = liveActive ? displayAddress(href) : (activeMedia?.src?.split('/').pop() ?? '')
+  const mediaSrc = isMobile && activeMedia?.srcMobile ? activeMedia.srcMobile : activeMedia?.src
+  const address = liveActive ? displayAddress(href) : (mediaSrc?.split('/').pop() ?? '')
+
+  useEffect(() => {
+    setPhonePreview(false)
+  }, [isMobile, project.slug])
 
   useEffect(() => () => {
     Object.values(fadeTimers.current).forEach((id) => window.clearTimeout(id))
@@ -482,7 +493,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   }
 
   const livePanel = (item?: ProjectMedia) => {
-    if (!embed) return <SimulatorPreview project={project} label={label} />
+    if (!embed) return <SimulatorPreview project={project} label={label} phone={showMobileImage} />
     const id = item?.id ?? 'live'
     const state = embedState[id] ?? { key: 0, loaded: false, reloading: false }
     return (
@@ -510,13 +521,13 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
       )
     }
     if (item.kind === 'live') return livePanel(item)
-    if (item.kind === 'image' && item.src) return <SimulatorContainImage src={item.src} label={tabLabel(item)} />
+    if (item.kind === 'image' && item.src) return <SimulatorContainImage src={item.src} srcMobile={item.srcMobile} label={tabLabel(item)} />
     if (item.kind === 'video' && item.src) return <SimulatorVideo src={item.src} poster={project.image} label={tabLabel(item)} active={active} />
-    return <SimulatorPreview project={project} label={label} />
+    return <SimulatorPreview project={project} label={label} phone={showMobileImage} />
   }
 
   return (
-    <div className={`mk-simulator${embed ? ' embed' : ''}${hasTabs ? ' tabbed' : ''}${galleryActive ? ' gallery' : ''}`} data-slug={project.slug}>
+    <div className={`mk-simulator${embed ? ' embed' : ''}${hasTabs ? ' tabbed' : ''}${galleryActive ? ' gallery' : ''}${compactChrome ? ' phone' : ''}`} data-slug={project.slug}>
       {galleryActive ? null : hasTabs ? (
         <div className="mk-simulator-tabs" role="tablist" aria-label={label}>
           <span className="dots"><i /><i /><i /></span>
@@ -564,13 +575,23 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
               <Lock aria-hidden="true" />
               <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
                 <small>{address}</small>
-                <ExternalLink />
               </a>
             </>
           ) : (
             <small>{address}</small>
           )}
         </span>
+        {canToggleDevice ? (
+          <button
+            type="button"
+            className="device"
+            aria-label={showMobileImage ? t.projects.showDesktopPreview : t.projects.showMobilePreview}
+            aria-pressed={showMobileImage}
+            onClick={() => setPhonePreview((current) => !current)}
+          >
+            <MonitorSmartphone />
+          </button>
+        ) : null}
       </div>
       )}
       <div className="mk-simulator-screen">
@@ -594,6 +615,19 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
       </div>
     </div>
   )
+}
+
+const ROOT_ACCENT_VARS = ['--mk-accent', '--mk-accent-rgb', '--mk-accent-deep', '--mk-accent-ink'] as const
+
+function applyRootAccent(slug: string, theme: 'dark' | 'light') {
+  const root = document.documentElement.style
+  const vars = starAccentVars(slug, theme)
+  for (const key of ROOT_ACCENT_VARS) root.setProperty(key, vars[key])
+}
+
+function clearRootAccent() {
+  const root = document.documentElement.style
+  for (const key of ROOT_ACCENT_VARS) root.removeProperty(key)
 }
 
 function ProjectDetails({ project }: { project: Project }) {
@@ -641,35 +675,28 @@ export default function ProjectShowcase() {
   useEffect(() => {
     const track = trackRef.current
     if (!track) return
-    const root = document.documentElement
     const observer = new IntersectionObserver(([entry]) => {
       progressVisible.current = entry.isIntersecting
       if (!entry.isIntersecting) {
-        root.style.removeProperty('--mk-top-progress')
-        root.style.removeProperty('--mk-top-progress-rgb')
+        clearRootAccent()
         return
       }
-      const vars = starAccentVars(
+      applyRootAccent(
         projects[activeRef.current].slug,
         document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
       )
-      root.style.setProperty('--mk-top-progress', vars['--mk-accent'])
-      root.style.setProperty('--mk-top-progress-rgb', vars['--mk-accent-rgb'])
     })
     observer.observe(track)
     return () => {
       observer.disconnect()
       progressVisible.current = false
-      root.style.removeProperty('--mk-top-progress')
-      root.style.removeProperty('--mk-top-progress-rgb')
+      clearRootAccent()
     }
   }, [])
 
   useEffect(() => {
     if (!progressVisible.current) return
-    const vars = starAccentVars(project.slug, theme)
-    document.documentElement.style.setProperty('--mk-top-progress', vars['--mk-accent'])
-    document.documentElement.style.setProperty('--mk-top-progress-rgb', vars['--mk-accent-rgb'])
+    applyRootAccent(project.slug, theme)
   }, [project.slug, theme])
 
   return (
@@ -689,24 +716,12 @@ export default function ProjectShowcase() {
         <div className="mk-project-stage" style={accentVars}>
           <StarsBackground slug={project.slug} />
           <ShowcaseProgress progress={scrollYProgress} segments={projects.length} />
-          <div className="mk-project-topbar">
-            <span><strong>{String(active + 1).padStart(2, '0')}</strong><i>/</i>{String(projects.length).padStart(2, '0')}</span>
-            <div>{projects.map((item, index) => <button key={item.slug} className={index === active ? 'active' : ''} aria-label={t.projects.show(item.title)} onClick={() => {
-              const track = trackRef.current
-              if (!track) return
-              window.scrollTo({ top: projectScrollTop(track, index, projects.length), behavior: 'smooth' })
-            }}><i />{index === active && <small>{item.title}</small>}</button>)}</div>
-          </div>
           <AnimatePresence mode="popLayout">
             <motion.article className="mk-project-slide" key={project.slug} style={accentVars} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.25 }}>
               <ProjectDetails project={project} />
               <div className="mk-project-simulator"><ProjectSimulator project={project} label={t.projects.preview(project.title)} /></div>
             </motion.article>
           </AnimatePresence>
-          <div className="mk-project-cue">
-            <ScrollDownCue />
-            <small>{active < projects.length - 1 ? t.projects.scroll : t.projects.keepScrolling}</small>
-          </div>
         </div>
       </div>
     </section>

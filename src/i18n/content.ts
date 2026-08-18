@@ -46,18 +46,18 @@ export type SiteContent = {
     visit: string
     source: string
     choose: string
-    show: (title: string) => string
     preview: (title: string) => string
     embedBack: string
     embedForward: string
     embedReload: string
+    showMobilePreview: string
+    showDesktopPreview: string
     galleryPrev: string
     galleryNext: string
     tapToInteract: string
     livePreview: string
     pitchShort: string
     scroll: string
-    keepScrolling: string
     items: Record<string, ProjectCopy>
   }
   stack: { eyebrow: string; title: string; titleHighlight: string; intro: string; assemble: string }
@@ -115,7 +115,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
   habitchain: {
     description: 'Um rastreador de hábitos com compromisso real, usando incentivos onchain para transformar consistência em responsabilidade.',
     category: 'Produto Onchain',
-    metric: 'Hábitos com valor em stake',
+    metric: 'Vencedor de Hackathon',
     timeframe: '2025–2026',
     tabs: {
       live: 'Prévia ao vivo',
@@ -201,18 +201,18 @@ export const content: Record<Language, SiteContent> = {
       visit: 'Visit project',
       source: 'Source',
       choose: 'Choose a project',
-      show: (title) => `Show ${title}`,
       preview: (title) => `${title} project preview`,
       embedBack: 'Back to start',
       embedForward: 'Forward',
       embedReload: 'Reload preview',
+      showMobilePreview: 'Show mobile preview',
+      showDesktopPreview: 'Show desktop preview',
       galleryPrev: 'Previous screenshot',
       galleryNext: 'Next screenshot',
       tapToInteract: 'Tap to interact',
       livePreview: 'Live preview',
       pitchShort: 'Pitch',
       scroll: 'Scroll to explore',
-      keepScrolling: 'Keep scrolling',
       items: englishProjects,
     },
     stack: {
@@ -322,18 +322,18 @@ export const content: Record<Language, SiteContent> = {
       visit: 'Visitar projeto',
       source: 'Código',
       choose: 'Escolha um projeto',
-      show: (title) => `Mostrar ${title}`,
       preview: (title) => `Prévia do projeto ${title}`,
       embedBack: 'Voltar ao início',
       embedForward: 'Avançar',
       embedReload: 'Recarregar prévia',
+      showMobilePreview: 'Mostrar prévia mobile',
+      showDesktopPreview: 'Mostrar prévia desktop',
       galleryPrev: 'Captura anterior',
       galleryNext: 'Próxima captura',
       tapToInteract: 'Toque para interagir',
       livePreview: 'Prévia ao vivo',
       pitchShort: 'Pitch',
       scroll: 'Role para explorar',
-      keepScrolling: 'Continue rolando',
       items: portugueseProjects,
     },
     stack: {

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { AnimatePresence, LayoutGroup, motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
 import { useLenis } from 'lenis/react'
-import { ChevronDown, ChevronsUp, Code2, Github, Linkedin, Menu, Moon, Sparkles, Sun, Twitter, X } from 'lucide-react'
+import { ChevronDown, ChevronsUp, Code2, Menu, Moon, Sparkles, Sun, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react'
@@ -714,28 +714,6 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
   )
 }
 
-const socialItems = [
-  { label: 'GitHub', href: profile.links.github, Icon: Github, color: '#f0f6fc', bg: 'rgba(240,246,252,.08)' },
-  { label: 'LinkedIn', href: profile.links.linkedin, Icon: Linkedin, color: '#0a66c2', bg: 'rgba(10,102,194,.12)' },
-  { label: 'X', href: profile.links.x, Icon: Twitter, color: '#8b5cf6', bg: 'rgba(139,92,246,.12)' },
-]
-
-function SocialSidebar() {
-  const [hovered, setHovered] = useState<string | null>(null)
-  return (
-    <motion.aside className="mk-social" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.9, delay: 1.8 }}>
-      <i />
-      {socialItems.map(({ label, href, Icon, color, bg }) => (
-        <span key={label}>
-          <a href={href} target="_blank" rel="noreferrer" aria-label={label} onMouseEnter={() => setHovered(label)} onMouseLeave={() => setHovered(null)} style={hovered === label ? { color, background: bg, borderColor: `${color}55` } : undefined}><Icon size={18} /></a>
-          <small className={hovered === label ? 'visible' : ''} style={{ color }}>{label}</small>
-        </span>
-      ))}
-      <i />
-    </motion.aside>
-  )
-}
-
 function getVisibleProjectTrack() {
   const track = document.querySelector('.mk-project-track')
   if (!(track instanceof HTMLElement)) return null
@@ -918,7 +896,6 @@ export default function PortfolioShell({ children }: { children: ReactNode }) {
       <LoadingScreen key={loaderPlayId} forced={loaderPlayId > 0} dismissId={loaderDismissId} onActiveChange={setLoaderActive} onChromeChange={setLoaderChrome} />
       <a className="mk-skip" href="#main-content">{t.accessibility.skip}</a>
       <Navbar onBrandClick={replaySplash} />
-      <SocialSidebar />
       <ControlDock theme={theme} onToggleTheme={toggleTheme} loaderActive={loaderActive} loaderChrome={loaderChrome} onToggleStartup={toggleStartupUi} />
       {children}
     </>
