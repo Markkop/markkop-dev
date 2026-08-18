@@ -277,7 +277,7 @@ export const content: Record<Language, SiteContent> = {
         { label: '// MOTIVAÇÃO', title: 'O que me motiva', text: 'Quero me divertir, trabalhar com o que gosto e dar o meu melhor nisso. O feedback de gestores e colegas sempre indica que estou no caminho certo.' },
       ],
       journey: '// Carreira',
-      milestonesHeading: '// Marcos',
+      milestonesHeading: '// Conquistas',
       meAndYou: 'Eu e Você',
       careerMilestones: [
         'Full-stack Developer',
