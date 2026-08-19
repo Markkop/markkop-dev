@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Calendar, Code2, Download, Github, Linkedin, Twitter } from 'lucide-react'
+import { Calendar, Download, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
 import PortfolioShell from '@/components/PortfolioShell'
 import ProjectShowcase from '@/components/ProjectShowcase'
 import StackShowcase from '@/components/StackShowcase'
@@ -211,17 +211,11 @@ function Contact() {
         <SectionWrapper delay={0.1}><h2>{t.contact.title}<br /><motion.span animate={{ opacity: [1, 0.72, 1] }} transition={{ duration: 3, repeat: Infinity }}>{t.contact.titleHighlight}</motion.span></h2></SectionWrapper>
         <SectionWrapper delay={0.2}><p className="mk-contact-copy">{t.contact.intro}</p></SectionWrapper>
         <SectionWrapper delay={0.3}>
-          <div className="mk-contact-actions">
-            <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>{t.nav.connect}<ArrowRight size={15} /></motion.a>
-            <motion.a className="secondary" href={profile.links.github} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>{t.contact.github}<Github size={15} /></motion.a>
-          </div>
-        </SectionWrapper>
-        <SectionWrapper delay={0.4}>
           <div className="mk-contact-socials">
-            <a href={profile.links.github} target="_blank" rel="noreferrer"><Github size={14} />GitHub</a>
-            <a href={profile.links.linkedin} target="_blank" rel="noreferrer"><Linkedin size={14} />LinkedIn</a>
-            <a href={profile.links.x} target="_blank" rel="noreferrer"><Twitter size={14} />X</a>
-            <Link href="/links"><Code2 size={14} />{t.contact.allLinks}</Link>
+            <motion.a href={profile.links.github} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Github size={14} />GitHub</motion.a>
+            <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Linkedin size={14} />LinkedIn</motion.a>
+            <motion.a href={profile.links.x} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Twitter size={14} />X</motion.a>
+            <motion.a href={profile.links.instagram} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Instagram size={14} />Instagram</motion.a>
           </div>
         </SectionWrapper>
       </div>

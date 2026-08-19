@@ -12,7 +12,7 @@ type ProjectCopy = {
 
 export type SiteContent = {
   language: { label: string; switchLabel: string }
-  nav: { home: string; about: string; projects: string; stack: string; contact: string; connect: string; links: string }
+  nav: { home: string; about: string; projects: string; stack: string; contact: string; connect: string; links: string; linktree: string }
   accessibility: { skip: string; backToTop: string; nextSection: string; startupUi: (active: boolean) => string; primaryNav: string; toggleMenu: string; socialProfiles: string; theme: (theme: 'dark' | 'light') => string }
   status: { building: string; latest: string }
   hero: {
@@ -67,10 +67,6 @@ export type SiteContent = {
     title: string
     titleHighlight: string
     intro: string
-    linkedin: string
-    github: string
-    allLinks: string
-    allLinksDescription: string
   }
   footer: { built: string }
   links: {
@@ -118,7 +114,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
     metric: 'Vencedor de Hackathon',
     timeframe: '2025–2026',
     tabs: {
-      live: 'Prévia ao vivo',
+      live: 'Site',
       app: 'App',
       pitch: 'Pitch de um slide',
     },
@@ -158,7 +154,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
 export const content: Record<Language, SiteContent> = {
   en: {
     language: { label: 'English', switchLabel: 'Switch language to Portuguese' },
-    nav: { home: 'Home', about: 'About', projects: 'Projects', stack: 'Stack', contact: 'Contact', connect: 'Connect', links: 'Links' },
+    nav: { home: 'Home', about: 'About', projects: 'Projects', stack: 'Stack', contact: 'Contact', connect: 'Connect', links: 'Links', linktree: 'Linktree' },
     accessibility: {
       skip: 'Skip to content',
       backToTop: 'Scroll back to top',
@@ -210,7 +206,7 @@ export const content: Record<Language, SiteContent> = {
       galleryPrev: 'Previous screenshot',
       galleryNext: 'Next screenshot',
       tapToInteract: 'Tap to interact',
-      livePreview: 'Live preview',
+      livePreview: 'Website',
       pitchShort: 'Pitch',
       scroll: 'Scroll to explore',
       items: englishProjects,
@@ -237,10 +233,6 @@ export const content: Record<Language, SiteContent> = {
       title: 'Let\'s Build Your Next',
       titleHighlight: 'Web Project.',
       intro: 'Full-stack developer in Florianópolis, Brazil. Available for freelance, contracts, and remote collaborations worldwide.',
-      linkedin: 'Start a conversation',
-      github: 'Explore 98+ repositories',
-      allLinks: 'All links',
-      allLinksDescription: 'Projects and profiles',
     },
     footer: { built: 'Designed & built by Mark · markkop.dev' },
     links: {
@@ -259,7 +251,7 @@ export const content: Record<Language, SiteContent> = {
   },
   'pt-BR': {
     language: { label: 'Português', switchLabel: 'Mudar idioma para inglês' },
-    nav: { home: 'Início', about: 'Sobre', projects: 'Projetos', stack: 'Stack', contact: 'Contato', connect: 'Conectar', links: 'Links' },
+    nav: { home: 'Início', about: 'Sobre', projects: 'Projetos', stack: 'Stack', contact: 'Contato', connect: 'Conectar', links: 'Links', linktree: 'Linktree' },
     accessibility: {
       skip: 'Pular para o conteúdo',
       backToTop: 'Voltar ao topo',
@@ -331,7 +323,7 @@ export const content: Record<Language, SiteContent> = {
       galleryPrev: 'Captura anterior',
       galleryNext: 'Próxima captura',
       tapToInteract: 'Toque para interagir',
-      livePreview: 'Prévia ao vivo',
+      livePreview: 'Site',
       pitchShort: 'Pitch',
       scroll: 'Role para explorar',
       items: portugueseProjects,
@@ -358,10 +350,6 @@ export const content: Record<Language, SiteContent> = {
       title: 'Vamos construir seu próximo',
       titleHighlight: 'projeto web.',
       intro: 'Desenvolvedor full-stack em Florianópolis, Brasil. Disponível para freelance, contratos e colaborações remotas no mundo todo.',
-      linkedin: 'Iniciar uma conversa',
-      github: 'Explorar mais de 98 repositórios',
-      allLinks: 'Todos os links',
-      allLinksDescription: 'Projetos e perfis',
     },
     footer: { built: 'Projetado e desenvolvido por Mark · markkop.dev' },
     links: {

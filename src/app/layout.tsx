@@ -75,7 +75,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{document.documentElement.dataset.theme=localStorage.getItem('markkop-theme')||'dark';var language=localStorage.getItem('markkop-language')==='pt-BR'?'pt-BR':'en';document.documentElement.dataset.language=language;document.documentElement.lang=language}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.language='en'}(function(){var v=window.visualViewport;var h=v?v.height:window.innerHeight;var b=v?Math.max(0,window.innerHeight-v.height-v.offsetTop):0;var r=document.documentElement.style;r.setProperty('--mk-vvh',h+'px');r.setProperty('--mk-vv-bottom',b+'px')})()",
+              "try{document.documentElement.dataset.theme=localStorage.getItem('markkop-theme')||'dark';var language=localStorage.getItem('markkop-language')==='pt-BR'?'pt-BR':'en';document.documentElement.dataset.language=language;document.documentElement.lang=language}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.language='en'}(function(){var v=window.visualViewport;if(v&&v.scale!==1)return;var h=v?v.height:window.innerHeight;var b=v?Math.max(0,window.innerHeight-v.height-v.offsetTop):0;var r=document.documentElement.style;r.setProperty('--mk-vvh',h+'px');r.setProperty('--mk-vv-bottom',b+'px')})()",
           }}
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

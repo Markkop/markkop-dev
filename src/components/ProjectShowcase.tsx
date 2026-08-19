@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { ArrowLeft, ArrowRight, ChevronDown, ChevronLeft, ChevronRight, Code2, ExternalLink, Github, Globe, Image as ImageIcon, Lock, MonitorSmartphone, Pointer, RotateCw, Video } from 'lucide-react'
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type KeyboardEvent, type PointerEvent, type RefObject } from 'react'
+import PinchZoomFrame from '@/components/PinchZoomFrame'
 import TextReveal from '@/components/ui/TextReveal'
 import ShowcaseProgress from '@/components/ShowcaseProgress'
 import { useLanguage } from '@/context/LanguageContext'
@@ -131,6 +132,7 @@ function SimulatorEmbed({
       }
 
       // Inner 100dvh / visualViewport often resolve against the top-level window, not the iframe.
+      if (window.visualViewport && window.visualViewport.scale !== 1) return
       const outerHeight = window.visualViewport?.height ?? window.innerHeight
       if (outerHeight <= 0) return
       const nextScale = height / outerHeight
@@ -197,7 +199,9 @@ function SimulatorScrollImage({ src, label }: { src: string; label: string }) {
       className={`mk-simulator-image${interacting ? ' interacting' : ''}`}
       data-lenis-prevent={!isMobile || interacting ? true : undefined}
     >
-      <Image src={src} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" style={{ width: '100%', height: 'auto' }} />
+      <PinchZoomFrame scrollParent className="mk-pinch-zoom-scroll">
+        <Image src={src} alt={label} width={1200} height={2400} sizes="(max-width: 1024px) 100vw, 50vw" style={{ width: '100%', height: 'auto' }} />
+      </PinchZoomFrame>
       <MobileInteractOverlay onEnter={() => setInteracting(true)} />
     </div>
   )
@@ -218,9 +222,9 @@ function SimulatorContainImage({ src, srcMobile, label }: { src: string; srcMobi
   const isMobile = useMobileProjectMedia()
   const imageSrc = isMobile && srcMobile ? srcMobile : src
   return (
-    <div className="mk-simulator-contain">
+    <PinchZoomFrame className="mk-simulator-contain" resetKey={imageSrc}>
       <Image src={imageSrc} alt={label} fill sizes="(max-width: 1024px) 100vw, 50vw" style={{ objectFit: 'contain' }} />
-    </div>
+    </PinchZoomFrame>
   )
 }
 
@@ -252,7 +256,8 @@ function SimulatorGallery({
 }) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const indexRef = useRef(index)
-  const drag = useRef<{ id: number; x: number; dx: number } | null>(null)
+  const drag = useRef<{ id: number; x: number; dx: number; captured?: boolean } | null>(null)
+  const pointers = useRef(new Set<number>())
   const wheelLock = useRef(false)
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -294,8 +299,19 @@ function SimulatorGallery({
     return () => node.removeEventListener('wheel', onWheel)
   }, [onIndexChange, slideCount])
 
-  const endDrag = () => {
-    if (!drag.current) return
+  const cancelDrag = () => {
+    const current = drag.current
+    drag.current = null
+    setDragging(false)
+    setDragX(0)
+    if (current && viewportRef.current?.hasPointerCapture(current.id)) {
+      viewportRef.current.releasePointerCapture(current.id)
+    }
+  }
+
+  const endDrag = (event?: PointerEvent<HTMLDivElement>) => {
+    if (event) pointers.current.delete(event.pointerId)
+    if (!drag.current || (event && drag.current.id !== event.pointerId)) return
     const dx = drag.current.dx
     const width = viewportRef.current?.clientWidth ?? 1
     drag.current = null
@@ -307,14 +323,29 @@ function SimulatorGallery({
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
+    if ((event.target as Element).closest('[data-pinched]')) return
+    if (event.isPrimary) pointers.current.clear()
+    pointers.current.add(event.pointerId)
+    if (pointers.current.size > 1) {
+      cancelDrag()
+      return
+    }
     drag.current = { id: event.pointerId, x: event.clientX, dx: 0 }
     setDragging(true)
-    event.currentTarget.setPointerCapture(event.pointerId)
+    if (event.pointerType !== 'touch') event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (pointers.current.size > 1) {
+      cancelDrag()
+      return
+    }
     if (drag.current?.id !== event.pointerId) return
     const dx = event.clientX - drag.current.x
+    if (!drag.current.captured && event.pointerType === 'touch' && Math.abs(dx) > 12) {
+      event.currentTarget.setPointerCapture(event.pointerId)
+      drag.current.captured = true
+    }
     const atStart = indexRef.current === 0 && dx > 0
     const atEnd = indexRef.current === slideCount - 1 && dx < 0
     const next = atStart || atEnd ? dx * 0.28 : dx
@@ -368,14 +399,16 @@ function SimulatorGallery({
           >
             {images.map((image, i) => (
               <figure key={image.id} className="mk-simulator-gallery-slide">
-                <Image
-                  src={image.src}
-                  alt={caption(image.id)}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  priority={Math.abs(i - index) <= 1}
-                  draggable={false}
-                />
+                <PinchZoomFrame className="mk-pinch-zoom-fill" resetKey={index}>
+                  <Image
+                    src={image.src}
+                    alt={caption(image.id)}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    priority={Math.abs(i - index) <= 1}
+                    draggable={false}
+                  />
+                </PinchZoomFrame>
               </figure>
             ))}
           </div>
@@ -647,7 +680,6 @@ function ProjectDetails({ project }: { project: Project }) {
       </div>
       <p>{copy.description}</p>
       <div className="mk-project-tech">{project.tech.map((tech) => <span key={tech}>{techLogos[tech] && <Image className={invertOnLightLogos.has(tech) ? 'mk-tech-invert' : undefined} src={techLogos[tech]} alt="" width={13} height={13} />}<small>{tech}</small></span>)}</div>
-      <div className="mk-project-role"><span>{copy.category}</span><i /><span>{copy.timeframe}</span></div>
       <div className="mk-project-actions">
         <a href={project.live} target="_blank" rel="noreferrer">{t.projects.visit}<ArrowRight size={14} /></a>
         {project.code && <a className="secondary" href={project.code} target="_blank" rel="noreferrer"><Github size={14} />{t.projects.source}</a>}
@@ -685,7 +717,7 @@ export default function ProjectShowcase() {
         projects[activeRef.current].slug,
         document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
       )
-    })
+    }, { rootMargin: '0px 0px -50% 0px', threshold: 0 })
     observer.observe(track)
     return () => {
       observer.disconnect()

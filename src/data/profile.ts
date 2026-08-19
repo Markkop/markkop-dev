@@ -43,6 +43,8 @@ export const profile = {
     github: 'https://github.com/Markkop',
     linkedin: 'https://www.linkedin.com/in/markkopmann',
     x: 'https://x.com/heymarkkop',
+    instagram: 'https://www.instagram.com/markkop.dev',
+    linktree: 'https://linktree.markkop.dev',
   },
   stats: [
     { value: '2019', prefix: 'Since', label: 'Programming' },
@@ -90,7 +92,7 @@ export const projects: Project[] = [
     category: 'Company Website',
     metric: 'WordPress → Next.js',
     timeframe: '2022–present',
-    tech: ['Next.js', 'TypeScript', 'React', 'Tailwind CSS'],
+    tech: ['Next.js', 'Strapi CMS', 'React', 'Tailwind CSS'],
     live: 'https://www.halborn.com/',
     image: '/projects/halborn.jpg',
     imageMobile: '/projects/halborn-mobile.jpg',
@@ -102,13 +104,13 @@ export const projects: Project[] = [
     category: 'Onchain Product',
     metric: 'Hackathon winner',
     timeframe: '2025–2026',
-    tech: ['TypeScript', 'Next.js', 'Solidity', 'Polkadot'],
+    tech: ['TypeScript', 'Next.js', 'Solidity', 'Base'],
     live: 'https://www.habitchain.xyz/',
     code: 'https://github.com/Markkop/habitchain-2',
     image: '/projects/habitchain.png',
     embed: true,
     media: [
-      { id: 'live', kind: 'live', label: 'Live preview' },
+      { id: 'live', kind: 'live', label: 'Website' },
       { id: 'app', kind: 'live', src: 'https://app.habitchain.xyz/?mode=demo', label: 'App' },
       { id: 'pitch', kind: 'image', src: '/projects/habitchain-pitch.png', srcMobile: '/projects/habitchain-pitch-mobile.png', label: 'One-slide pitch' },
     ],
@@ -120,7 +122,7 @@ export const projects: Project[] = [
     category: 'Property Platform',
     metric: 'AI-assisted workflow',
     timeframe: '2025–2026',
-    tech: ['Svelte', 'TypeScript', 'PostgreSQL', 'Elixir'],
+    tech: ['Svelte', 'Elixir', 'PostgreSQL', 'OpenAI'],
     live: 'https://casas.markkop.dev/',
     image: '/projects/minha-casa.png',
     video: '/projects/minha-casa.webm',
@@ -147,7 +149,7 @@ export const projects: Project[] = [
     metric: '500+ Discord servers',
     timeframe: '2020–2025',
     tech: ['TypeScript', 'Node.js', 'Discord'],
-    live: 'https://github.com/Markkop/corvo-astral',
+    live: 'https://top.gg/bot/750529201161109507',
     code: 'https://github.com/Markkop/corvo-astral',
     image: '/projects/corvo-astral/alma.png',
     media: [{
@@ -172,9 +174,11 @@ export const projects: Project[] = [
 export const stack = [
   { group: 'Next.js Product', items: ['Next.js', 'Node.js', 'PostgreSQL', 'GitHub', 'Vercel', 'Codex'] },
   { group: 'React AI App', items: ['React', 'Tailwind CSS', 'Supabase', 'GitHub', 'Vercel', 'OpenAI'] },
+  { group: 'Frontend CMS Site', items: ['Next.js', 'React', 'Tailwind CSS', 'Strapi CMS'] },
   { group: 'Self-hosted Svelte App', items: ['Svelte', 'Elixir', 'PostgreSQL', 'Forgejo', 'Docker', 'Claude'] },
   { group: 'Hardhat EVM dApp', items: ['React', 'TypeScript', 'Node.js', 'Solidity', 'Hardhat', 'EVM', 'GitHub', 'VS Code'] },
   { group: 'Foundry EVM dApp', items: ['Next.js', 'TypeScript', 'Node.js', 'Solidity', 'Foundry', 'EVM', 'GitHub', 'Cursor'] },
+  { group: 'Base dApp', items: ['Next.js', 'TypeScript', 'Solidity', 'Base'] },
   { group: 'Polkadot dApp', items: ['Next.js', 'TypeScript', 'Node.js', 'Polkadot', 'Docker', 'GitHub'] },
 ] as const
 

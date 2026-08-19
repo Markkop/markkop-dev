@@ -1,9 +1,8 @@
 'use client'
 
-import Link from 'next/link'
 import { AnimatePresence, LayoutGroup, motion, useMotionValueEvent, useReducedMotion, useScroll } from 'framer-motion'
 import { useLenis } from 'lenis/react'
-import { ChevronDown, ChevronsUp, Code2, Menu, Moon, Sparkles, Sun, X } from 'lucide-react'
+import { ChevronDown, ChevronsUp, Menu, Moon, Sparkles, Sun, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 import { usePathname } from 'next/navigation'
 import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react'
@@ -672,9 +671,10 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
               {hovered === index && <motion.i layoutId="mk-nav-hover" transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
             </a>
           ))}
-          <i className="mk-nav-divider" />
-          <Link className="mk-nav-secondary" href="/links"><Code2 size={14} /> {t.nav.links}</Link>
-          <a className="mk-nav-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
+          <a href={profile.links.linktree} target="_blank" rel="noreferrer" onMouseEnter={() => setHovered(links.length)}>
+            <span>{t.nav.linktree}</span>
+            {hovered === links.length && <motion.i layoutId="mk-nav-hover" transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
+          </a>
         </nav>
       </motion.header>
 
@@ -703,9 +703,10 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
                     <i />{link.label}
                   </motion.a>
                 ))}
-                <Link href="/links" onClick={() => setOpen(false)}><i />{t.nav.links}</Link>
+                <motion.a href={profile.links.linktree} target="_blank" rel="noreferrer" onClick={() => setOpen(false)} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 + links.length * 0.04 }}>
+                  <i />{t.nav.linktree}
+                </motion.a>
               </div>
-              <a className="mk-drawer-cta" href={profile.links.linkedin} target="_blank" rel="noreferrer">{t.nav.connect}</a>
             </motion.aside>
           </>
         )}
