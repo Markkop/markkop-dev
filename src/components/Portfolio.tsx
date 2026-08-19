@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Calendar, Download, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
 import NowGallery from '@/components/NowGallery'
 import PhotoGallery from '@/components/PhotoGallery'
@@ -52,9 +52,17 @@ function JourneyOrg({ org }: { org: TimelineOrg }) {
   return <span className="mk-journey-org">{content}</span>
 }
 
-function TimelineNode({ milestone, role, column, branch }: { milestone: TimelineItem; role?: string; column: number; branch?: boolean }) {
+function TimelineNode({ milestone, role, column, branch, revealIndex }: { milestone: TimelineItem; role?: string; column: number; branch?: boolean; revealIndex: number }) {
+  const reduceMotion = useReducedMotion()
   return (
-    <span className={branch ? 'mk-journey-item mk-journey-branch' : 'mk-journey-item'} style={{ '--mk-col': column } as React.CSSProperties}>
+    <motion.span
+      className={branch ? 'mk-journey-item mk-journey-branch' : 'mk-journey-item'}
+      style={{ '--mk-col': column } as React.CSSProperties}
+      initial={reduceMotion ? false : { opacity: 0, scale: 0.8 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+      viewport={{ once: true, amount: 0.45 }}
+      transition={{ duration: 0.45, delay: revealIndex * 0.03, ease: [0.16, 1, 0.3, 1] }}
+    >
       <span className="mk-journey-mark"><i /><strong>{milestone.year}</strong></span>
       {milestone.now ? null : (
         <div className="mk-journey-brands">
@@ -62,7 +70,7 @@ function TimelineNode({ milestone, role, column, branch }: { milestone: Timeline
         </div>
       )}
       {role ? <small className={milestone.now ? 'mk-journey-now' : undefined}>{role}</small> : null}
-    </span>
+    </motion.span>
   )
 }
 
@@ -77,10 +85,10 @@ function Timeline({ label, milestonesLabel, items, roles, branches, branchRoles 
         {items.map((milestone, index) => {
           const column = index * 2 + 1
           const branch = index < items.length - 1 ? branches[index] : undefined
-          const node = branch ? <TimelineNode milestone={branch} role={branchRoles[index]} column={column + 1} branch /> : null
+          const node = branch ? <TimelineNode milestone={branch} role={branchRoles[index]} column={column + 1} branch revealIndex={index * 2 + 1} /> : null
           return (
             <div className="mk-journey-group" key={`${milestone.year}-${index}`}>
-              <TimelineNode milestone={milestone} role={roles[index]} column={column} />
+              <TimelineNode milestone={milestone} role={roles[index]} column={column} revealIndex={index * 2} />
               {branch ? (
                 <>
                   <i className="mk-journey-connector" style={{ '--mk-col': column + 1 } as React.CSSProperties} />
@@ -165,7 +173,7 @@ function About() {
           ))}
         </div>
 
-        <SectionWrapper delay={0.4}>
+        <SectionWrapper className="mk-journey-reveal" delay={0.4}>
           <Timeline
             label={t.about.journey}
             milestonesLabel={t.about.milestonesHeading}

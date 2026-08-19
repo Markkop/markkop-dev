@@ -9,7 +9,7 @@ export const siteConfig = {
   handle: '@heymarkkop',
   links: {
     github: 'https://github.com/Markkop',
-    linkedin: 'https://www.linkedin.com/in/markkopmann',
+    linkedin: 'https://www.linkedin.com/in/marcelo-kopmann/',
     x: 'https://x.com/heymarkkop',
   },
 } as const

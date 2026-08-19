@@ -5,7 +5,7 @@ Role: Software Engineer
 Location: Santa Catarina, Brazil
 Website: https://markkop.dev
 GitHub: https://github.com/Markkop
-LinkedIn: https://www.linkedin.com/in/markkopmann
+LinkedIn: https://www.linkedin.com/in/marcelo-kopmann/
 X: https://x.com/heymarkkop
 
 Marcelo builds practical web, AI, gamified, open-source, and onchain products.

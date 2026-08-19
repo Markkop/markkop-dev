@@ -41,7 +41,7 @@ export const profile = {
     'Full-stack engineer turning ideas into useful tools, playful experiences, and open-source software.',
   links: {
     github: 'https://github.com/Markkop',
-    linkedin: 'https://www.linkedin.com/in/markkopmann',
+    linkedin: 'https://www.linkedin.com/in/marcelo-kopmann/',
     x: 'https://x.com/heymarkkop',
     instagram: 'https://www.instagram.com/markkop.dev',
     linktree: 'https://linktree.markkop.dev',
