@@ -25,6 +25,27 @@ const nextConfig: NextConfig = {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        has: [{ type: 'host', value: 'www.markkop.dev' }],
+        destination: 'https://markkop.dev',
+        permanent: true,
+      },
+      {
+        source: '/:path+',
+        has: [{ type: 'host', value: 'www.markkop.dev' }],
+        destination: 'https://markkop.dev/:path+',
+        permanent: true,
+      },
+    ]
+  },
+  async rewrites() {
+    return [
+      { source: '/favicon.ico', destination: '/brand-icon.png' },
+    ]
+  },
   async headers() {
     return [
       {
@@ -44,7 +65,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
+            value: 'DENY'
           },
           {
             key: 'X-Content-Type-Options',

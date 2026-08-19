@@ -91,6 +91,8 @@ export type SiteContent = {
     selectedWork: string
     github: string
     linkedin: string
+    blog: string
+    blogDescription: string
   }
   notFound: { title: string; text: string; home: string }
   error: { title: string; text: string; retry: string }
@@ -273,6 +275,8 @@ export const content: Record<Language, SiteContent> = {
       selectedWork: 'Selected work',
       github: 'Open-source projects and experiments',
       linkedin: 'Professional profile and contact',
+      blog: 'Blog',
+      blogDescription: 'Articles on DEV Community',
     },
     notFound: { title: 'This route wandered off.', text: 'The page is missing, but the rest of the system is still online.', home: 'Return home' },
     error: { title: 'Something went wrong.', text: 'An unexpected error occurred. Try rendering this page again.', retry: 'Try again' },
@@ -298,7 +302,7 @@ export const content: Record<Language, SiteContent> = {
       explore: 'Conheça meu trabalho',
       linkedin: 'Conectar no LinkedIn',
       role: 'Engenheiro de Software',
-      location: 'Santa Catarina, Brasil',
+      location: 'Florianópolis, Santa Catarina, Brasil',
       focus: 'produtos_web + fluxos_com_ia + open_source + incentivos_onchain',
       state: '● curioso, criando, aprendendo',
     },
@@ -406,6 +410,8 @@ export const content: Record<Language, SiteContent> = {
       selectedWork: 'Trabalhos selecionados',
       github: 'Projetos e experimentos open source',
       linkedin: 'Perfil profissional e contato',
+      blog: 'Blog',
+      blogDescription: 'Artigos no DEV Community',
     },
     notFound: { title: 'Esta rota se perdeu.', text: 'A página não existe, mas o restante do sistema continua online.', home: 'Voltar ao início' },
     error: { title: 'Algo deu errado.', text: 'Ocorreu um erro inesperado. Tente renderizar esta página novamente.', retry: 'Tentar novamente' },

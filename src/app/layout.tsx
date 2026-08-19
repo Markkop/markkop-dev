@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { siteConfig } from '@/config/seo'
+import { profile } from '@/data/profile'
 import { LanguageProvider } from '@/context/LanguageContext'
 import SmoothScroll from '@/components/SmoothScroll'
 import './globals.css'
@@ -22,7 +23,6 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: siteConfig.author, url: siteConfig.url }],
   creator: siteConfig.author,
-  alternates: { canonical: '/' },
   openGraph: {
     title: siteConfig.title,
     description: siteConfig.description,
@@ -30,14 +30,14 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     type: 'profile',
     locale: 'en_US',
-    images: [{ url: '/og.png', width: 1536, height: 1024, alt: 'Marcelo "Mark" Kopmann — Software Engineer' }],
+    images: [{ url: '/og.jpg', width: 1536, height: 1024, alt: 'Marcelo "Mark" Kopmann — Software Engineer' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: siteConfig.title,
     description: siteConfig.description,
     creator: siteConfig.handle,
-    images: ['/og.png'],
+    images: ['/og.jpg'],
   },
   robots: { index: true, follow: true },
 }
@@ -59,19 +59,24 @@ const jsonLd = {
   worksFor: { '@type': 'Organization', name: 'Halborn' },
   address: {
     '@type': 'PostalAddress',
+    addressLocality: 'Florianópolis',
     addressRegion: 'Santa Catarina',
     addressCountry: 'BR',
   },
-  sameAs: Object.values(siteConfig.links),
+  sameAs: [
+    profile.links.github,
+    profile.links.linkedin,
+    profile.links.x,
+    profile.links.instagram,
+    profile.links.devto,
+  ],
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/brand-icon.png?v=4" type="image/png" />
-        <link rel="apple-touch-icon" href="/brand-icon.png?v=4" />
-        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="describedby" href="/llms.txt" />
         <script
           dangerouslySetInnerHTML={{
             __html:

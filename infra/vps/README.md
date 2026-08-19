@@ -18,6 +18,8 @@ docker exec caddy-caddy-1 caddy validate --config /etc/caddy/Caddyfile
 docker exec caddy-caddy-1 caddy reload --config /etc/caddy/Caddyfile
 ```
 
+The Caddyfile issues a **permanent** (308) redirect from `http://` and `www.markkop.dev` to `https://markkop.dev`. Reload Caddy after changing it; Next.js also 301s `www` as a backup.
+
 The DNS cutover is managed separately in Porkbun. Both `markkop.dev` and `www.markkop.dev` should resolve to the VPS before relying on automatic TLS issuance.
 
 ## Operations

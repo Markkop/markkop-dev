@@ -34,7 +34,7 @@ export const profile = {
   name: 'Marcelo "Mark" Kopmann',
   shortName: 'Mark Kop',
   role: 'Software Engineer',
-  location: 'Santa Catarina, Brazil',
+  location: 'Florianópolis, Santa Catarina, Brazil',
   company: 'Halborn',
   headline: 'I build practical products where web, AI, games, and onchain systems meet.',
   summary:
@@ -44,6 +44,7 @@ export const profile = {
     linkedin: 'https://www.linkedin.com/in/marcelo-kopmann/',
     x: 'https://x.com/heymarkkop',
     instagram: 'https://www.instagram.com/markkop.dev',
+    devto: 'https://dev.to/heymarkkop',
     linktree: 'https://linktree.markkop.dev',
   },
   stats: [

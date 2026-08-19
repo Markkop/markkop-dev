@@ -174,8 +174,17 @@ function useElementSize(ref: RefObject<HTMLElement | null>) {
 export default function StackShowcase() {
   const { t } = useLanguage()
   const ref = useRef<HTMLDivElement>(null)
+  const [compact, setCompact] = useState(false)
   const [activeStack, setActiveStack] = useState<{ tech: StackTech; members: ReadonlySet<StackTech> } | null>(null)
   const leaveTimer = useRef(0)
+
+  useLayoutEffect(() => {
+    const media = window.matchMedia('(max-width: 1024px)')
+    const sync = () => setCompact(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
   const cells = tech
   const highlighted = activeStack?.members ?? null
   const onEnter = useCallback((name: StackTech) => {
@@ -222,7 +231,7 @@ export default function StackShowcase() {
 
   return (
     <section id="tech-stack" className="mk-stack-root">
-      <div className="mk-stack-mobile mk-section-dark">
+      <div className="mk-stack-mobile mk-section-dark" aria-hidden={!compact}>
         <header className="mk-stack-heading"><p>{t.stack.eyebrow}</p><h2>{t.stack.title} {t.stack.titleHighlight}</h2><span>{t.stack.intro}</span></header>
         <div className="mk-mobile-hexes">{mobileRows.map((row, rowIndex) => <div className="mk-mobile-hex-row" key={`row-${rowIndex}`}>{row.map((cell, columnIndex) => {
           const index = mobileRows.slice(0, rowIndex).reduce((sum, current) => sum + current.length, 0) + columnIndex
@@ -230,7 +239,7 @@ export default function StackShowcase() {
           return <motion.div key={`${cell.name}-${index}`} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true, margin: '80px' }} transition={{ duration: 0.45, delay: index * 0.03 }}><Hex item={cell} index={index} mobile lit={lit} onEnter={onEnter} onLeave={onLeave} onToggle={onToggle} /></motion.div>
         })}</div>)}</div>
       </div>
-      <div className="mk-stack-track" ref={ref}>
+      <div className="mk-stack-track" ref={ref} aria-hidden={compact}>
         <div className="mk-stack-stage">
           <header className="mk-stack-heading">
             <p>{t.stack.eyebrow}</p>

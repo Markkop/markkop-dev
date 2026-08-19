@@ -18,7 +18,8 @@ export default function TextReveal({
   const visible = useInView(ref, { once: true, margin: '-10%' })
 
   return (
-    <span ref={ref} className={`mk-text-reveal ${className}`} aria-label={text}>
+    <span ref={ref} className={`mk-text-reveal ${className}`}>
+      <span className="mk-sr-only">{text}</span>
       <span aria-hidden="true">
         {text.split(' ').map((word, wordIndex) => (
           <span className="mk-reveal-word" key={`${word}-${wordIndex}`}>

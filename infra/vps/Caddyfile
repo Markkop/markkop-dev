@@ -1,7 +1,11 @@
-markkop.dev {
-  reverse_proxy markkop-dev:3000
+http://markkop.dev, http://www.markkop.dev {
+  redir https://markkop.dev{uri} permanent
 }
 
 www.markkop.dev {
   redir https://markkop.dev{uri} permanent
+}
+
+markkop.dev {
+  reverse_proxy markkop-dev:3000
 }

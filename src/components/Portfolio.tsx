@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Calendar, Download, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
+import DevTo from '@/components/icons/DevTo'
 import NowGallery from '@/components/NowGallery'
 import PhotoGallery from '@/components/PhotoGallery'
 import PortfolioShell from '@/components/PortfolioShell'
@@ -114,9 +115,10 @@ function Hero() {
     <section id="hero" className="mk-hero">
       <div className="mk-hero-glow" />
       <div className="mk-hero-inner">
-        <motion.div className="mk-hero-copy" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}>
+        <motion.div className="mk-hero-copy" initial={{ y: 16 }} animate={{ y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}>
           <p className="mk-name">{profile.name}</p>
           <h1>
+            <span className="mk-sr-only">{profile.name}. </span>
             <span>{t.hero.lead}</span>
             <strong>{t.hero.highlight}</strong>
             <small>{t.hero.summary}</small>
@@ -127,10 +129,10 @@ function Hero() {
           </div>
         </motion.div>
 
-        <motion.div className="mk-portrait" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.85, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}>
+        <motion.div className="mk-portrait" initial={{ scale: 0.98 }} animate={{ scale: 1 }} transition={{ duration: 0.85, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}>
           <i />
           <div>
-            <Image src="/LISBON_229.jpg" alt={`${profile.name} — ${t.hero.role}`} fill sizes="(max-width: 1024px) 100vw, 50vw" priority />
+            <Image src="/LISBON_229.jpg" alt={`${profile.name} — ${t.hero.role}`} fill sizes="(max-width: 1024px) 100vw, 50vw" priority fetchPriority="high" />
             <span><strong>{profile.name}</strong><small>{t.hero.role}</small></span>
           </div>
         </motion.div>
@@ -226,6 +228,7 @@ function Contact() {
       <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Linkedin size={14} />LinkedIn</motion.a>
       <motion.a href={profile.links.x} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Twitter size={14} />X</motion.a>
       <motion.a href={profile.links.instagram} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Instagram size={14} />Instagram</motion.a>
+      <motion.a href={profile.links.devto} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><DevTo size={14} />Blog</motion.a>
     </div>
   )
 

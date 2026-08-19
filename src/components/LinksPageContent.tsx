@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight, Github, Instagram, Linkedin, Radio, Twitter } from 'lucide-react'
+import DevTo from '@/components/icons/DevTo'
 import { profile, projects } from '@/data/profile'
 import { useLanguage } from '@/context/LanguageContext'
 import LanguageToggle from '@/components/LanguageToggle'
@@ -14,6 +15,7 @@ export default function LinksPageContent() {
     { name: 'LinkedIn', description: t.links.linkedin, href: profile.links.linkedin, icon: Linkedin },
     { name: 'X / Twitter', description: '@heymarkkop', href: profile.links.x, icon: Twitter },
     { name: 'Instagram', description: '@markkop.dev', href: profile.links.instagram, icon: Instagram },
+    { name: t.links.blog, description: t.links.blogDescription, href: profile.links.devto, icon: DevTo },
   ]
 
   return (

@@ -603,7 +603,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
           {liveActive ? (
             <>
               <Lock aria-hidden="true" />
-              <a href={href} target="_blank" rel="noreferrer" aria-label={label}>
+              <a href={href} target="_blank" rel="noreferrer" aria-label={`${address} (${label})`}>
                 <small>{address}</small>
               </a>
             </>
@@ -691,6 +691,7 @@ export default function ProjectShowcase() {
   const trackRef = useRef<HTMLDivElement>(null)
   const activeRef = useRef(0)
   const [active, setActive] = useState(0)
+  const [starsReady, setStarsReady] = useState(false)
   const { scrollYProgress } = useScroll({ target: trackRef, offset: ['start start', 'end end'] })
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     const next = Math.max(0, Math.min(Math.floor(value * projects.length), projects.length - 1))
@@ -700,6 +701,18 @@ export default function ProjectShowcase() {
   const project = projects[active]
   const accentVars = starAccentVars(project.slug, theme) as CSSProperties
   const progressVisible = useRef(false)
+
+  useEffect(() => {
+    const root = document.getElementById('projects')
+    if (!root) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      setStarsReady(true)
+      observer.disconnect()
+    }, { rootMargin: '200px 0px' })
+    observer.observe(root)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const track = trackRef.current
@@ -743,7 +756,7 @@ export default function ProjectShowcase() {
         } as CSSProperties}
       >
         <div className="mk-project-stage" style={accentVars}>
-          <StarsBackground slug={project.slug} />
+          {starsReady ? <StarsBackground slug={project.slug} /> : null}
           <ShowcaseProgress progress={scrollYProgress} segments={projects.length} />
           <AnimatePresence mode="popLayout">
             <motion.article className="mk-project-slide" key={project.slug} style={accentVars} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }} transition={{ duration: 0.25 }}>

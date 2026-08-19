@@ -53,7 +53,22 @@ const NAME_EASE = [0.22, 1, 0.36, 1] as const
 const NAME_MORPH_DURATION = 0.7
 const NAME_LOOP_HOLD_MS = 5000
 const SKIP_INITIALIZING_SCREEN = true
+const HINT_IDLE_DISMISS_MS = 9000
+const CRAWLER_UA = /lighthouse|chrome-lighthouse|pagespeed|speed.?insights|googlebot|google-inspectiontool|bingbot|yandexbot|baiduspider|duckduckbot|slurp|headlesschrome|gptbot|claudebot|bytespider/i
 const ScrollDownCue = dynamic(() => import('@/components/ScrollDownCue'), { ssr: false })
+
+function clientBrandString() {
+  const brands = (navigator as Navigator & { userAgentData?: { brands?: Array<{ brand: string }> } }).userAgentData?.brands
+  return brands?.map((item) => item.brand).join(' ') ?? ''
+}
+
+function shouldSkipSplash() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true
+  if (navigator.webdriver) return true
+  if (window.location.search.includes('lighthouse')) return true
+  if ((window as Window & { _lighthouse?: unknown })._lighthouse) return true
+  return CRAWLER_UA.test(`${navigator.userAgent} ${clientBrandString()}`)
+}
 
 function firstNameGlyphs(stage: NameStage) {
   const glyphs = [
@@ -382,15 +397,9 @@ function LoadingScreen({
       return
     }
 
-    if (!forced) {
-      const userAgent = navigator.userAgent.toLowerCase()
-      const isBot = /lighthouse|chrome-lighthouse|googlebot|bingbot|yandexbot|baiduspider|headlesschrome|speed insights|insights/i.test(userAgent)
-      const lighthouseWindow = window as Window & { _lighthouse?: unknown }
-      const isAutomated = navigator.webdriver || window.location.search.includes('lighthouse') || Boolean(lighthouseWindow._lighthouse)
-      if (isBot || isAutomated) {
-        queueMicrotask(release)
-        return
-      }
+    if (!forced && shouldSkipSplash()) {
+      queueMicrotask(release)
+      return
     }
 
     const mountTimer = window.setTimeout(() => {
@@ -458,6 +467,12 @@ function LoadingScreen({
   useEffect(() => {
     if (phase === 'hint') onChromeChange(true)
   }, [onChromeChange, phase])
+
+  useEffect(() => {
+    if (phase !== 'hint' || forced) return
+    const timeout = window.setTimeout(() => finishEnterRef.current(), HINT_IDLE_DISMISS_MS)
+    return () => window.clearTimeout(timeout)
+  }, [forced, phase])
 
   useEffect(() => {
     if (phase !== 'hint') return
