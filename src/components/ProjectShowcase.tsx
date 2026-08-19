@@ -12,6 +12,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectGalleryImage, type ProjectMedia } from '@/data/profile'
 import { invertOnLightLogos, techLogos } from '@/data/techLogos'
 import { starAccentVars } from '@/data/starPalettes'
+import { useGalleryWheelNav } from '@/hooks/useGalleryWheelNav'
 
 const StarsBackground = dynamic(() => import('@/components/StarsBackground'), { ssr: false })
 
@@ -254,11 +255,11 @@ function SimulatorGallery({
   prevLabel: string
   nextLabel: string
 }) {
+  const galleryRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const indexRef = useRef(index)
   const drag = useRef<{ id: number; x: number; dx: number; captured?: boolean } | null>(null)
   const pointers = useRef(new Set<number>())
-  const wheelLock = useRef(false)
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
   const [instant, setInstant] = useState(false)
@@ -274,30 +275,24 @@ function SimulatorGallery({
 
   const go = (dir: -1 | 1) => goTo(indexRef.current + dir)
 
+  useGalleryWheelNav({
+    targetRef: galleryRef,
+    indexRef,
+    count: slideCount,
+    getWidth: () => viewportRef.current?.clientWidth ?? 0,
+    onOffset: (offset, active) => {
+      setDragging(active)
+      setDragX(offset)
+    },
+    onIndex: goTo,
+    blocked: () => drag.current !== null,
+  })
+
   useEffect(() => {
     if (!instant) return
     const id = window.requestAnimationFrame(() => setInstant(false))
     return () => window.cancelAnimationFrame(id)
   }, [instant])
-
-  useEffect(() => {
-    const node = viewportRef.current
-    if (!node) return
-    const onWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return
-      event.preventDefault()
-      if (wheelLock.current || Math.abs(event.deltaX) < 24) return
-      wheelLock.current = true
-      const dir = event.deltaX > 0 ? 1 : -1
-      const current = indexRef.current
-      const next = (current + dir + slideCount) % slideCount
-      if (Math.abs(next - current) !== 1) setInstant(true)
-      onIndexChange(next)
-      window.setTimeout(() => { wheelLock.current = false }, 520)
-    }
-    node.addEventListener('wheel', onWheel, { passive: false })
-    return () => node.removeEventListener('wheel', onWheel)
-  }, [onIndexChange, slideCount])
 
   const cancelDrag = () => {
     const current = drag.current
@@ -373,8 +368,10 @@ function SimulatorGallery({
 
   return (
     <div
+      ref={galleryRef}
       className="mk-simulator-gallery"
       tabIndex={0}
+      data-lenis-prevent
       onKeyDown={onKeyDown}
       aria-roledescription="carousel"
       aria-label={currentCaption}

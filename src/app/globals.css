@@ -905,7 +905,7 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 .mk-hex.lit .mk-hex-content > small { color: var(--section-foreground); }
 .mk-hex:focus-visible > svg polygon:first-of-type { stroke: var(--mk-accent); stroke-width: 1.5; }
 @media (prefers-reduced-motion: reduce) {
-  .mk-hex, .mk-hex > svg polygon:first-of-type, .mk-hex > svg stop, .mk-hex > svg .inner, .mk-hex-content > small, .mk-simulator-gallery-nav, .mk-simulator-gallery-track, .mk-simulator-gallery-dots button, .mk-simulator-gallery-bar > small, .mk-simulator, .mk-simulator .dots, .mk-simulator-bar, .mk-now-gallery-stage figure, .mk-now-gallery-dots button { transition: none; animation: none; }
+  .mk-hex, .mk-hex > svg polygon:first-of-type, .mk-hex > svg stop, .mk-hex > svg .inner, .mk-hex-content > small, .mk-simulator-gallery-nav, .mk-simulator-gallery-track, .mk-simulator-gallery-dots button, .mk-simulator-gallery-bar > small, .mk-simulator, .mk-simulator .dots, .mk-simulator-bar, .mk-now-gallery-track, .mk-now-gallery-dots button { transition: none; animation: none; }
 }
 .mk-stack-mobile { display: none; }
 
@@ -953,15 +953,21 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 .mk-now-gallery-frame { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .mk-now-gallery-stage { position: relative; flex: 1; min-height: 0; overflow: hidden; cursor: grab; touch-action: pan-y; }
 .mk-now-gallery-stage:active { cursor: grabbing; }
-.mk-now-gallery-stage figure {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .55s cubic-bezier(.16, 1, .3, 1);
+.mk-now-gallery-track {
+  display: flex;
+  height: 100%;
+  will-change: transform;
+  transition: transform .5s cubic-bezier(.22, 1, .36, 1);
 }
-.mk-now-gallery-stage figure.active { opacity: 1; z-index: 1; }
+.mk-now-gallery-track.instant { transition: none; }
+.mk-now-gallery-stage figure {
+  position: relative;
+  flex: 0 0 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
 .mk-now-gallery-stage img { object-fit: cover; pointer-events: none; }
 .mk-now-gallery-nav {
   position: absolute;
@@ -1017,7 +1023,7 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
   box-shadow: 0 0 8px rgba(var(--mk-accent-rgb), .45);
 }
 @media (prefers-reduced-motion: reduce) {
-  .mk-now-gallery-stage figure { transition: none; }
+  .mk-now-gallery-track { transition: none; }
 }
 .mk-contact { padding: 58px 0 76px; }
 .mk-contact-glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 80% 50% at 50% 60%, rgba(var(--mk-accent-rgb), .07), transparent 60%); }
