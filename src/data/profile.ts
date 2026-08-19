@@ -177,6 +177,12 @@ export const nowPhotos = [
   { id: 'mk3', src: '/gallery/mk3.jpg', position: '50% 50%' },
 ] as const
 
+export const workPhotos = [
+  { id: 'work1', src: '/gallery/work1.jpg', position: '50% 0%' },
+  { id: 'work3', src: '/gallery/work3.jpg', position: '50% 0%' },
+  { id: 'work2', src: '/gallery/work2.jpg', position: '50% 0%' },
+] as const
+
 export const stack = [
   { group: 'Next.js Product', items: ['Next.js', 'Node.js', 'PostgreSQL', 'GitHub', 'Vercel', 'Codex'] },
   { group: 'React AI App', items: ['React', 'Tailwind CSS', 'Supabase', 'GitHub', 'Vercel', 'OpenAI'] },

@@ -75,6 +75,10 @@ export type SiteContent = {
     title: string
     titleHighlight: string
     intro: string
+    galleryLabel: string
+    galleryPrev: string
+    galleryNext: string
+    photos: string[]
   }
   footer: { built: string }
   links: {
@@ -249,6 +253,14 @@ export const content: Record<Language, SiteContent> = {
       title: 'Let\'s Build Your Next',
       titleHighlight: 'Web Project.',
       intro: 'Full-stack developer in Florianópolis, Brazil. Available for freelance, contracts, and remote collaborations worldwide.',
+      galleryLabel: 'Sample websites',
+      galleryPrev: 'Previous website',
+      galleryNext: 'Next website',
+      photos: [
+        'Wedding Websites',
+        'Business Websites',
+        'Company Theater Websites',
+      ],
     },
     footer: { built: 'Designed & built by Mark · markkop.dev' },
     links: {
@@ -374,6 +386,14 @@ export const content: Record<Language, SiteContent> = {
       title: 'Vamos construir seu próximo',
       titleHighlight: 'projeto web.',
       intro: 'Desenvolvedor full-stack em Florianópolis, Brasil. Disponível para freelance, contratos e colaborações remotas no mundo todo.',
+      galleryLabel: 'Sites de exemplo',
+      galleryPrev: 'Site anterior',
+      galleryNext: 'Próximo site',
+      photos: [
+        'Sites de Casamento',
+        'Sites para Empresas',
+        'Sites para Companhias de Teatro',
+      ],
     },
     footer: { built: 'Projetado e desenvolvido por Mark · markkop.dev' },
     links: {

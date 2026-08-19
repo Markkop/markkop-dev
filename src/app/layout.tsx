@@ -69,8 +69,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/brand-icon.png" />
-        <link rel="apple-touch-icon" href="/brand-icon.png" />
+        <link rel="icon" href="/brand-icon.png?v=4" type="image/png" />
+        <link rel="apple-touch-icon" href="/brand-icon.png?v=4" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <script
           dangerouslySetInnerHTML={{

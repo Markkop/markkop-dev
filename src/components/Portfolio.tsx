@@ -5,12 +5,13 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Calendar, Download, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
 import NowGallery from '@/components/NowGallery'
+import PhotoGallery from '@/components/PhotoGallery'
 import PortfolioShell from '@/components/PortfolioShell'
 import ProjectShowcase from '@/components/ProjectShowcase'
 import StackShowcase from '@/components/StackShowcase'
 import SectionWrapper from '@/components/ui/SectionWrapper'
 import { useLanguage } from '@/context/LanguageContext'
-import { profile } from '@/data/profile'
+import { profile, workPhotos } from '@/data/profile'
 
 type TimelineOrg = { name: string; logo?: string; logoLight?: string; href?: string; emoji?: string }
 type TimelineItem = { year: string; orgs: readonly TimelineOrg[]; now?: boolean }
@@ -207,23 +208,50 @@ function Now() {
   )
 }
 
+const SHOW_CONTACT_GALLERY = false
+
 function Contact() {
   const { t } = useLanguage()
+  const socials = (
+    <div className="mk-contact-socials">
+      <motion.a href={profile.links.github} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Github size={14} />GitHub</motion.a>
+      <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Linkedin size={14} />LinkedIn</motion.a>
+      <motion.a href={profile.links.x} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Twitter size={14} />X</motion.a>
+      <motion.a href={profile.links.instagram} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Instagram size={14} />Instagram</motion.a>
+    </div>
+  )
+
   return (
     <section id="contact" className="mk-contact mk-section-dark">
       <div className="mk-contact-glow" />
       <div className="mk-wide">
-        <SectionWrapper><p className="mk-kicker">{t.contact.eyebrow}</p></SectionWrapper>
-        <SectionWrapper delay={0.1}><h2>{t.contact.title}<br /><motion.span animate={{ opacity: [1, 0.72, 1] }} transition={{ duration: 3, repeat: Infinity }}>{t.contact.titleHighlight}</motion.span></h2></SectionWrapper>
-        <SectionWrapper delay={0.2}><p className="mk-contact-copy">{t.contact.intro}</p></SectionWrapper>
-        <SectionWrapper delay={0.3}>
-          <div className="mk-contact-socials">
-            <motion.a href={profile.links.github} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Github size={14} />GitHub</motion.a>
-            <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Linkedin size={14} />LinkedIn</motion.a>
-            <motion.a href={profile.links.x} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Twitter size={14} />X</motion.a>
-            <motion.a href={profile.links.instagram} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Instagram size={14} />Instagram</motion.a>
+        {SHOW_CONTACT_GALLERY ? (
+          <div className="mk-contact-grid">
+            <SectionWrapper className="mk-contact-copy-col">
+              <p className="mk-kicker">{t.contact.eyebrow}</p>
+              <h2>{t.contact.title}<br /><motion.span animate={{ opacity: [1, 0.72, 1] }} transition={{ duration: 3, repeat: Infinity }}>{t.contact.titleHighlight}</motion.span></h2>
+              <p className="mk-contact-copy">{t.contact.intro}</p>
+              {socials}
+            </SectionWrapper>
+            <SectionWrapper className="mk-contact-gallery-col" delay={0.12}>
+              <PhotoGallery
+                photos={workPhotos}
+                captions={t.contact.photos}
+                label={t.contact.galleryLabel}
+                prevLabel={t.contact.galleryPrev}
+                nextLabel={t.contact.galleryNext}
+                showCaption
+              />
+            </SectionWrapper>
           </div>
-        </SectionWrapper>
+        ) : (
+          <>
+            <SectionWrapper><p className="mk-kicker">{t.contact.eyebrow}</p></SectionWrapper>
+            <SectionWrapper delay={0.1}><h2>{t.contact.title}<br /><motion.span animate={{ opacity: [1, 0.72, 1] }} transition={{ duration: 3, repeat: Infinity }}>{t.contact.titleHighlight}</motion.span></h2></SectionWrapper>
+            <SectionWrapper delay={0.2}><p className="mk-contact-copy">{t.contact.intro}</p></SectionWrapper>
+            <SectionWrapper delay={0.3}>{socials}</SectionWrapper>
+          </>
+        )}
       </div>
     </section>
   )

@@ -864,7 +864,6 @@ function ControlDock({
             >
               <svg className="mk-to-top-ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="24" /><circle className="progress" cx="30" cy="30" r="24" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)} /></svg>
               <span className="mk-to-top-arrows" aria-hidden="true"><ChevronsUp /><ChevronsUp /></span>
-              <small>{progress}%</small>
             </motion.button>
           ) : null}
         </AnimatePresence>

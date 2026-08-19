@@ -59,9 +59,7 @@ function Hex({ item, index, mobile = false, lit = false, onEnter, onLeave, onTog
   )
 }
 
-const assembleSpan = 0.4
-const holdSpan = 0.2 / 3
-const assembledAt = assembleSpan / (assembleSpan + holdSpan)
+const assembledAt = 1
 
 function AssemblingHex({ cell, index, progress, from, to, lit, onEnter, onLeave, onToggle }: {
   cell: Tech
@@ -205,7 +203,7 @@ export default function StackShowcase() {
 
   const canvasRef = useRef<HTMLDivElement>(null)
   const area = useElementSize(canvasRef)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end end'] })
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'start start'] })
   const cueOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0])
   const hexCols = useMemo(() => honeycombCols(cells.length, area.width, area.height), [cells.length, area.width, area.height])
   const hexScale = useMemo(() => fitHoneycombScale(cells.length, hexCols, area.width, area.height), [cells.length, hexCols, area.width, area.height])
