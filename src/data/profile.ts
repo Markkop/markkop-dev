@@ -133,7 +133,7 @@ export const projects: Project[] = [
     slug: 'wedding',
     description: 'A focused tool to organize guest lists, invitations, ordering, details, and RSVP status.',
     category: 'Planning Tool',
-    metric: 'Guest workflow',
+    metric: 'Perfect for Weddings',
     timeframe: '2025–2026',
     tech: ['TypeScript', 'Next.js', 'React'],
     live: 'https://guests.markkop.dev/',
@@ -170,6 +170,12 @@ export const projects: Project[] = [
     }],
   },
 ]
+
+export const nowPhotos = [
+  { id: 'mk2', src: '/gallery/mk2.jpg', position: '50% 100%' },
+  { id: 'mk1', src: '/gallery/mk1.jpg', position: '78% 48%' },
+  { id: 'mk3', src: '/gallery/mk3.jpg', position: '50% 50%' },
+] as const
 
 export const stack = [
   { group: 'Next.js Product', items: ['Next.js', 'Node.js', 'PostgreSQL', 'GitHub', 'Vercel', 'Codex'] },

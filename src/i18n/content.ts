@@ -61,7 +61,15 @@ export type SiteContent = {
     items: Record<string, ProjectCopy>
   }
   stack: { eyebrow: string; title: string; titleHighlight: string; intro: string; assemble: string }
-  now: { eyebrow: string; items: string[]; updated: string }
+  now: {
+    eyebrow: string
+    items: string[]
+    updated: string
+    galleryLabel: string
+    galleryPrev: string
+    galleryNext: string
+    photos: string[]
+  }
   contact: {
     eyebrow: string
     title: string
@@ -128,7 +136,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
   wedding: {
     description: 'Uma ferramenta focada em organizar convidados, convites, ordenação, detalhes e confirmações de presença.',
     category: 'Ferramenta de Planejamento',
-    metric: 'Fluxo de convidados',
+    metric: 'Perfeito para casamentos',
     timeframe: '2025–2026',
   },
   'corvo-astral': {
@@ -227,6 +235,14 @@ export const content: Record<Language, SiteContent> = {
         'Attending and volunteering at tech events',
       ],
       updated: 'Updated August 2026',
+      galleryLabel: 'Event photos',
+      galleryPrev: 'Previous photo',
+      galleryNext: 'Next photo',
+      photos: [
+        'In the audience, notebook open',
+        'On a panel, mic in hand',
+        'On stage at PragaConf',
+      ],
     },
     contact: {
       eyebrow: 'START A PROJECT',
@@ -344,6 +360,14 @@ export const content: Record<Language, SiteContent> = {
         'Voluntariando em eventos de tecnologia',
       ],
       updated: 'Atualizado em agosto de 2026',
+      galleryLabel: 'Fotos de eventos',
+      galleryPrev: 'Foto anterior',
+      galleryNext: 'Próxima foto',
+      photos: [
+        'Na plateia, caderno aberto',
+        'No painel, microfone na mão',
+        'No palco da PragaConf',
+      ],
     },
     contact: {
       eyebrow: 'COMECE UM PROJETO',
