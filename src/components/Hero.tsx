@@ -18,6 +18,8 @@ export default function Hero() {
               fill
               sizes="(max-width: 1024px) 92vw, 448px"
               preload
+              fetchPriority="high"
+              loading="eager"
               decoding="sync"
             />
             <HeroCaption />
