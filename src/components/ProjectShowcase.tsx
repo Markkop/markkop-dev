@@ -12,7 +12,7 @@ import { useLanguage } from '@/context/LanguageContext'
 import { projects, type Project, type ProjectGalleryImage, type ProjectMedia } from '@/data/profile'
 import { invertOnLightLogos, techLogos } from '@/data/techLogos'
 import { starAccentVars } from '@/data/starPalettes'
-import { useGalleryWheelNav } from '@/hooks/useGalleryWheelNav'
+import { useDesktopMedia, useGalleryWheelNav } from '@/hooks/useGalleryWheelNav'
 
 const StarsBackground = dynamic(() => import('@/components/StarsBackground'), { ssr: false })
 
@@ -255,10 +255,11 @@ function SimulatorGallery({
   prevLabel: string
   nextLabel: string
 }) {
+  const isDesktop = useDesktopMedia()
   const galleryRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const indexRef = useRef(index)
-  const drag = useRef<{ id: number; x: number; dx: number; captured?: boolean } | null>(null)
+  const drag = useRef<{ id: number; x: number; y: number; dx: number; captured?: boolean } | null>(null)
   const pointers = useRef(new Set<number>())
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -308,11 +309,12 @@ function SimulatorGallery({
     if (event) pointers.current.delete(event.pointerId)
     if (!drag.current || (event && drag.current.id !== event.pointerId)) return
     const dx = drag.current.dx
+    const captured = drag.current.captured
     const width = viewportRef.current?.clientWidth ?? 1
     drag.current = null
     setDragging(false)
     setDragX(0)
-    if (Math.abs(dx) < Math.max(48, width * 0.16)) return
+    if (!captured || Math.abs(dx) < Math.max(48, width * 0.16)) return
     go(dx < 0 ? 1 : -1)
   }
 
@@ -325,9 +327,11 @@ function SimulatorGallery({
       cancelDrag()
       return
     }
-    drag.current = { id: event.pointerId, x: event.clientX, dx: 0 }
+    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0 }
+    if (event.pointerType === 'touch') return
+    drag.current.captured = true
     setDragging(true)
-    if (event.pointerType !== 'touch') event.currentTarget.setPointerCapture(event.pointerId)
+    event.currentTarget.setPointerCapture(event.pointerId)
   }
 
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -337,9 +341,18 @@ function SimulatorGallery({
     }
     if (drag.current?.id !== event.pointerId) return
     const dx = event.clientX - drag.current.x
-    if (!drag.current.captured && event.pointerType === 'touch' && Math.abs(dx) > 12) {
+    const dy = event.clientY - drag.current.y
+    if (!drag.current.captured && event.pointerType === 'touch') {
+      const absX = Math.abs(dx)
+      const absY = Math.abs(dy)
+      if (absX < 12 && absY < 12) return
+      if (absY >= absX) {
+        cancelDrag()
+        return
+      }
       event.currentTarget.setPointerCapture(event.pointerId)
       drag.current.captured = true
+      setDragging(true)
     }
     const atStart = indexRef.current === 0 && dx > 0
     const atEnd = indexRef.current === slideCount - 1 && dx < 0
@@ -371,7 +384,7 @@ function SimulatorGallery({
       ref={galleryRef}
       className="mk-simulator-gallery"
       tabIndex={0}
-      data-lenis-prevent
+      data-lenis-prevent={isDesktop ? true : undefined}
       onKeyDown={onKeyDown}
       aria-roledescription="carousel"
       aria-label={currentCaption}
@@ -383,7 +396,7 @@ function SimulatorGallery({
         <div
           ref={viewportRef}
           className="mk-simulator-gallery-viewport"
-          data-lenis-prevent
+          data-lenis-prevent={isDesktop ? true : undefined}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}

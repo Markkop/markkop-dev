@@ -735,12 +735,12 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 .mk-simulator-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 .mk-simulator-image { position: absolute; inset: 0; overflow: hidden; }
 .mk-simulator-image img { display: block; width: 100%; height: auto; }
-.mk-pinch-zoom { overflow: hidden; touch-action: none; overscroll-behavior: contain; }
+.mk-pinch-zoom { overflow: hidden; touch-action: pan-y pinch-zoom; overscroll-behavior: contain; }
 .mk-pinch-zoom-content { position: relative; width: 100%; height: 100%; transform-origin: center center; will-change: transform; }
 .mk-pinch-zoom-content.flow { height: auto; transform-origin: 0 0; }
 .mk-pinch-zoom-fill { position: absolute; inset: 0; }
 .mk-pinch-zoom-scroll { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; }
-.mk-pinch-zoom[data-pinched] { cursor: grab; overflow: hidden; }
+.mk-pinch-zoom[data-pinched] { cursor: grab; overflow: hidden; touch-action: none; }
 .mk-pinch-zoom[data-pinched]:active { cursor: grabbing; }
 .mk-simulator-contain.mk-pinch-zoom { display: block; }
 .mk-simulator-gallery { position: absolute; inset: 0; display: flex; flex-direction: column; outline: none; user-select: none; }

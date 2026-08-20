@@ -4,10 +4,11 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
-import { useGalleryWheelNav } from '@/hooks/useGalleryWheelNav'
+import { useDesktopMedia, useGalleryWheelNav } from '@/hooks/useGalleryWheelNav'
 
 const SWIPE_RATIO = 0.16
 const SWIPE_MIN_PX = 48
+const AXIS_LOCK_PX = 12
 
 export type PhotoGalleryItem = {
   id: string
@@ -30,6 +31,7 @@ export default function PhotoGallery({
   nextLabel: string
   showCaption?: boolean
 }) {
+  const isDesktop = useDesktopMedia()
   const [index, setIndex] = useState(0)
   const [dragX, setDragX] = useState(0)
   const [dragging, setDragging] = useState(false)
@@ -37,7 +39,7 @@ export default function PhotoGallery({
   const rootRef = useRef<HTMLDivElement>(null)
   const viewportRef = useRef<HTMLDivElement>(null)
   const indexRef = useRef(0)
-  const drag = useRef<{ id: number; x: number; dx: number } | null>(null)
+  const drag = useRef<{ id: number; x: number; y: number; dx: number; captured?: boolean } | null>(null)
   const count = photos.length
   indexRef.current = index
 
@@ -71,6 +73,16 @@ export default function PhotoGallery({
     return () => window.cancelAnimationFrame(id)
   }, [instant])
 
+  const cancelDrag = () => {
+    const current = drag.current
+    drag.current = null
+    setDragging(false)
+    setDragX(0)
+    if (current && viewportRef.current?.hasPointerCapture(current.id)) {
+      viewportRef.current.releasePointerCapture(current.id)
+    }
+  }
+
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'ArrowRight') {
       event.preventDefault()
@@ -95,7 +107,9 @@ export default function PhotoGallery({
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
-    drag.current = { id: event.pointerId, x: event.clientX, dx: 0 }
+    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0 }
+    if (event.pointerType === 'touch') return
+    drag.current.captured = true
     setDragging(true)
     event.currentTarget.setPointerCapture(event.pointerId)
   }
@@ -103,6 +117,19 @@ export default function PhotoGallery({
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
     if (drag.current?.id !== event.pointerId) return
     const dx = event.clientX - drag.current.x
+    const dy = event.clientY - drag.current.y
+    if (!drag.current.captured && event.pointerType === 'touch') {
+      const absX = Math.abs(dx)
+      const absY = Math.abs(dy)
+      if (absX < AXIS_LOCK_PX && absY < AXIS_LOCK_PX) return
+      if (absY >= absX) {
+        cancelDrag()
+        return
+      }
+      event.currentTarget.setPointerCapture(event.pointerId)
+      drag.current.captured = true
+      setDragging(true)
+    }
     const atStart = indexRef.current === 0 && dx > 0
     const atEnd = indexRef.current === count - 1 && dx < 0
     drag.current.dx = dx
@@ -112,11 +139,12 @@ export default function PhotoGallery({
   const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
     if (!drag.current || drag.current.id !== event.pointerId) return
     const dx = drag.current.dx
+    const captured = drag.current.captured
     const width = viewportRef.current?.clientWidth ?? 1
     drag.current = null
     setDragging(false)
     setDragX(0)
-    if (Math.abs(dx) < Math.max(SWIPE_MIN_PX, width * SWIPE_RATIO)) return
+    if (!captured || Math.abs(dx) < Math.max(SWIPE_MIN_PX, width * SWIPE_RATIO)) return
     go(dx < 0 ? 1 : -1)
   }
 
@@ -125,7 +153,7 @@ export default function PhotoGallery({
       ref={rootRef}
       className="mk-now-gallery"
       tabIndex={0}
-      data-lenis-prevent
+      data-lenis-prevent={isDesktop ? true : undefined}
       onKeyDown={onKeyDown}
       whileHover={{ y: -2, boxShadow: '0 8px 32px rgba(0,0,0,.35)' }}
       aria-roledescription="carousel"

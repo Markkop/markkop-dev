@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, type RefObject } from 'react'
+import { useEffect, useRef, useSyncExternalStore, type RefObject } from 'react'
 
-const DESKTOP_MEDIA = '(min-width: 1025px)'
+export const DESKTOP_MEDIA = '(min-width: 1025px)'
 const SETTLE_MS = 110
 const SNAP_RATIO = 0.32
 const SNAP_MIN_PX = 64
@@ -10,6 +10,20 @@ const EDGE_RESISTANCE = 0.28
 
 function wrap(index: number, count: number) {
   return ((index % count) + count) % count
+}
+
+function subscribeDesktopMedia(onChange: () => void) {
+  const media = window.matchMedia(DESKTOP_MEDIA)
+  media.addEventListener('change', onChange)
+  return () => media.removeEventListener('change', onChange)
+}
+
+function getDesktopMediaSnapshot() {
+  return window.matchMedia(DESKTOP_MEDIA).matches
+}
+
+export function useDesktopMedia() {
+  return useSyncExternalStore(subscribeDesktopMedia, getDesktopMediaSnapshot, () => false)
 }
 
 export function useGalleryWheelNav({
@@ -29,6 +43,7 @@ export function useGalleryWheelNav({
   onIndex: (index: number) => void
   blocked?: () => boolean
 }) {
+  const isDesktop = useDesktopMedia()
   const getWidthRef = useRef(getWidth)
   const onOffsetRef = useRef(onOffset)
   const onIndexRef = useRef(onIndex)
@@ -42,7 +57,7 @@ export function useGalleryWheelNav({
 
   useEffect(() => {
     const node = targetRef.current
-    if (!node) return
+    if (!node || !isDesktop) return
 
     let offset = 0
     let settleTimer = 0
@@ -100,7 +115,6 @@ export function useGalleryWheelNav({
     }
 
     const onWheel = (event: WheelEvent) => {
-      if (!window.matchMedia(DESKTOP_MEDIA).matches) return
       if (event.ctrlKey || event.metaKey) return
       event.preventDefault()
       if (blockedRef.current?.()) return
@@ -131,5 +145,5 @@ export function useGalleryWheelNav({
       window.clearTimeout(settleTimer)
       window.cancelAnimationFrame(raf)
     }
-  }, [indexRef, targetRef])
+  }, [indexRef, isDesktop, targetRef])
 }
