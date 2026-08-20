@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { siteConfig } from '@/config/seo'
 import LinksPageContent from '@/components/LinksPageContent'
-import './links.css'
 
 export const metadata: Metadata = {
   title: 'Links — Marcelo "Mark" Kopmann',

@@ -801,17 +801,17 @@ function ControlDock({
   const circumference = 2 * Math.PI * 24
   const atTop = progress <= 5
   const fade = reduceMotion
-    ? { initial: false as const, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.01 } }
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.01 } }
     : {
-        initial: loaderActive ? { opacity: 0, x: 18 } : false,
+        initial: { opacity: 0, x: 18 },
         animate: { opacity: 1, x: 0 },
         exit: { opacity: 0, x: 14 },
         transition: { duration: 0.55, delay: loaderActive ? 0.5 : 0, ease: DOCK_EASE },
       }
   const rise = reduceMotion
-    ? { initial: false as const, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.01 } }
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, transition: { duration: 0.01 } }
     : {
-        initial: loaderActive ? { opacity: 0, y: 16, scale: 0.9 } : false,
+        initial: { opacity: 0, y: 16, scale: 0.9 },
         animate: { opacity: 1, y: 0, scale: 1 },
         exit: { opacity: 0, y: 10, scale: 0.94 },
       }
@@ -892,7 +892,7 @@ export default function PortfolioShell({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme()
   const [loaderPlayId, setLoaderPlayId] = useState(0)
   const [loaderDismissId, setLoaderDismissId] = useState(0)
-  const [loaderActive, setLoaderActive] = useState(false)
+  const [loaderActive, setLoaderActive] = useState(true)
   const [loaderChrome, setLoaderChrome] = useState(false)
 
   const replaySplash = useCallback(() => {

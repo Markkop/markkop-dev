@@ -21,9 +21,6 @@ const nextConfig: NextConfig = {
   output: "standalone",
   trailingSlash: false,
   compress: true,
-  experimental: {
-    inlineCss: true,
-  },
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
