@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Hero from '@/components/Hero'
 import Portfolio from '@/components/Portfolio'
 
 export const metadata: Metadata = {
@@ -6,5 +7,9 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
-  return <Portfolio />
+  return (
+    <Portfolio>
+      <Hero />
+    </Portfolio>
+  )
 }

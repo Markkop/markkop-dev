@@ -1,9 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Calendar, Download, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
+import { Github, Instagram, Linkedin, Twitter } from 'lucide-react'
+import { type ReactNode } from 'react'
 import DevTo from '@/components/icons/DevTo'
 import NowGallery from '@/components/NowGallery'
 import PhotoGallery from '@/components/PhotoGallery'
@@ -106,38 +106,6 @@ function Timeline({ label, milestonesLabel, items, roles, branches, branchRoles 
         })}
       </div>
     </div>
-  )
-}
-
-function Hero() {
-  const { t } = useLanguage()
-  return (
-    <section id="hero" className="mk-hero">
-      <div className="mk-hero-glow" />
-      <div className="mk-hero-inner">
-        <motion.div className="mk-hero-copy" initial={{ y: 16 }} animate={{ y: 0 }} transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}>
-          <p className="mk-name">{profile.name}</p>
-          <h1>
-            <span className="mk-sr-only">{profile.name}. </span>
-            <span>{t.hero.lead}</span>
-            <strong>{t.hero.highlight}</strong>
-            <small>{t.hero.summary}</small>
-          </h1>
-          <div className="mk-hero-actions">
-            <a className="primary" href={profile.links.linkedin} target="_blank" rel="noreferrer"><Calendar size={16} />{t.nav.connect}</a>
-            <Link className="secondary" href="/links"><Download size={16} />{t.nav.links}</Link>
-          </div>
-        </motion.div>
-
-        <motion.div className="mk-portrait" initial={{ scale: 0.98 }} animate={{ scale: 1 }} transition={{ duration: 0.85, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}>
-          <i />
-          <div>
-            <Image src="/LISBON_229.jpg" alt={`${profile.name} — ${t.hero.role}`} fill sizes="(max-width: 1024px) 100vw, 50vw" priority fetchPriority="high" />
-            <span><strong>{profile.name}</strong><small>{t.hero.role}</small></span>
-          </div>
-        </motion.div>
-      </div>
-    </section>
   )
 }
 
@@ -275,11 +243,11 @@ function Footer() {
   )
 }
 
-export default function Portfolio() {
+export default function Portfolio({ children }: { children: ReactNode }) {
   return (
     <PortfolioShell>
       <main id="main-content">
-        <Hero />
+        {children}
         <About />
         <ProjectShowcase />
         <StackShowcase />
