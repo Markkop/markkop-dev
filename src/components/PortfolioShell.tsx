@@ -53,7 +53,6 @@ const NAME_EASE = [0.22, 1, 0.36, 1] as const
 const NAME_MORPH_DURATION = 0.7
 const NAME_LOOP_HOLD_MS = 5000
 const SKIP_INITIALIZING_SCREEN = true
-const HINT_IDLE_DISMISS_MS = 9000
 const CRAWLER_UA = /lighthouse|chrome-lighthouse|pagespeed|speed.?insights|googlebot|google-inspectiontool|bingbot|yandexbot|baiduspider|duckduckbot|slurp|headlesschrome|gptbot|claudebot|bytespider/i
 const ScrollDownCue = dynamic(() => import('@/components/ScrollDownCue'), { ssr: false })
 
@@ -467,12 +466,6 @@ function LoadingScreen({
   useEffect(() => {
     if (phase === 'hint') onChromeChange(true)
   }, [onChromeChange, phase])
-
-  useEffect(() => {
-    if (phase !== 'hint' || forced) return
-    const timeout = window.setTimeout(() => finishEnterRef.current(), HINT_IDLE_DISMISS_MS)
-    return () => window.clearTimeout(timeout)
-  }, [forced, phase])
 
   useEffect(() => {
     if (phase !== 'hint') return
