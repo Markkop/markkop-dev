@@ -1,10 +1,20 @@
 import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
 import { siteConfig } from '@/config/seo'
 import { profile } from '@/data/profile'
 import { LanguageProvider } from '@/context/LanguageContext'
 import SmoothScroll from '@/components/SmoothScroll'
 import { SPLASH_BOOT_SCRIPT, SPLASH_BOOT_STYLE } from '@/lib/splash'
 import './globals.css'
+
+const monaSans = localFont({
+  src: './fonts/MonaSans.woff2',
+  display: 'swap',
+  weight: '200 900',
+  variable: '--font-mona-sans',
+  fallback: ['system-ui', 'sans-serif'],
+  preload: true,
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -75,7 +85,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${monaSans.variable} ${monaSans.className}`} suppressHydrationWarning>
       <head>
         <link rel="describedby" href="/llms.txt" />
         <style id="mk-splash-boot" dangerouslySetInnerHTML={{ __html: SPLASH_BOOT_STYLE }} />

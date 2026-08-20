@@ -108,15 +108,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        source: '/fonts/:path*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: isProduction ? 'public, max-age=31536000, immutable' : 'no-store',
-          },
-        ],
-      },
     ]
   },
   poweredByHeader: false,
