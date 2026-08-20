@@ -482,6 +482,9 @@ button { font: inherit; }
 .mk-kicker { color: var(--mk-accent); font: 700 16px var(--font-mono); letter-spacing: .15em; text-transform: uppercase; }
 
 /* Loader */
+html[data-splash="pending"] { background: var(--mk-bg, #0b0810); }
+html[data-splash="pending"] body { visibility: hidden; overflow: hidden; }
+html[data-splash="pending"] .mk-loader { visibility: visible; }
 .mk-loader { position: fixed; inset: 0; z-index: 99999; overflow: hidden; background: transparent; }
 .mk-loader-curtain { position: absolute; left: 0; right: 0; height: 50%; z-index: 1; background: var(--mk-bg); }
 .mk-loader-curtain.top { top: 0; }

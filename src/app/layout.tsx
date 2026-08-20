@@ -3,6 +3,7 @@ import { siteConfig } from '@/config/seo'
 import { profile } from '@/data/profile'
 import { LanguageProvider } from '@/context/LanguageContext'
 import SmoothScroll from '@/components/SmoothScroll'
+import { SPLASH_BOOT_SCRIPT, SPLASH_BOOT_STYLE } from '@/lib/splash'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -77,10 +78,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="describedby" href="/llms.txt" />
+        <style id="mk-splash-boot" dangerouslySetInnerHTML={{ __html: SPLASH_BOOT_STYLE }} />
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{document.documentElement.dataset.theme=localStorage.getItem('markkop-theme')||'dark';var language=localStorage.getItem('markkop-language')==='pt-BR'?'pt-BR':'en';document.documentElement.dataset.language=language;document.documentElement.lang=language}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.language='en'}(function(){var v=window.visualViewport;if(v&&v.scale!==1)return;var h=v?v.height:window.innerHeight;var b=v?Math.max(0,window.innerHeight-v.height-v.offsetTop):0;var r=document.documentElement.style;r.setProperty('--mk-vvh',h+'px');r.setProperty('--mk-vv-bottom',b+'px')})()",
+              "try{document.documentElement.dataset.theme=localStorage.getItem('markkop-theme')||'dark';var language=localStorage.getItem('markkop-language')==='pt-BR'?'pt-BR':'en';document.documentElement.dataset.language=language;document.documentElement.lang=language}catch(e){document.documentElement.dataset.theme='dark';document.documentElement.dataset.language='en'}(function(){var v=window.visualViewport;if(v&&v.scale!==1)return;var h=v?v.height:window.innerHeight;var b=v?Math.max(0,window.innerHeight-v.height-v.offsetTop):0;var r=document.documentElement.style;r.setProperty('--mk-vvh',h+'px');r.setProperty('--mk-vv-bottom',b+'px')})()" + SPLASH_BOOT_SCRIPT,
           }}
         />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />

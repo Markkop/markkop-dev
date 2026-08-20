@@ -9,6 +9,7 @@ import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState, 
 import LanguageToggle from '@/components/LanguageToggle'
 import { useLanguage } from '@/context/LanguageContext'
 import { profile, projects } from '@/data/profile'
+import { clearSplashPending, shouldSkipSplash, SPLASH_STORAGE_KEY } from '@/lib/splash'
 import { projectIndexAt, projectScrollTop } from '@/lib/projectScroll'
 
 const SECTION_IDS = ['hero', 'about', 'projects', 'tech-stack', 'now', 'contact'] as const
@@ -53,21 +54,7 @@ const NAME_EASE = [0.22, 1, 0.36, 1] as const
 const NAME_MORPH_DURATION = 0.7
 const NAME_LOOP_HOLD_MS = 5000
 const SKIP_INITIALIZING_SCREEN = true
-const CRAWLER_UA = /lighthouse|chrome-lighthouse|pagespeed|speed.?insights|googlebot|google-inspectiontool|bingbot|yandexbot|baiduspider|duckduckbot|slurp|headlesschrome|gptbot|claudebot|bytespider/i
 const ScrollDownCue = dynamic(() => import('@/components/ScrollDownCue'), { ssr: false })
-
-function clientBrandString() {
-  const brands = (navigator as Navigator & { userAgentData?: { brands?: Array<{ brand: string }> } }).userAgentData?.brands
-  return brands?.map((item) => item.brand).join(' ') ?? ''
-}
-
-function shouldSkipSplash() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return true
-  if (navigator.webdriver) return true
-  if (window.location.search.includes('lighthouse')) return true
-  if ((window as Window & { _lighthouse?: unknown })._lighthouse) return true
-  return CRAWLER_UA.test(`${navigator.userAgent} ${clientBrandString()}`)
-}
 
 function firstNameGlyphs(stage: NameStage) {
   const glyphs = [
@@ -357,7 +344,7 @@ function LoadingScreen({
   const finishEnter = useCallback(() => {
     if (enteringRef.current) return
     enteringRef.current = true
-    sessionStorage.setItem('markkop-mubx-loaded', 'true')
+    sessionStorage.setItem(SPLASH_STORAGE_KEY, 'true')
     pinToTop()
     setPhase('entering')
     window.setTimeout(() => {
@@ -380,23 +367,20 @@ function LoadingScreen({
     finishEnter()
   }, [finishEnter, phase])
 
+  useLayoutEffect(() => {
+    if (isLinks || sessionStorage.getItem(SPLASH_STORAGE_KEY) || (!forced && shouldSkipSplash())) {
+      clearSplashPending()
+    }
+  }, [forced, isLinks])
+
   useEffect(() => {
     const release = () => {
+      clearSplashPending()
       onActiveChange(false)
       onChromeChange(false)
     }
 
-    if (isLinks) {
-      queueMicrotask(release)
-      return
-    }
-
-    if (sessionStorage.getItem('markkop-mubx-loaded')) {
-      queueMicrotask(release)
-      return
-    }
-
-    if (!forced && shouldSkipSplash()) {
+    if (isLinks || sessionStorage.getItem(SPLASH_STORAGE_KEY) || (!forced && shouldSkipSplash())) {
       queueMicrotask(release)
       return
     }
@@ -432,15 +416,20 @@ function LoadingScreen({
     }
   }, [forced, isLinks, onActiveChange, onChromeChange])
 
+  useLayoutEffect(() => {
+    if (!mounted || !visible) return
+    clearSplashPending()
+  }, [mounted, visible])
+
   useEffect(() => {
     if (dismissId === 0) return
-    if (sessionStorage.getItem('markkop-mubx-loaded')) return
+    if (sessionStorage.getItem(SPLASH_STORAGE_KEY)) return
     finishEnterRef.current()
   }, [dismissId])
 
   useEffect(() => {
     if (!mounted || !visible || isLinks) return
-    if (sessionStorage.getItem('markkop-mubx-loaded')) return
+    if (sessionStorage.getItem(SPLASH_STORAGE_KEY)) return
     lenis?.stop()
     pinToTop()
     return () => { lenis?.start() }
@@ -889,7 +878,7 @@ export default function PortfolioShell({ children }: { children: ReactNode }) {
   const [loaderChrome, setLoaderChrome] = useState(false)
 
   const replaySplash = useCallback(() => {
-    sessionStorage.removeItem('markkop-mubx-loaded')
+    sessionStorage.removeItem(SPLASH_STORAGE_KEY)
     setLoaderDismissId(0)
     setLoaderPlayId((value) => value + 1)
   }, [])
