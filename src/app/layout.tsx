@@ -1,9 +1,19 @@
 import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
 import { siteConfig } from '@/config/seo'
 import { profile } from '@/data/profile'
 import { LanguageProvider } from '@/context/LanguageContext'
 import SmoothScroll from '@/components/SmoothScroll'
 import './globals.css'
+
+const monaSans = localFont({
+  src: './fonts/MonaSans.woff2',
+  display: 'swap',
+  preload: true,
+  adjustFontFallback: 'Arial',
+  variable: '--font-mona',
+  weight: '200 900',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -74,7 +84,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${monaSans.className} ${monaSans.variable}`} suppressHydrationWarning>
       <head>
         <link rel="describedby" href="/llms.txt" />
         <script
