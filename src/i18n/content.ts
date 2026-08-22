@@ -339,7 +339,7 @@ export const content: Record<Language, SiteContent> = {
       ],
       journey: '// Carreira',
       milestonesHeading: '// Conquistas',
-      lfg: 'LFG',
+      lfg: 'Bora lá ',
       careerMilestones: [
         'Full-stack Developer',
         'Senior Software Engineer',
