@@ -28,6 +28,7 @@ export type Project = {
   video?: string
   embed?: boolean
   deviceToggle?: boolean
+  startMobile?: boolean
   media?: ProjectMedia[]
 }
 
@@ -182,6 +183,7 @@ export const projects: Project[] = [
     live: 'https://todo.markkop.dev/',
     embed: true,
     deviceToggle: true,
+    startMobile: true,
     media: [
       { id: 'live', kind: 'live', src: 'https://todo.markkop.dev/demo' },
     ],
