@@ -83,16 +83,21 @@ export type SiteContent = {
   footer: { built: string }
   links: {
     back: string
-    eyebrow: string
-    summary: string
-    ai: string
-    openSource: string
     connect: string
-    selectedWork: string
+    talks: string
+    projects: string
     github: string
     linkedin: string
     blog: string
     blogDescription: string
+    presentation: string
+    feedback: string
+    visit: string
+    repo: string
+    builtWithAi: string
+    notAvailable: string
+    galleryPrev: string
+    galleryNext: string
   }
   notFound: { title: string; text: string; home: string }
   error: { title: string; text: string; retry: string }
@@ -126,7 +131,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
     description: 'Um rastreador de hábitos com compromisso real, usando incentivos onchain para transformar consistência em responsabilidade.',
     category: 'Produto Onchain',
     metric: 'Vencedor de Hackathon',
-    timeframe: '2025–2026',
+    timeframe: '2026',
     tabs: {
       live: 'Site',
       app: 'App',
@@ -143,19 +148,19 @@ const portugueseProjects: Record<string, ProjectCopy> = {
     description: 'Um espaço para reunir anúncios de imóveis, comparar propriedades e planejar a compra de uma casa.',
     category: 'Plataforma Imobiliária',
     metric: 'Fluxo assistido por IA',
-    timeframe: '2025–2026',
+    timeframe: '2026',
   },
   wedding: {
     description: 'Uma ferramenta focada em organizar convidados, convites, ordenação, detalhes e confirmações de presença.',
     category: 'Ferramenta',
     metric: 'Perfeito para casamentos',
-    timeframe: '2025–2026',
+    timeframe: '2025',
   },
   'corvo-astral': {
     description: 'Um bot comunitário para Discord que reúne e disponibiliza informações úteis para jogadores de Wakfu.',
     category: 'Bot Comunitário',
     metric: '500+ servidores no Discord',
-    timeframe: '2020–2025',
+    timeframe: '2020',
     tabs: {
       alma: 'Almanax',
       'alma-daily': 'Almanax diário',
@@ -273,16 +278,21 @@ export const content: Record<Language, SiteContent> = {
     footer: { built: 'Designed & built by Mark · markkop.dev' },
     links: {
       back: 'Back to markkop.dev',
-      eyebrow: '// LINKS',
-      summary: 'Software engineer building useful, playful, and open products.',
-      ai: 'AI',
-      openSource: 'Open source',
       connect: 'Connect',
-      selectedWork: 'Selected work',
+      talks: 'Talks',
+      projects: 'Projects',
       github: 'Open-source projects and experiments',
       linkedin: 'Professional profile and contact',
       blog: 'Blog',
       blogDescription: 'Articles on DEV Community',
+      presentation: 'Presentation',
+      feedback: 'Feedback',
+      visit: 'Visit',
+      repo: 'Repo',
+      builtWithAi: 'Built with AI',
+      notAvailable: 'Not available',
+      galleryPrev: 'Previous image',
+      galleryNext: 'Next image',
     },
     notFound: { title: 'This route wandered off.', text: 'The page is missing, but the rest of the system is still online.', home: 'Return home' },
     error: { title: 'Something went wrong.', text: 'An unexpected error occurred. Try rendering this page again.', retry: 'Try again' },
@@ -408,16 +418,21 @@ export const content: Record<Language, SiteContent> = {
     footer: { built: 'Projetado e desenvolvido por Mark · markkop.dev' },
     links: {
       back: 'Voltar para markkop.dev',
-      eyebrow: '// LINKS',
-      summary: 'Engenheiro de software criando produtos úteis, divertidos e abertos.',
-      ai: 'IA',
-      openSource: 'Código aberto',
       connect: 'Conecte-se',
-      selectedWork: 'Trabalhos selecionados',
+      talks: 'Palestras',
+      projects: 'Projetos',
       github: 'Projetos e experimentos open source',
       linkedin: 'Perfil profissional e contato',
       blog: 'Blog',
       blogDescription: 'Artigos no DEV Community',
+      presentation: 'Apresentação',
+      feedback: 'Feedback',
+      visit: 'Visitar',
+      repo: 'Repositório',
+      builtWithAi: 'Feito com IA',
+      notAvailable: 'Indisponível',
+      galleryPrev: 'Imagem anterior',
+      galleryNext: 'Próxima imagem',
     },
     notFound: { title: 'Esta rota se perdeu.', text: 'A página não existe, mas o restante do sistema continua online.', home: 'Voltar ao início' },
     error: { title: 'Algo deu errado.', text: 'Ocorreu um erro inesperado. Tente renderizar esta página novamente.', retry: 'Tentar novamente' },

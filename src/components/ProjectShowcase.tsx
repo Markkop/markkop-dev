@@ -465,7 +465,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const [visited, setVisited] = useState<Set<string>>(() => new Set(media[0]?.id ? [media[0].id] : []))
   const [embedState, setEmbedState] = useState<Record<string, { key: number; loaded: boolean; reloading: boolean }>>({})
   const [galleryIndex, setGalleryIndex] = useState(0)
-  const [phonePreview, setPhonePreview] = useState(false)
+  const [phonePreview, setPhonePreview] = useState(() => Boolean(project.startMobile))
   const fadeTimers = useRef<Record<string, number>>({})
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const embed = interactive && Boolean(project.embed)
@@ -485,8 +485,8 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const address = liveActive ? displayAddress(href) : (mediaSrc?.split('/').pop() ?? '')
 
   useEffect(() => {
-    setPhonePreview(false)
-  }, [isMobile, project.slug])
+    setPhonePreview(project.startMobile ? !isMobile : false)
+  }, [isMobile, project.slug, project.startMobile])
 
   useEffect(() => () => {
     Object.values(fadeTimers.current).forEach((id) => window.clearTimeout(id))

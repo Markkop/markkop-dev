@@ -1,15 +1,25 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowUpRight, Github, Instagram, Linkedin, Radio, Twitter } from 'lucide-react'
+import dynamic from 'next/dynamic'
+import { ArrowUpRight, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
 import DevTo from '@/components/icons/DevTo'
-import { profile, projects } from '@/data/profile'
-import { useLanguage } from '@/context/LanguageContext'
+import { ExpandableProject, ExpandableTalk } from '@/components/LinksExpandableCard'
 import LanguageToggle from '@/components/LanguageToggle'
+import ThemeToggle from '@/components/ThemeToggle'
+import { extraProjects, projectToExtra, sortProjectsByDate } from '@/data/extraProjects'
+import { profile, projects } from '@/data/profile'
+import { talks } from '@/data/talks'
+import { useLanguage } from '@/context/LanguageContext'
+
+const StarsBackground = dynamic(() => import('@/components/StarsBackground'), { ssr: false })
 
 export default function LinksPageContent() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
+  const [openTalk, setOpenTalk] = useState<string | null>(null)
+  const [openProject, setOpenProject] = useState<string | null>(null)
   const socials = [
     { name: 'GitHub', description: t.links.github, href: profile.links.github, icon: Github },
     { name: 'LinkedIn', description: t.links.linkedin, href: profile.links.linkedin, icon: Linkedin },
@@ -20,26 +30,27 @@ export default function LinksPageContent() {
 
   return (
     <main className="links-page">
-      <div className="links-grid" aria-hidden="true" />
+      <div className="links-stars" aria-hidden="true">
+        <StarsBackground slug="habitchain" />
+      </div>
       <div className="links-shell">
         <div className="links-topbar">
           <Link href="/" className="brand" aria-label={t.links.back}>markkop.dev<span>_</span></Link>
-          <LanguageToggle />
+          <div className="links-topbar-actions">
+            <LanguageToggle />
+            <ThemeToggle />
+          </div>
         </div>
         <header className="links-header">
           <div className="avatar-ring">
             <Image src="/LISBON_229.jpg" alt={profile.name} fill sizes="128px" priority />
           </div>
-          <p className="eyebrow">{t.links.eyebrow}</p>
-          <h1>Marcelo <span>&quot;Mark&quot;</span> Kopmann</h1>
-          <p>{t.links.summary}</p>
-          <div className="tag-row"><span>TypeScript</span><span>{t.links.ai}</span><span>Web3</span><span>{t.links.openSource}</span></div>
         </header>
 
         <section className="links-section">
-          <h2><Radio size={14} /> {t.links.connect}</h2>
-          {socials.map(({ icon: Icon, ...item }, index) => (
-            <a key={item.name} className={`link-card ${index === 1 ? 'primary' : ''}`} href={item.href} target="_blank" rel="noreferrer">
+          <h2>// {t.links.connect}</h2>
+          {socials.map(({ icon: Icon, ...item }) => (
+            <a key={item.name} className="link-card" href={item.href} target="_blank" rel="noreferrer">
               <span className="link-icon"><Icon size={20} /></span>
               <span><strong>{item.name}</strong><small>{item.description}</small></span>
               <ArrowUpRight size={18} />
@@ -48,17 +59,31 @@ export default function LinksPageContent() {
         </section>
 
         <section className="links-section">
-          <h2><Radio size={14} /> {t.links.selectedWork}</h2>
-          {projects.slice(0, 6).map((project) => {
-            const copy = t.projects.items[project.slug] ?? project
-            return (
-              <a key={project.slug} className="link-card" href={project.live} target="_blank" rel="noreferrer">
-                <span className="link-icon">{project.title.slice(0, 2).toUpperCase()}</span>
-                <span><strong>{project.title}</strong><small>{copy.category} · {copy.metric}</small></span>
-                <ArrowUpRight size={18} />
-              </a>
-            )
-          })}
+          <h2>// {t.links.talks}</h2>
+          {talks.map((talk) => (
+            <ExpandableTalk
+              key={talk.slug}
+              talk={talk}
+              language={language}
+              open={openTalk === talk.slug}
+              onToggle={() => setOpenTalk((current) => current === talk.slug ? null : talk.slug)}
+            />
+          ))}
+        </section>
+
+        <section className="links-section">
+          <h2>// {t.links.projects}</h2>
+          {sortProjectsByDate([
+            ...projects.map((project) => projectToExtra(project, t.projects.items[project.slug] ?? project)),
+            ...extraProjects,
+          ]).map((item) => (
+            <ExpandableProject
+              key={item.slug}
+              project={item}
+              open={openProject === item.slug}
+              onToggle={() => setOpenProject((current) => current === item.slug ? null : item.slug)}
+            />
+          ))}
         </section>
       </div>
     </main>

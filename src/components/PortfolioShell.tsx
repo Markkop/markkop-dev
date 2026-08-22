@@ -668,8 +668,8 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
               {hovered === index && <motion.i layoutId="mk-nav-hover" transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
             </a>
           ))}
-          <a href={profile.links.linktree} target="_blank" rel="noreferrer" onMouseEnter={() => setHovered(links.length)}>
-            <span>{t.nav.linktree}</span>
+          <a href="/links" onMouseEnter={() => setHovered(links.length)}>
+            <span>{t.nav.links}</span>
             {hovered === links.length && <motion.i layoutId="mk-nav-hover" transition={{ type: 'spring', stiffness: 350, damping: 30 }} />}
           </a>
         </nav>
@@ -700,8 +700,8 @@ function Navbar({ onBrandClick }: { onBrandClick: () => void }) {
                     <i />{link.label}
                   </motion.a>
                 ))}
-                <motion.a href={profile.links.linktree} target="_blank" rel="noreferrer" onClick={() => setOpen(false)} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 + links.length * 0.04 }}>
-                  <i />{t.nav.linktree}
+                <motion.a href="/links" onClick={() => setOpen(false)} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.06 + links.length * 0.04 }}>
+                  <i />{t.nav.links}
                 </motion.a>
               </div>
             </motion.aside>

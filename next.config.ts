@@ -7,7 +7,7 @@ const securityPolicy = [
   "connect-src 'self' https://api.github.com",
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:",
+  "img-src 'self' data: https://talks.markkop.dev https://res.cloudinary.com https://secure.meetupstatic.com https://i.imgur.com https://github.com https://user-images.githubusercontent.com https://raw.githubusercontent.com",
   "font-src 'self' data:",
   "object-src 'none'",
   "base-uri 'self'",
