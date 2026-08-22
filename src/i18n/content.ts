@@ -141,7 +141,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
   },
   wedding: {
     description: 'Uma ferramenta focada em organizar convidados, convites, ordenação, detalhes e confirmações de presença.',
-    category: 'Ferramenta de Planejamento',
+    category: 'Ferramenta',
     metric: 'Perfeito para casamentos',
     timeframe: '2025–2026',
   },
