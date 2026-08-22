@@ -27,6 +27,7 @@ export type Project = {
   imageMobile?: string
   video?: string
   embed?: boolean
+  deviceToggle?: boolean
   media?: ProjectMedia[]
 }
 
@@ -169,6 +170,18 @@ export const projects: Project[] = [
         { id: 'calc', src: '/projects/corvo-astral/calc.png', label: 'Damage calculator' },
       ],
     }],
+  },
+  {
+    title: 'Todo Idle Quest',
+    slug: 'todo-idle-quest',
+    description: 'A productivity-powered idle RPG. Completing real tasks, habits, and planner work grants XP, while your hero keeps adventuring while you are away.',
+    category: 'Idle RPG',
+    metric: 'Tasks level your hero',
+    timeframe: '2026',
+    tech: ['Svelte', 'Elixir', 'PostgreSQL', 'TypeScript'],
+    live: 'https://todo.markkop.dev/',
+    embed: true,
+    deviceToggle: true,
   },
 ]
 

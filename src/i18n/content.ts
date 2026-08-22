@@ -133,6 +133,12 @@ const portugueseProjects: Record<string, ProjectCopy> = {
       pitch: 'Pitch de um slide',
     },
   },
+  'todo-idle-quest': {
+    description: 'Um RPG idle alimentado por produtividade. Completar tarefas reais, hábitos e o planner gera XP, enquanto o herói segue a aventura na sua ausência.',
+    category: 'RPG Idle',
+    metric: 'Tarefas evoluem o herói',
+    timeframe: '2026',
+  },
   prisma: {
     description: 'Um espaço para reunir anúncios de imóveis, comparar propriedades e planejar a compra de uma casa.',
     category: 'Plataforma Imobiliária',

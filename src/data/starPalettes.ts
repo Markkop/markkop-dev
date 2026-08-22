@@ -10,6 +10,7 @@ export const STAR_PALETTES: Record<string, StarPalette> = {
   prisma: { primary: '#22d3ee', secondary: '#3b82f6', ice: '#bfe8ff', fog: '#03060f', glow: '#bffcff' },
   halborn: { primary: '#c5ff01', secondary: '#8fd400', ice: '#eeffb8', fog: '#030805', glow: '#d8ff55' },
   habitchain: { primary: '#8b5cf6', secondary: '#a78bfa', ice: '#e9d5ff', fog: '#0b0810', glow: '#d8b4fe' },
+  'todo-idle-quest': { primary: '#c4a574', secondary: '#6d5848', ice: '#f1e6d6', fog: '#1f130b', glow: '#e8d5b5' },
   wedding: { primary: '#f472b6', secondary: '#e879f9', ice: '#fbcfe8', fog: '#140814', glow: '#f9a8d4' },
   'corvo-astral': { primary: '#60a5fa', secondary: '#2563eb', ice: '#dbeafe', fog: '#030712', glow: '#bfdbfe' },
 }
@@ -18,6 +19,7 @@ export const STAR_PALETTES_LIGHT: Record<string, StarPalette> = {
   prisma: { primary: '#0891b2', secondary: '#2563eb', ice: '#0284c7', fog: '#ffffff', glow: '#22d3ee' },
   halborn: { primary: '#111111', secondary: '#2a2a2a', ice: '#6b7280', fog: '#ffffff', glow: '#404040' },
   habitchain: { primary: '#7c3aed', secondary: '#6d28d9', ice: '#a78bfa', fog: '#ffffff', glow: '#8b5cf6' },
+  'todo-idle-quest': { primary: '#6d5848', secondary: '#382e27', ice: '#8c7462', fog: '#ffffff', glow: '#c4a574' },
   wedding: { primary: '#db2777', secondary: '#c026d3', ice: '#ec4899', fog: '#ffffff', glow: '#f472b6' },
   'corvo-astral': { primary: '#2563eb', secondary: '#1d4ed8', ice: '#3b82f6', fog: '#ffffff', glow: '#60a5fa' },
 }

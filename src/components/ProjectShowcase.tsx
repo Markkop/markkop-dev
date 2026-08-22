@@ -100,12 +100,14 @@ function SimulatorEmbed({
   frameKey,
   frameLoaded,
   onFrameLoad,
+  phone,
 }: {
   src: string
   label: string
   frameKey: number
   frameLoaded: boolean
   onFrameLoad: () => void
+  phone?: boolean
 }) {
   const scaleRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.5)
@@ -125,7 +127,8 @@ function SimulatorEmbed({
       const height = node.clientHeight
       if (width <= 0 || height <= 0) return
 
-      if (media.matches) {
+      const usePhoneFrame = phone ?? media.matches
+      if (usePhoneFrame) {
         const nextScale = width / MOBILE_EMBED_WIDTH
         setScale(nextScale)
         setEmbedSize({ width: MOBILE_EMBED_WIDTH, height: height / nextScale })
@@ -152,7 +155,7 @@ function SimulatorEmbed({
       window.visualViewport?.removeEventListener('resize', update)
       media.removeEventListener('change', update)
     }
-  }, [])
+  }, [phone])
 
   useEffect(() => {
     const id = window.setTimeout(() => setShowFrame(true), 400)
@@ -466,7 +469,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
   const fadeTimers = useRef<Record<string, number>>({})
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
   const embed = interactive && Boolean(project.embed)
-  const canToggleDevice = Boolean(project.imageMobile)
+  const canToggleDevice = Boolean(project.imageMobile) || (embed && Boolean(project.deviceToggle))
   const showMobileImage = canToggleDevice && (isMobile !== phonePreview)
   const compactChrome = showMobileImage && !isMobile
   const activeMedia = media.find((item) => item.id === activeId) ?? media[0]
@@ -546,6 +549,7 @@ function ProjectSimulator({ project, label, interactive = true }: { project: Pro
         frameKey={state.key}
         frameLoaded={state.loaded}
         onFrameLoad={() => onFrameLoad(id)}
+        phone={canToggleDevice ? showMobileImage : undefined}
       />
     )
   }
