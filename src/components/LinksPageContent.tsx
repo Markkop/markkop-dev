@@ -4,8 +4,9 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { ArrowUpRight, Github, Instagram, Linkedin, Twitter } from 'lucide-react'
+import { ArrowUpRight, Github, Instagram, Twitter } from 'lucide-react'
 import DevTo from '@/components/icons/DevTo'
+import LinkedIn from '@/components/icons/LinkedIn'
 import { ExpandableProject, ExpandableTalk } from '@/components/LinksExpandableCard'
 import LanguageToggle from '@/components/LanguageToggle'
 import ThemeToggle from '@/components/ThemeToggle'
@@ -22,7 +23,7 @@ export default function LinksPageContent() {
   const [openProject, setOpenProject] = useState<string | null>(null)
   const socials = [
     { name: 'GitHub', description: t.links.github, href: profile.links.github, icon: Github },
-    { name: 'LinkedIn', description: t.links.linkedin, href: profile.links.linkedin, icon: Linkedin },
+    { name: 'LinkedIn', description: t.links.linkedin, href: profile.links.linkedin, icon: LinkedIn },
     { name: 'X / Twitter', description: '@heymarkkop', href: profile.links.x, icon: Twitter },
     { name: 'Instagram', description: '@markkop.dev', href: profile.links.instagram, icon: Instagram },
     { name: t.links.blog, description: t.links.blogDescription, href: profile.links.devto, icon: DevTo },

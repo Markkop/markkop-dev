@@ -1,8 +1,9 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Github, Instagram, Linkedin, Twitter } from 'lucide-react'
+import { Github, Instagram, Twitter } from 'lucide-react'
 import DevTo from '@/components/icons/DevTo'
+import LinkedIn from '@/components/icons/LinkedIn'
 import PhotoGallery from '@/components/PhotoGallery'
 import SectionWrapper from '@/components/ui/SectionWrapper'
 import { useLanguage } from '@/context/LanguageContext'
@@ -15,7 +16,7 @@ export default function Contact() {
   const socials = (
     <div className="mk-contact-socials">
       <motion.a href={profile.links.github} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Github size={14} />GitHub</motion.a>
-      <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Linkedin size={14} />LinkedIn</motion.a>
+      <motion.a href={profile.links.linkedin} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><LinkedIn size={14} />LinkedIn</motion.a>
       <motion.a href={profile.links.x} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Twitter size={14} />X</motion.a>
       <motion.a href={profile.links.instagram} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><Instagram size={14} />Instagram</motion.a>
       <motion.a href={profile.links.devto} target="_blank" rel="noreferrer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}><DevTo size={14} />Blog</motion.a>
