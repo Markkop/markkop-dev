@@ -94,7 +94,6 @@ export type SiteContent = {
     feedback: string
     visit: string
     repo: string
-    builtWithAi: string
     notAvailable: string
     galleryPrev: string
     galleryNext: string
@@ -289,7 +288,6 @@ export const content: Record<Language, SiteContent> = {
       feedback: 'Feedback',
       visit: 'Visit',
       repo: 'Repo',
-      builtWithAi: 'Built with AI',
       notAvailable: 'Not available',
       galleryPrev: 'Previous image',
       galleryNext: 'Next image',
@@ -429,7 +427,6 @@ export const content: Record<Language, SiteContent> = {
       feedback: 'Feedback',
       visit: 'Visitar',
       repo: 'Repositório',
-      builtWithAi: 'Feito com IA',
       notAvailable: 'Indisponível',
       galleryPrev: 'Imagem anterior',
       galleryNext: 'Próxima imagem',

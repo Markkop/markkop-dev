@@ -12,7 +12,6 @@ import {
   MapPin,
   MessageSquare,
   Presentation,
-  Sparkles,
   Tag,
   User,
   Users,
@@ -300,7 +299,6 @@ export function ExpandableProject({
   open: boolean
   onToggle: () => void
 }) {
-  const { t } = useLanguage()
   const personal = project.client.name.toLowerCase() === 'personal'
   const ClientIcon = personal ? User : Building2
   const itemIcon = project.favicon || project.images[0] || ''
@@ -334,11 +332,6 @@ export function ExpandableProject({
               <span><ClientIcon size={13} /> {project.client.name}</span>
             )}
             <span><Calendar size={13} /> {project.date}</span>
-            {project.aiUsage.level === 'Full' ? (
-              <span className="links-ai-badge" title={project.aiUsage.description || t.links.builtWithAi}>
-                <Sparkles size={13} /> {t.links.builtWithAi}
-              </span>
-            ) : null}
           </p>
           <p className="links-detail-copy">{project.description}</p>
           <div className="links-detail-tags">

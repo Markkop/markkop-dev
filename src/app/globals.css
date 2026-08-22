@@ -426,11 +426,6 @@ button.link-card { width: 100%; appearance: none; font: inherit; color: inherit;
 .links-detail-meta span, .links-detail-meta a { display: inline-flex; align-items: center; gap: 6px; }
 .links-detail-meta a { color: var(--purple); }
 .links-detail-meta a:hover { color: var(--purple-deep); }
-.links-ai-badge {
-  padding: 4px 8px; color: var(--purple); background: var(--purple-soft);
-  border: 1px solid color-mix(in srgb, var(--purple) 30%, transparent); border-radius: var(--radius-pill);
-  font-family: "JetBrains Mono", monospace; font-size: 9px; letter-spacing: .08em; text-transform: uppercase;
-}
 .links-detail-copy { margin: 0 0 14px; color: var(--muted); font-size: 14px; line-height: 1.65; }
 .links-detail-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .links-detail-tags a, .links-detail-tags span {

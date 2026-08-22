@@ -6,11 +6,6 @@ export type ExtraProjectClient = {
   url: string
 }
 
-export type ExtraProjectAiUsage = {
-  level: 'Incremental' | 'Full' | 'None'
-  description: string
-}
-
 export type ExtraProjectButton = {
   type: 'view' | 'source'
   text: string
@@ -26,7 +21,6 @@ export type ExtraProject = {
   category: string
   date: string
   client: ExtraProjectClient
-  aiUsage: ExtraProjectAiUsage
   description: string
   images: string[]
   tags: string[]
@@ -70,10 +64,6 @@ export function projectToExtra(
     client: project.slug === 'halborn'
       ? { name: 'Halborn', url: project.live }
       : { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: {
-      level: project.slug === 'prisma' ? 'Full' : 'None',
-      description: '',
-    },
     description: copy.description,
     images: collectImages(project),
     tags: [...project.tech],
@@ -110,10 +100,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Developer Tool',
     date: '2024',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: {
-      level: 'Full',
-      description: 'README notes that refactors and new implementations were largely produced with ChatGPT and Genie VS Code, exposing a live UI that calls OpenAI models.',
-    },
     description: 'A tool that fetches files from a GitHub repository, merges them into a single context allowing for easy copy–paste into chatbots.',
     images: [talksAsset('/images/repogpt.png'), talksAsset('/images/repogpt-github.png')],
     favicon: '/projects/favicons/repogpt.png',
@@ -129,7 +115,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Developer Tool',
     date: '2025',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'Full', description: '' },
     description: 'Web utility that scans a GitHub repository for environment variable usage and produces a .env file example.',
     images: [
       talksAsset('https://github.com/Markkop/RepoEnvGenerator/blob/main/public/og.png?raw=true'),
@@ -148,7 +133,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Micro-app',
     date: '2025',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'Full', description: '' },
     description: 'A micro‑app to track shaving history.',
     images: [talksAsset('/images/beard-tracker.png')],
     favicon: '/projects/favicons/beard-shave-tracker.svg',
@@ -163,7 +147,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Utility',
     date: '2025',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'Full', description: '' },
     description: 'Small utility that ingests receipt data and outputs parsed values for budgeting or claims. Built with Replit Agent',
     images: [talksAsset('/images/receipt-processor.png')],
     favicon: '/projects/favicons/receipt-processor.svg',
@@ -178,7 +161,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Web App',
     date: '2025',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'Full', description: '' },
     description: 'A minimal public board to capture and iterate prompts for LLM workflows; designed for quick capture and sharing during experiments.',
     images: [talksAsset('/images/prompt-mural.png')],
     favicon: '/projects/favicons/prompt-mural.svg',
@@ -193,7 +175,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'DApp',
     date: '2022',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A full‑stack DApp for minting, listing, buying, and managing NFTs. Integrates IPFS via Pinata, MetaMask wallet, and testnet deployment scripts.',
     images: [talksAsset('/images/nft-marketplace-1.png'), talksAsset('/images/nft-marketplace-github.png')],
     favicon: '/projects/favicons/nft-marketplace.svg',
@@ -209,7 +190,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Voice App',
     date: '2022',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A Google App/Alexa Skill for ZenithVR MMORPG that delivers in‑game information via natural speech interfaces.',
     images: [talksAsset('/images/essence-helper.png'), talksAsset('/images/essence-helper-github.png')],
     favicon: '/projects/favicons/essence-helper.svg',
@@ -225,7 +205,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'API',
     date: '2021',
     client: { name: 'Codecon', url: 'https://codecon.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'An API integration with Gather Websocket to get statistics and create player interactions for the Codecon Online event.',
     images: [talksAsset('/images/codecon-gather-1.jpg')],
     favicon: '/projects/favicons/gather-websocket-api.png',
@@ -242,7 +221,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'API',
     date: '2021',
     client: { name: 'Codecon', url: 'https://codecon.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'After building the Codecon Discord bot, we decided to move the gamification logic to a separate API so we could integrate it with the Codecon App',
     images: [talksAsset('/images/codecodes-api-1.png')],
     favicon: '/projects/favicons/gamification-api.png',
@@ -259,7 +237,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Community Bot',
     date: '2021',
     client: { name: 'Codecon', url: 'https://codecon.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A Discord bot for the Codecon community, used to manage ranks, claims, and token management.',
     images: [talksAsset('/images/codecon-discord-bot-1.jpg')],
     favicon: '/projects/favicons/codecon-discord-bot.png',
@@ -276,7 +253,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Website',
     date: '2024',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A simple linktree clone to make my links more accessible.',
     images: [talksAsset('/images/linktree-1.png')],
     favicon: '/projects/favicons/linktree-clone.svg',
@@ -292,7 +268,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Tool',
     date: '2023',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A tool to delete multiple playlists from a Spotify account.',
     images: [talksAsset('/images/spotify-1.jpeg')],
     favicon: '/projects/favicons/multiple-playlist-deleter.png',
@@ -308,7 +283,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Website',
     date: '2024',
     client: { name: 'Personal', url: 'https://www.corvosdeefrim.com/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A website for the Corvos de Efrim, a guild presente in multiple MMORPGs such as Wakfu, Dofus and Waven.',
     images: [talksAsset('/images/corvos-1.png')],
     favicon: '/projects/favicons/mmorpg-guild-website.png',
@@ -325,7 +299,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Web App',
     date: '2022',
     client: { name: 'Multiple Clients', url: '' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A web app to track crypto rewards for web3 clients and users',
     images: [
       talksAsset('/images/retrocade-rewards-1.png'),
@@ -345,7 +318,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Desktop App',
     date: '2020',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'Incremental', description: '' },
     description: 'Cross‑platform Electron application to download a YouTube video and cut a clip by time range, with optional MP3 export.',
     images: [talksAsset('/images/yt-dl.png'), talksAsset('/images/yt-dlandcut-github.png')],
     favicon: '/projects/favicons/youtube-download-cut.png',
@@ -361,7 +333,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Integration',
     date: '2019',
     client: { name: 'Linx', url: 'https://www.linx.com.br/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'As part of Linx team, I was responsible for the integration of the existing search, recommendation, showcase and banners products',
     images: [talksAsset('/images/lnx-1.png')],
     favicon: '/projects/favicons/ecommerce-solutions.png',
@@ -376,7 +347,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Prototype',
     date: '2021',
     client: { name: 'ArcTouch', url: 'https://www.arctouch.com/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A proof of concept for a business card that uses a marker to display 3D models using Augmented Reality.',
     images: [talksAsset('/images/web-ar.png')],
     favicon: '/projects/favicons/web-ar-business-card.png',
@@ -392,7 +362,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Prototype',
     date: '2022',
     client: { name: 'ArcTouch', url: 'https://www.arctouch.com/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'A proof of concept for making a Decentraland plot/scene interacting with external APIs',
     images: [
       talksAsset('/images/metaverse-3.png'),
@@ -412,7 +381,6 @@ export const extraProjects: ExtraProject[] = [
     category: 'Scripts',
     date: '2019',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
-    aiUsage: { level: 'None', description: '' },
     description: 'One of my first projects, a set of scripts to extend Habitica.com functionality. It features a Pomodoro Timer task, Custom Skills and keyboard shortcurs.',
     images: [talksAsset('/images/habitica-1.jpg')],
     favicon: '/projects/favicons/habitica-scripts.png',
