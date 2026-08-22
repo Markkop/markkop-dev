@@ -15,6 +15,7 @@ import {
   Sparkles,
   Tag,
   User,
+  Users,
 } from 'lucide-react'
 import { useLanguage } from '@/context/LanguageContext'
 import { projectSubtitle, type ExtraProject, type ExtraProjectButton } from '@/data/extraProjects'
@@ -39,6 +40,9 @@ function LinksExpandable({
   title,
   subtitle,
   image,
+  isFavicon,
+  onDark,
+  fill,
   open,
   onToggle,
   children,
@@ -47,11 +51,20 @@ function LinksExpandable({
   title: string
   subtitle: string
   image?: string
+  isFavicon?: boolean
+  onDark?: boolean
+  fill?: boolean
   open: boolean
   onToggle: () => void
   children: ReactNode
 }) {
   const panelId = `${id}-panel`
+  const iconClass = [
+    'link-icon',
+    isFavicon ? 'is-favicon' : '',
+    onDark ? 'is-on-dark' : '',
+    fill ? 'is-fill' : '',
+  ].filter(Boolean).join(' ')
 
   return (
     <article className={open ? 'links-expand is-open' : 'links-expand'}>
@@ -62,12 +75,12 @@ function LinksExpandable({
         aria-controls={panelId}
         onClick={onToggle}
       >
-        <span className="link-icon">
+        <span className={iconClass}>
           {image ? (
             <>
               {/* Remote covers from talks.markkop.dev; CSP allowlists the hosts. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={image} alt="" />
+              <img src={image} alt="" className={isFavicon ? 'is-favicon' : undefined} />
             </>
           ) : title.slice(0, 2).toUpperCase()}
         </span>
@@ -220,13 +233,18 @@ export function ExpandableTalk({
 }) {
   const { t } = useLanguage()
   const dateLabel = formatTalkDate(talk.date, language)
+  const itemIcon = talk.favicon || talk.coverImage
+  const isFavicon = Boolean(talk.favicon)
 
   return (
     <LinksExpandable
       id={`talk-${talk.slug}`}
       title={talk.title}
-      subtitle={`${dateLabel} · ${talk.location}`}
-      image={talk.coverImage}
+      subtitle={`${dateLabel} · ${talk.event}`}
+      image={itemIcon}
+      isFavicon={isFavicon}
+      onDark={talk.faviconOnDark}
+      fill={talk.faviconFill}
       open={open}
       onToggle={onToggle}
     >
@@ -238,6 +256,13 @@ export function ExpandableTalk({
           <h3>{talk.title}</h3>
           <p className="links-detail-meta">
             <span><Calendar size={13} /> {dateLabel}</span>
+            {talk.eventLink ? (
+              <a href={talk.eventLink} target="_blank" rel="noreferrer" onClick={stop}>
+                <Users size={13} /> {talk.event}
+              </a>
+            ) : (
+              <span><Users size={13} /> {talk.event}</span>
+            )}
             {talk.locationLink ? (
               <a href={talk.locationLink} target="_blank" rel="noreferrer" onClick={stop}>
                 <MapPin size={13} /> {talk.location}
@@ -278,13 +303,18 @@ export function ExpandableProject({
   const { t } = useLanguage()
   const personal = project.client.name.toLowerCase() === 'personal'
   const ClientIcon = personal ? User : Building2
+  const itemIcon = project.favicon || project.images[0] || ''
+  const isFavicon = Boolean(project.favicon)
 
   return (
     <LinksExpandable
       id={`project-${project.slug}`}
       title={project.title}
       subtitle={projectSubtitle(project)}
-      image={project.images[0] ?? ''}
+      image={itemIcon}
+      isFavicon={isFavicon}
+      onDark={project.faviconOnDark}
+      fill={project.faviconFill}
       open={open}
       onToggle={onToggle}
     >

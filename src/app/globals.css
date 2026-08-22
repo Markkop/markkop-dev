@@ -368,6 +368,11 @@ button.link-card { width: 100%; appearance: none; font: inherit; color: inherit;
 .link-card.primary { color: white; background: var(--purple); border-color: var(--purple); }
 .link-icon { width: 42px; height: 42px; display: grid; place-items: center; overflow: hidden; background: var(--purple-soft); border-radius: var(--radius-control); color: var(--purple); font-family: "JetBrains Mono", monospace; font-size: 10px; font-weight: 700; }
 .link-icon img { width: 100%; height: 100%; object-fit: cover; }
+.link-icon.is-favicon img,
+.link-icon img.is-favicon { width: 24px; height: 24px; object-fit: contain; }
+.link-icon.is-fill img,
+.link-icon.is-fill img.is-favicon { width: 100%; height: 100%; object-fit: cover; }
+[data-theme="light"] .link-icon.is-on-dark { background: #000; }
 .primary .link-icon { color: white; background: rgba(255,255,255,.14); }
 .link-card > span:nth-child(2) { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .link-card strong { font-size: 15px; }

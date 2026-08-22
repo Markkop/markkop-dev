@@ -31,6 +31,9 @@ export type ExtraProject = {
   images: string[]
   tags: string[]
   buttons: ExtraProjectButton[]
+  favicon?: string
+  faviconOnDark?: boolean
+  faviconFill?: boolean
 }
 
 function collectImages(project: Project) {
@@ -80,6 +83,9 @@ export function projectToExtra(
         ? [{ type: 'source' as const, text: 'Repo', icon: 'code' as const, url: project.code, enabled: true }]
         : []),
     ],
+    favicon: project.favicon,
+    faviconOnDark: project.faviconOnDark,
+    faviconFill: project.faviconFill,
   }
 }
 
@@ -110,6 +116,7 @@ export const extraProjects: ExtraProject[] = [
     },
     description: 'A tool that fetches files from a GitHub repository, merges them into a single context allowing for easy copy–paste into chatbots.',
     images: [talksAsset('/images/repogpt.png'), talksAsset('/images/repogpt-github.png')],
+    favicon: '/projects/favicons/repogpt.png',
     tags: ['Next.js', 'TypeScript', 'OpenAI API', 'Tailwind CSS', 'Vercel'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://repogpt.markkop.dev/', enabled: true },
@@ -128,6 +135,7 @@ export const extraProjects: ExtraProject[] = [
       talksAsset('https://github.com/Markkop/RepoEnvGenerator/blob/main/public/og.png?raw=true'),
       talksAsset('/images/repoenvgen-github.png'),
     ],
+    favicon: '/projects/favicons/repo-env-generator.png',
     tags: ['Next.js', 'TypeScript', 'GitHub API', 'Vercel'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://repoenvgen.markkop.dev/', enabled: true },
@@ -143,6 +151,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'Full', description: '' },
     description: 'A micro‑app to track shaving history.',
     images: [talksAsset('/images/beard-tracker.png')],
+    favicon: '/projects/favicons/beard-shave-tracker.svg',
     tags: ['React', 'TypeScript', 'Netlify'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://beard-shave-tracker.netlify.app/', enabled: true },
@@ -157,6 +166,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'Full', description: '' },
     description: 'Small utility that ingests receipt data and outputs parsed values for budgeting or claims. Built with Replit Agent',
     images: [talksAsset('/images/receipt-processor.png')],
+    favicon: '/projects/favicons/receipt-processor.svg',
     tags: ['JavaScript', 'Replit'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://stipend-claim-helper-markkop.replit.app/', enabled: true },
@@ -171,6 +181,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'Full', description: '' },
     description: 'A minimal public board to capture and iterate prompts for LLM workflows; designed for quick capture and sharing during experiments.',
     images: [talksAsset('/images/prompt-mural.png')],
+    favicon: '/projects/favicons/prompt-mural.svg',
     tags: ['Next.js', 'TypeScript', 'Vercel'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://promptmural.xyz/', enabled: true },
@@ -185,6 +196,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A full‑stack DApp for minting, listing, buying, and managing NFTs. Integrates IPFS via Pinata, MetaMask wallet, and testnet deployment scripts.',
     images: [talksAsset('/images/nft-marketplace-1.png'), talksAsset('/images/nft-marketplace-github.png')],
+    favicon: '/projects/favicons/nft-marketplace.svg',
     tags: ['Next.js', 'Solidity', 'Hardhat', 'Ethers.js', 'IPFS', 'Vercel', 'Polygon'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://nft-marketplace-markkop.vercel.app/', enabled: true },
@@ -200,6 +212,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A Google App/Alexa Skill for ZenithVR MMORPG that delivers in‑game information via natural speech interfaces.',
     images: [talksAsset('/images/essence-helper.png'), talksAsset('/images/essence-helper-github.png')],
+    favicon: '/projects/favicons/essence-helper.svg',
     tags: ['Jovo', 'TypeScript', 'Alexa', 'Google Assistant'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://www.amazon.com/dp/B09T6XJ3NT', enabled: true },
@@ -215,6 +228,8 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'An API integration with Gather Websocket to get statistics and create player interactions for the Codecon Online event.',
     images: [talksAsset('/images/codecon-gather-1.jpg')],
+    favicon: '/projects/favicons/gather-websocket-api.png',
+    faviconOnDark: true,
     tags: ['JavaScript', 'discord.js', 'Node.js'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://codecon.dev/', enabled: false, disabledReason: 'Project offline' },
@@ -230,6 +245,8 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'After building the Codecon Discord bot, we decided to move the gamification logic to a separate API so we could integrate it with the Codecon App',
     images: [talksAsset('/images/codecodes-api-1.png')],
+    favicon: '/projects/favicons/gamification-api.png',
+    faviconOnDark: true,
     tags: ['JavaScript', 'Node.js'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://codecon.dev/', enabled: false, disabledReason: 'Project offline' },
@@ -245,6 +262,8 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A Discord bot for the Codecon community, used to manage ranks, claims, and token management.',
     images: [talksAsset('/images/codecon-discord-bot-1.jpg')],
+    favicon: '/projects/favicons/codecon-discord-bot.png',
+    faviconOnDark: true,
     tags: ['JavaScript', 'discord.js', 'Node.js'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://codecon.dev/', enabled: false, disabledReason: 'Project offline' },
@@ -260,6 +279,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A simple linktree clone to make my links more accessible.',
     images: [talksAsset('/images/linktree-1.png')],
+    favicon: '/projects/favicons/linktree-clone.svg',
     tags: ['Next.js', 'Tailwind CSS'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://linktree.markkop.dev/', enabled: true },
@@ -275,6 +295,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A tool to delete multiple playlists from a Spotify account.',
     images: [talksAsset('/images/spotify-1.jpeg')],
+    favicon: '/projects/favicons/multiple-playlist-deleter.png',
     tags: ['JavaScript', 'Spotify API'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://multiple-playlist-deleter.vercel.app/', enabled: true },
@@ -290,6 +311,8 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A website for the Corvos de Efrim, a guild presente in multiple MMORPGs such as Wakfu, Dofus and Waven.',
     images: [talksAsset('/images/corvos-1.png')],
+    favicon: '/projects/favicons/mmorpg-guild-website.png',
+    faviconFill: true,
     tags: ['Next.js', 'Tailwind CSS'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://www.corvosdeefrim.com/', enabled: true },
@@ -309,6 +332,7 @@ export const extraProjects: ExtraProject[] = [
       talksAsset('/images/shilly-1.png'),
       talksAsset('/images/cryptoheadz-1.png'),
     ],
+    favicon: '/projects/favicons/web3-rewards-tracker.png',
     tags: ['Next.js', 'Tailwind CSS', 'GraphQL', 'Blockchain', 'BitQuery', 'PancakeSwap API'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://retrocade-rewards-tracker.vercel.app/', enabled: true },
@@ -324,6 +348,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'Incremental', description: '' },
     description: 'Cross‑platform Electron application to download a YouTube video and cut a clip by time range, with optional MP3 export.',
     images: [talksAsset('/images/yt-dl.png'), talksAsset('/images/yt-dlandcut-github.png')],
+    favicon: '/projects/favicons/youtube-download-cut.png',
     tags: ['Electron', 'Node.js', 'FFmpeg', 'YouTube‑DL'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://github.com/Markkop/yt-dlandcut/releases', enabled: true },
@@ -339,6 +364,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'As part of Linx team, I was responsible for the integration of the existing search, recommendation, showcase and banners products',
     images: [talksAsset('/images/lnx-1.png')],
+    favicon: '/projects/favicons/ecommerce-solutions.png',
     tags: ['JavaScript', 'PHP', 'jQuery', 'Vue.js'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://www.linx.com.br/busca-e-personalizacao/', enabled: true },
@@ -353,6 +379,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'A proof of concept for a business card that uses a marker to display 3D models using Augmented Reality.',
     images: [talksAsset('/images/web-ar.png')],
+    favicon: '/projects/favicons/web-ar-business-card.png',
     tags: ['AR.js', 'A-Frame', 'HTML', 'CSS', 'JavaScript'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: '', enabled: false, disabledReason: 'Private project' },
@@ -372,6 +399,7 @@ export const extraProjects: ExtraProject[] = [
       talksAsset('/images/metaverse-1.jpg'),
       talksAsset('/images/metaverse-2.png'),
     ],
+    favicon: '/projects/favicons/metaverse-project.png',
     tags: ['Decentraland', 'Metaverse', 'TypeScript', 'Web3'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: '', enabled: false, disabledReason: 'Private project' },
@@ -387,6 +415,7 @@ export const extraProjects: ExtraProject[] = [
     aiUsage: { level: 'None', description: '' },
     description: 'One of my first projects, a set of scripts to extend Habitica.com functionality. It features a Pomodoro Timer task, Custom Skills and keyboard shortcurs.',
     images: [talksAsset('/images/habitica-1.jpg')],
+    favicon: '/projects/favicons/habitica-scripts.png',
     tags: ['JavaScript', 'Habitica API'],
     buttons: [
       { type: 'view', text: 'Repo', icon: 'code', url: 'https://github.com/Markkop/habiticaScripts', enabled: true },

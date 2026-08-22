@@ -30,6 +30,9 @@ export type Project = {
   deviceToggle?: boolean
   startMobile?: boolean
   media?: ProjectMedia[]
+  favicon?: string
+  faviconOnDark?: boolean
+  faviconFill?: boolean
 }
 
 export const profile = {
@@ -99,6 +102,8 @@ export const projects: Project[] = [
     live: 'https://www.halborn.com/',
     image: '/projects/halborn.jpg',
     imageMobile: '/projects/halborn-mobile.jpg',
+    favicon: '/projects/favicons/halborn.png',
+    faviconFill: true,
   },
   {
     title: 'HabitChain',
@@ -111,6 +116,7 @@ export const projects: Project[] = [
     live: 'https://www.habitchain.xyz/',
     code: 'https://github.com/Markkop/habitchain-2',
     image: '/projects/habitchain.png',
+    favicon: '/projects/favicons/habitchain.png',
     embed: true,
     media: [
       { id: 'live', kind: 'live', label: 'Website' },
@@ -129,6 +135,8 @@ export const projects: Project[] = [
     live: 'https://casas.markkop.dev/',
     image: '/projects/minha-casa.png',
     video: '/projects/minha-casa.webm',
+    favicon: '/projects/favicons/prisma.svg',
+    faviconFill: true,
     embed: true,
   },
   {
@@ -142,6 +150,7 @@ export const projects: Project[] = [
     live: 'https://guests.markkop.dev/',
     code: 'https://github.com/Markkop/wedding-guest-planner',
     image: '/projects/wedding.png',
+    favicon: '/projects/favicons/wedding.png',
     embed: true,
   },
   {
@@ -155,6 +164,7 @@ export const projects: Project[] = [
     live: 'https://top.gg/bot/750529201161109507',
     code: 'https://github.com/Markkop/corvo-astral',
     image: '/projects/corvo-astral/alma.png',
+    favicon: '/projects/favicons/corvo-astral.svg',
     media: [{
       id: 'gallery',
       kind: 'gallery',
@@ -181,6 +191,8 @@ export const projects: Project[] = [
     timeframe: '2026',
     tech: ['Svelte', 'Elixir', 'PostgreSQL', 'TypeScript'],
     live: 'https://todo.markkop.dev/',
+    favicon: '/projects/favicons/todo-idle-quest.png',
+    faviconFill: true,
     embed: true,
     deviceToggle: true,
     startMobile: true,
