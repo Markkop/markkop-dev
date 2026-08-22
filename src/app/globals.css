@@ -947,6 +947,12 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 @keyframes cue { 50% { transform: translateY(6px); } }
 
 /* Hexagonal stack */
+.mk-stack-root {
+  --mk-accent: #8b5cf6;
+  --mk-accent-deep: #7c3aed;
+  --mk-accent-rgb: 139, 92, 246;
+  --mk-accent-ink: #ffffff;
+}
 .mk-stack-heading p { margin: 0 0 15px; color: var(--mk-accent); font: 700 10px var(--font-mono); letter-spacing: .2em; text-transform: uppercase; }
 .mk-stack-heading h2 { margin: 0 0 12px; color: var(--section-foreground); font-size: clamp(40px, 5vw, 64px); line-height: 1; }
 .mk-stack-heading > span { display: block; max-width: 680px; color: var(--section-muted); font-size: 17px; }

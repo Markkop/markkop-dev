@@ -12,7 +12,7 @@ type ProjectCopy = {
 
 export type SiteContent = {
   language: { label: string; switchLabel: string }
-  nav: { home: string; about: string; projects: string; stack: string; contact: string; connect: string; links: string; linktree: string }
+  nav: { home: string; about: string; projects: string; stack: string; contact: string; connect: string; follow: string; links: string; linktree: string }
   accessibility: { skip: string; backToTop: string; nextSection: string; startupUi: (active: boolean) => string; primaryNav: string; toggleMenu: string; socialProfiles: string; theme: (theme: 'dark' | 'light') => string }
   status: { building: string; latest: string }
   hero: {
@@ -178,7 +178,7 @@ const portugueseProjects: Record<string, ProjectCopy> = {
 export const content: Record<Language, SiteContent> = {
   en: {
     language: { label: 'English', switchLabel: 'Switch language to Portuguese' },
-    nav: { home: 'Home', about: 'About', projects: 'Projects', stack: 'Stack', contact: 'Contact', connect: 'Connect', links: 'Links', linktree: 'Linktree' },
+    nav: { home: 'Home', about: 'About', projects: 'Projects', stack: 'Stack', contact: 'Contact', connect: 'Connect', follow: 'Follow', links: 'Links', linktree: 'Linktree' },
     accessibility: {
       skip: 'Skip to content',
       backToTop: 'Scroll back to top',
@@ -297,7 +297,7 @@ export const content: Record<Language, SiteContent> = {
   },
   'pt-BR': {
     language: { label: 'Português', switchLabel: 'Mudar idioma para inglês' },
-    nav: { home: 'Início', about: 'Sobre', projects: 'Projetos', stack: 'Stack', contact: 'Contato', connect: 'Conectar', links: 'Links', linktree: 'Linktree' },
+    nav: { home: 'Início', about: 'Sobre', projects: 'Projetos', stack: 'Stack', contact: 'Contato', connect: 'Conectar', follow: 'Seguir', links: 'Links', linktree: 'Linktree' },
     accessibility: {
       skip: 'Pular para o conteúdo',
       backToTop: 'Voltar ao topo',

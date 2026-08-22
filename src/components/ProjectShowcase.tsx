@@ -734,9 +734,13 @@ export default function ProjectShowcase() {
   useEffect(() => {
     const track = trackRef.current
     if (!track) return
-    const observer = new IntersectionObserver(([entry]) => {
-      progressVisible.current = entry.isIntersecting
-      if (!entry.isIntersecting) {
+    const syncAccentVisibility = () => {
+      const bounds = track.getBoundingClientRect()
+      const midpoint = window.innerHeight / 2
+      const visible = bounds.top <= midpoint && bounds.bottom > midpoint
+      if (visible === progressVisible.current) return
+      progressVisible.current = visible
+      if (!visible) {
         clearRootAccent()
         return
       }
@@ -744,10 +748,13 @@ export default function ProjectShowcase() {
         projects[activeRef.current].slug,
         document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
       )
-    }, { rootMargin: '0px 0px -50% 0px', threshold: 0 })
-    observer.observe(track)
+    }
+    syncAccentVisibility()
+    window.addEventListener('scroll', syncAccentVisibility, { passive: true })
+    window.addEventListener('resize', syncAccentVisibility)
     return () => {
-      observer.disconnect()
+      window.removeEventListener('scroll', syncAccentVisibility)
+      window.removeEventListener('resize', syncAccentVisibility)
       progressVisible.current = false
       clearRootAccent()
     }

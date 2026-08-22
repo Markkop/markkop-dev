@@ -20,7 +20,7 @@ export function HeroCopy() {
       </h1>
       <div className="mk-hero-actions">
         <a className="primary" href={profile.links.linkedin} target="_blank" rel="noreferrer"><LinkedIn size={16} />{t.nav.connect}</a>
-        <a className="secondary" href={profile.links.instagram} target="_blank" rel="noreferrer"><Instagram size={16} />Follow</a>
+        <a className="secondary" href={profile.links.instagram} target="_blank" rel="noreferrer"><Instagram size={16} />{t.nav.follow}</a>
         <Link className="secondary" href="/links"><LinkIcon size={16} />{t.nav.links}</Link>
       </div>
     </motion.div>
