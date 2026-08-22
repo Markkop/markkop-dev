@@ -801,6 +801,7 @@ a.mk-journey-org:hover { color: var(--mk-accent); }
 .mk-simulator-bar > .device { display: grid; place-items: center; width: 20px; height: 20px; flex-shrink: 0; padding: 0; border: 0; color: var(--mk-accent); background: transparent; cursor: pointer; }
 .mk-simulator-bar > .device:hover { color: var(--mk-accent-deep); }
 .mk-simulator.phone .mk-simulator-bar { padding-inline: 8px; gap: 8px; }
+.mk-simulator.phone .mk-simulator-bar .controls .forward { display: none; }
 .mk-simulator-screen { min-height: 0; flex: 1; position: relative; overflow: hidden; background: color-mix(in srgb, var(--section-bg) 75%, black); }
 .mk-simulator-panel { position: absolute; inset: 0; }
 .mk-simulator-panel[hidden] { display: block; visibility: hidden; pointer-events: none; }
