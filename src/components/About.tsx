@@ -26,7 +26,7 @@ function JourneyOrgLogo({ org }: { org: TimelineOrg }) {
 
 function JourneyOrg({ org }: { org: TimelineOrg }) {
   const { t } = useLanguage()
-  const name = org.name === 'Me and You' ? t.about.meAndYou : org.name
+  const name = org.name === 'LFG' ? t.about.lfg : org.name
   const content = (
     <>
       <JourneyOrgLogo org={org} />

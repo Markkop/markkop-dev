@@ -34,7 +34,7 @@ export type SiteContent = {
     cards: Array<{ label: string; title: string; text: string }>
     journey: string
     milestonesHeading: string
-    meAndYou: string
+    lfg: string
     careerMilestones: string[]
     milestones: string[]
   }
@@ -199,7 +199,7 @@ export const content: Record<Language, SiteContent> = {
       cards: profile.about.map((item) => ({ ...item })),
       journey: '// Career',
       milestonesHeading: '// Milestones',
-      meAndYou: 'Me and You',
+      lfg: 'LFG',
       careerMilestones: profile.milestones.map((item) => item.role),
       milestones: profile.journey.map((item) => item.role),
     },
@@ -323,13 +323,13 @@ export const content: Record<Language, SiteContent> = {
       ],
       journey: '// Carreira',
       milestonesHeading: '// Conquistas',
-      meAndYou: 'Eu e Você',
+      lfg: 'LFG',
       careerMilestones: [
         'Full-stack Developer',
         'Senior Software Engineer',
         'Frontend Developer',
         'Senior Frontend Developer',
-        'sites, consultoria e workshops',
+        'Halborn, projetos paralelos e freelance',
       ],
       milestones: [
         'Bot de Discord com 1k+ usuários',

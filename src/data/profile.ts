@@ -75,7 +75,7 @@ export const profile = {
     { year: '2021', role: 'Senior Software Engineer', orgs: [{ name: 'ArcTouch', logo: '/companies/arctouch.png', href: 'https://arctouch.com/' }] },
     { year: '2022', role: 'Frontend Developer', orgs: [{ name: 'Halborn', logo: '/companies/halborn.png', href: 'https://www.halborn.com/' }] },
     { year: '2024', role: 'Senior Frontend Developer', orgs: [{ name: 'Halborn', logo: '/companies/halborn.png', href: 'https://www.halborn.com/' }] },
-    { year: '2026', role: 'websites, consulting and workshops', orgs: [{ name: 'Me and You', emoji: '🤝' }] },
+    { year: '2026', role: 'Halborn, Side Projects and Freelancing', orgs: [{ name: 'LFG', emoji: '🚀' }] },
   ],
   journey: [
     { year: '2020', role: '1k+ users Discord bot', orgs: [{ name: 'Corvo Astral', logo: '/companies/discord.svg', href: 'https://github.com/Markkop/corvo-astral' }] },
