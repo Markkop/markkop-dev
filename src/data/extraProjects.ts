@@ -95,6 +95,21 @@ export function sortProjectsByDate(items: ExtraProject[]) {
 
 export const extraProjects: ExtraProject[] = [
   {
+    slug: 'boomsync',
+    title: 'BoomSync',
+    category: 'Web App',
+    date: '2026',
+    client: { name: 'Personal', url: 'https://markkop.dev/' },
+    description: 'A mobile-first helper for the party game Two Rooms and a Boom, with synchronized countdown timers, a room shuffler, and P2P connectivity for game synchronization.',
+    images: ['/images/boomsync.png'],
+    favicon: '/projects/favicons/boomsync.svg',
+    tags: ['React', 'TypeScript', 'Vite', 'PeerJS', 'Tailwind CSS'],
+    buttons: [
+      { type: 'view', text: 'Visit', icon: 'globe', url: 'https://boom.markkop.dev/', enabled: true },
+      { type: 'source', text: 'Repo', icon: 'code', url: 'https://github.com/Markkop/boomsync', enabled: true },
+    ],
+  },
+  {
     slug: 'repogpt',
     title: 'RepoGPT',
     category: 'Developer Tool',
