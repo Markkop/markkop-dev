@@ -97,7 +97,7 @@ export const extraProjects: ExtraProject[] = [
   {
     slug: 'boomsync',
     title: 'BoomSync',
-    category: 'Web App',
+    category: 'Micro-app',
     date: '2026',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
     description: 'A mobile-first helper for the party game Two Rooms and a Boom, with synchronized countdown timers, a room shuffler, and P2P connectivity for game synchronization.',
