@@ -34,7 +34,7 @@ export const talks: Talk[] = [
     location: 'Hostgator, Florianópolis',
     locationLink: 'https://maps.google.com/?q=Rua+Lauro+Linhares,+589,+Trindade,+Florian%C3%B3polis',
     description: 'How to self-host AI tooling and keep your development workflow under your own control',
-    presentationLink: '',
+    presentationLink: 'https://docs.google.com/presentation/d/17SugT6KYl7ILsOcKK0CstAFaNJcp5IeDsqGMctJKv7E/edit?usp=sharing',
     feedbackLink: '',
     coverImage: talksAsset('https://res.cloudinary.com/dmslsrxjq/image/upload/v1786467467/codecon-events/events/mdjf2rd3duxsbaewpcfp.jpg'),
     favicon: '/talks/favicons/codecon.png',
