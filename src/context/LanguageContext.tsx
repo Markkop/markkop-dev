@@ -61,3 +61,8 @@ export function useLanguage() {
   if (!context) throw new Error('useLanguage must be used within LanguageProvider')
   return context
 }
+
+/** Language from the document, usable outside LanguageProvider (e.g. global-error). */
+export function useDocumentLanguage(): Language {
+  return useSyncExternalStore(subscribeToLanguage, getLanguageSnapshot, () => 'en')
+}
