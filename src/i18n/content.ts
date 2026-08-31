@@ -99,7 +99,16 @@ export type SiteContent = {
     galleryNext: string
   }
   notFound: { title: string; text: string; home: string }
-  error: { title: string; text: string; retry: string }
+  error: {
+    title: string
+    text: string
+    quip: string
+    quipHint: string
+    retry: string
+    dump: string
+    stack: string
+    details: string
+  }
 }
 
 const englishProjects = Object.fromEntries(
@@ -293,7 +302,16 @@ export const content: Record<Language, SiteContent> = {
       galleryNext: 'Next image',
     },
     notFound: { title: 'This route wandered off.', text: 'The page is missing, but the rest of the system is still online.', home: 'Return home' },
-    error: { title: 'Something went wrong.', text: 'An unexpected error occurred. Try rendering this page again.', retry: 'Try again' },
+    error: {
+      title: 'This process dumped core.',
+      text: 'A throw escaped the render. Not every crash is HTTP 500 — retry, or read the dump below.',
+      quip: 'sudo make me a sandwich',
+      quipHint: 'permission denied: page panicked',
+      retry: 'Try again',
+      dump: 'cat error.dump',
+      stack: 'stack',
+      details: 'Error dump',
+    },
   },
   'pt-BR': {
     language: { label: 'Português', switchLabel: 'Mudar idioma para inglês' },
@@ -432,6 +450,15 @@ export const content: Record<Language, SiteContent> = {
       galleryNext: 'Próxima imagem',
     },
     notFound: { title: 'Esta rota se perdeu.', text: 'A página não existe, mas o restante do sistema continua online.', home: 'Voltar ao início' },
-    error: { title: 'Algo deu errado.', text: 'Ocorreu um erro inesperado. Tente renderizar esta página novamente.', retry: 'Tentar novamente' },
+    error: {
+      title: 'Este processo dumpou o core.',
+      text: 'Um throw escapou do render. Nem todo crash é HTTP 500 — tente de novo ou leia o dump abaixo.',
+      quip: 'sudo faz um sanduíche',
+      quipHint: 'permissão negada: a página entrou em pânico',
+      retry: 'Tentar novamente',
+      dump: 'cat error.dump',
+      stack: 'stack',
+      details: 'Dump do erro',
+    },
   },
 }
