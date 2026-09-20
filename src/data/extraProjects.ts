@@ -28,6 +28,9 @@ export type ExtraProject = {
   favicon?: string
   faviconOnDark?: boolean
   faviconFill?: boolean
+  topCover?: boolean
+  coverPosition?: 'top' | 'center' | 'bottom'
+  fit?: 'cover' | 'contain'
 }
 
 function collectImages(project: Project) {
@@ -76,6 +79,7 @@ export function projectToExtra(
     favicon: project.favicon,
     faviconOnDark: project.faviconOnDark,
     faviconFill: project.faviconFill,
+    ...(project.slug === 'wedding' ? { coverPosition: 'bottom' as const } : {}),
   }
 }
 
@@ -131,10 +135,7 @@ export const extraProjects: ExtraProject[] = [
     date: '2025',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
     description: 'Web utility that scans a GitHub repository for environment variable usage and produces a .env file example.',
-    images: [
-      talksAsset('https://github.com/Markkop/RepoEnvGenerator/blob/main/public/og.png?raw=true'),
-      talksAsset('/images/repoenvgen-github.png'),
-    ],
+    images: [talksAsset('/images/repoenvgen.png'), talksAsset('/images/repoenvgen-github.png')],
     favicon: '/projects/favicons/repo-env-generator.png',
     tags: ['Next.js', 'TypeScript', 'GitHub API', 'Vercel'],
     buttons: [
@@ -163,7 +164,7 @@ export const extraProjects: ExtraProject[] = [
     date: '2025',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
     description: 'Small utility that ingests receipt data and outputs parsed values for budgeting or claims. Built with Replit Agent',
-    images: [talksAsset('/images/receipt-processor.png')],
+    images: [],
     favicon: '/projects/favicons/receipt-processor.svg',
     tags: ['JavaScript', 'Replit'],
     buttons: [
@@ -206,8 +207,9 @@ export const extraProjects: ExtraProject[] = [
     date: '2022',
     client: { name: 'Personal', url: 'https://markkop.dev/' },
     description: 'A Google App/Alexa Skill for ZenithVR MMORPG that delivers in‑game information via natural speech interfaces.',
-    images: [talksAsset('/images/essence-helper.png'), talksAsset('/images/essence-helper-github.png')],
+    images: [talksAsset('/images/essence-helper.jpg'), talksAsset('/images/essence-helper-github.png')],
     favicon: '/projects/favicons/essence-helper.svg',
+    topCover: false,
     tags: ['Jovo', 'TypeScript', 'Alexa', 'Google Assistant'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://www.amazon.com/dp/B09T6XJ3NT', enabled: true },
@@ -271,6 +273,7 @@ export const extraProjects: ExtraProject[] = [
     description: 'A simple linktree clone to make my links more accessible.',
     images: [talksAsset('/images/linktree-1.png')],
     favicon: '/projects/favicons/linktree-clone.svg',
+    topCover: false,
     tags: ['Next.js', 'Tailwind CSS'],
     buttons: [
       { type: 'view', text: 'Visit', icon: 'globe', url: 'https://linktree.markkop.dev/', enabled: true },
@@ -286,9 +289,10 @@ export const extraProjects: ExtraProject[] = [
     description: 'A tool to delete multiple playlists from a Spotify account.',
     images: [talksAsset('/images/spotify-1.jpeg')],
     favicon: '/projects/favicons/multiple-playlist-deleter.png',
+    topCover: false,
     tags: ['JavaScript', 'Spotify API'],
     buttons: [
-      { type: 'view', text: 'Visit', icon: 'globe', url: 'https://multiple-playlist-deleter.vercel.app/', enabled: true },
+      { type: 'view', text: 'Visit', icon: 'globe', url: 'https://multiple-playlist-deleter-markkop.vercel.app/', enabled: true },
       { type: 'source', text: 'Repo', icon: 'code', url: 'https://github.com/Markkop/Multiple-Playlist-deleter', enabled: true },
     ],
   },
@@ -315,11 +319,7 @@ export const extraProjects: ExtraProject[] = [
     date: '2022',
     client: { name: 'Multiple Clients', url: '' },
     description: 'A web app to track crypto rewards for web3 clients and users',
-    images: [
-      talksAsset('/images/retrocade-rewards-1.png'),
-      talksAsset('/images/shilly-1.png'),
-      talksAsset('/images/cryptoheadz-1.png'),
-    ],
+    images: [talksAsset('/images/retrocade-rewards-1.png')],
     favicon: '/projects/favicons/web3-rewards-tracker.png',
     tags: ['Next.js', 'Tailwind CSS', 'GraphQL', 'Blockchain', 'BitQuery', 'PancakeSwap API'],
     buttons: [

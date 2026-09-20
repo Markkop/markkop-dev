@@ -77,7 +77,7 @@ function LinksExpandable({
         <span className={iconClass}>
           {image ? (
             <>
-              {/* Remote covers from talks.markkop.dev; CSP allowlists the hosts. */}
+              {/* Cover images: local /images plus a few remote talk hosts allowlisted in CSP. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={image} alt="" className={isFavicon ? 'is-favicon' : undefined} />
             </>
@@ -106,20 +106,25 @@ function MediaGallery({
   alt,
   fit = 'cover',
   topCover = true,
+  coverPosition,
 }: {
   images: string[]
   alt: string
   fit?: 'cover' | 'contain'
   topCover?: boolean
+  coverPosition?: 'top' | 'center' | 'bottom'
 }) {
   const { t } = useLanguage()
   const [index, setIndex] = useState(0)
   const current = images[index] ?? images[0]
   if (!current) return null
 
+  const position = coverPosition ?? (topCover ? 'top' : 'center')
+  const positionClass = position === 'top' ? ' is-top' : position === 'bottom' ? ' is-bottom' : ''
+
   return (
-    <div className={topCover ? 'links-detail-media is-top' : 'links-detail-media'}>
-      {/* Remote covers from talks.markkop.dev; sizes vary and hosts are CSP-allowlisted. */}
+    <div className={`links-detail-media${positionClass}`}>
+      {/* Covers are local or CSP-allowlisted remotes; sizes vary. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={current} alt={alt} className={fit === 'contain' ? 'is-contain' : undefined} />
       {images.length > 1 ? (
@@ -318,7 +323,7 @@ export function ExpandableProject({
     >
       <div className="links-detail">
         <div className="links-detail-media-wrap">
-          <MediaGallery images={project.images} alt={project.title} />
+          <MediaGallery images={project.images} alt={project.title} fit={project.fit} topCover={project.topCover} coverPosition={project.coverPosition} />
         </div>
         <div className="links-detail-body">
           <h3>{project.title}</h3>
