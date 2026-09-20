@@ -77,7 +77,7 @@ function LinksExpandable({
         <span className={iconClass}>
           {image ? (
             <>
-              {/* Cover images: local /images plus a few remote talk hosts allowlisted in CSP. */}
+              {/* Covers are local under /images and /talks. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={image} alt="" className={isFavicon ? 'is-favicon' : undefined} />
             </>
@@ -124,7 +124,7 @@ function MediaGallery({
 
   return (
     <div className={`links-detail-media${positionClass}`}>
-      {/* Covers are local or CSP-allowlisted remotes; sizes vary. */}
+      {/* Covers are local files; sizes vary. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={current} alt={alt} className={fit === 'contain' ? 'is-contain' : undefined} />
       {images.length > 1 ? (

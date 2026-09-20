@@ -36,7 +36,7 @@ export const talks: Talk[] = [
     description: 'How to self-host AI tooling and keep your development workflow under your own control',
     presentationLink: 'https://docs.google.com/presentation/d/17SugT6KYl7ILsOcKK0CstAFaNJcp5IeDsqGMctJKv7E/edit?usp=sharing',
     feedbackLink: '',
-    coverImage: talksAsset('https://res.cloudinary.com/dmslsrxjq/image/upload/v1786467467/codecon-events/events/mdjf2rd3duxsbaewpcfp.jpg'),
+    coverImage: talksAsset('/talks/covers/self-hosting-ai-tooling.jpg'),
     favicon: '/talks/favicons/codecon.png',
     faviconOnDark: true,
     tags: [
@@ -59,7 +59,7 @@ export const talks: Talk[] = [
     description: 'Find out how to keep up with AI and how people are using it when it comes to software development',
     presentationLink: 'https://docs.google.com/presentation/d/1XIx461UwqQDwO-j9bc-ppZVU0vikgahO_D9hN6I_a4g/edit?usp=sharing',
     feedbackLink: 'https://openfeedback.io/TcKKJ25Pz1FjZZpL8j79/2025-03-22/44tlHpo0j7RwMN7bJV7v',
-    coverImage: talksAsset('https://secure.meetupstatic.com/photos/event/8/f/3/4/600_526476660.webp?w=750'),
+    coverImage: talksAsset('/talks/covers/state-of-ai-2025.webp'),
     favicon: '/talks/favicons/floripajs.png',
     faviconFill: true,
     tags: [
@@ -84,7 +84,7 @@ export const talks: Talk[] = [
     description: 'Discover which AI tools you need to know to stay ahead and boost your productivity',
     presentationLink: 'https://docs.google.com/presentation/d/15BrDsRLp7sL_ZXCRuKPXbGFI_AR2K_WUi--aKHO-rrI/edit?usp=drivesdk',
     feedbackLink: 'https://openfeedback.io/TcKKJ25Pz1FjZZpL8j79/2024-09-25/F9I15yaOrcTKpDFzRO8x',
-    coverImage: talksAsset('https://i.imgur.com/CNFhtZE.png'),
+    coverImage: talksAsset('/talks/covers/10x-dev-ai.png'),
     favicon: '/talks/favicons/codecon.png',
     faviconOnDark: true,
     tags: [
@@ -109,7 +109,7 @@ export const talks: Talk[] = [
     description: 'How I used Habitica to gamify my life and make my first open source contribution',
     presentationLink: 'https://docs.google.com/presentation/d/1BCFNadvJbrBUpa4wOWb_reQrAX0QjnWZs05xkAGAA8Y/edit?usp=sharing',
     feedbackLink: '',
-    coverImage: talksAsset('https://i.imgur.com/FbKUQJX.png'),
+    coverImage: talksAsset('/talks/covers/habitica-talk.png'),
     favicon: '/talks/favicons/flask-conf.png',
     faviconFill: true,
     tags: [
@@ -130,7 +130,7 @@ export const talks: Talk[] = [
     description: 'Some news, stats and reflexions about Ruby on Rails',
     presentationLink: 'https://docs.google.com/presentation/d/1d8SST0bhF-O0OEsclPWFsDKQsdAGjpTlEm-l_XSHvzI/edit?usp=sharing',
     feedbackLink: '',
-    coverImage: talksAsset('https://i.imgur.com/kpyVVsu.png'),
+    coverImage: talksAsset('/talks/covers/rails-in-2019.png'),
     favicon: '/talks/favicons/rubyfloripa.png',
     faviconFill: true,
     tags: [
